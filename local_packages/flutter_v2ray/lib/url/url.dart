@@ -127,6 +127,8 @@ abstract class V2RayURL {
     "realitySettings": null,
     "grpcSettings": null,
     "dsSettings": null,
+    "httpupgradeSettings": null,
+    "xhttpSettings": null,
     "sockopt": null
   };
 
@@ -224,6 +226,26 @@ abstract class V2RayURL {
       streamSetting['grpcSettings'] = {
         "serviceName": serviceName ?? "",
         "multiMode": mode == "multi",
+      };
+      sni = host ?? "";
+    } else if (transport == 'httpupgrade') {
+      streamSetting['httpupgradeSettings'] = {
+        "path": path ?? "/",
+        "host": host ?? "",
+        "headers": {
+          "Host": host ?? "",
+        },
+      };
+      sni = host ?? "";
+    } else if (transport == 'xhttp') {
+      streamSetting['xhttpSettings'] = {
+        "path": path ?? "/",
+        "host": host ?? "",
+        "headers": {
+          "Host": host ?? "",
+        },
+        "mode": mode ?? "auto",
+        "extra": {},
       };
       sni = host ?? "";
     }
