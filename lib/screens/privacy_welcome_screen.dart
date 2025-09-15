@@ -699,7 +699,7 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                               }
                             },
                             child: Text(
-                              context.tr('privacy_welcome.privacy_policy'),
+                              context.tr('about.privacy_policy'),
                               style: checkboxTextStyle.copyWith(
                                 color: AppTheme.primaryGreen,
                                 decoration: TextDecoration.underline,
@@ -737,7 +737,7 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                               }
                             },
                             child: Text(
-                              context.tr('privacy_welcome.terms_of_service'),
+                              context.tr('about.terms_of_service'),
                               style: checkboxTextStyle.copyWith(
                                 color: AppTheme.primaryGreen,
                                 decoration: TextDecoration.underline,
