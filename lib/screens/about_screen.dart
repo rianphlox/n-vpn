@@ -64,7 +64,7 @@ class AboutScreen extends StatelessWidget {
             Text(
               context.tr(
                 TranslationKeys.aboutVersion,
-                parameters: {'version': '3.2.0'},
+                parameters: {'version': '3.2.5'},
               ),
               style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
