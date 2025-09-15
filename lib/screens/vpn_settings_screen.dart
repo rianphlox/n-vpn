@@ -226,8 +226,8 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
                                     isEnabled = value;
                                   });
                                 },
-                                // Updated deprecated activeColor to activeThumbColor
-                                activeThumbColor: AppTheme.primaryGreen,
+                                // Updated deprecated activeThumbColor to activeColor
+                                activeColor: AppTheme.primaryGreen,
                               ),
                             ],
                           ),
@@ -341,8 +341,8 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
                                     isDnsEnabled = value;
                                   });
                                 },
-                                // Updated deprecated activeColor to activeThumbColor
-                                activeThumbColor: AppTheme.primaryGreen,
+                                // Updated deprecated activeThumbColor to activeColor
+                                activeColor: AppTheme.primaryGreen,
                               ),
                             ],
                           ),
