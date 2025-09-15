@@ -7,6 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../providers/v2ray_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/error_snackbar.dart';
+import '../utils/app_localizations.dart';
 
 class StoreScreen extends StatefulWidget {
   const StoreScreen({Key? key}) : super(key: key);
@@ -43,7 +44,9 @@ class _StoreScreenState extends State<StoreScreen> {
           .timeout(
             const Duration(seconds: 10),
             onTimeout: () {
-              throw Exception('Connection timeout');
+              throw Exception(
+                context.tr(TranslationKeys.errorConnectionTimeout),
+              );
             },
           );
 
@@ -56,14 +59,17 @@ class _StoreScreenState extends State<StoreScreen> {
         });
       } else {
         setState(() {
-          _errorMessage =
-              'Failed to load store data: HTTP ${response.statusCode}';
+          _errorMessage = context.tr(
+            TranslationKeys.storeScreenFailedToLoad,
+            parameters: {'code': response.statusCode.toString()},
+          );
           _isLoading = false;
         });
       }
     } catch (e) {
       setState(() {
-        _errorMessage = 'Error: ${e.toString()}';
+        _errorMessage =
+            context.tr(TranslationKeys.errorNetwork) + ': ${e.toString()}';
         _isLoading = false;
       });
     }
@@ -71,22 +77,21 @@ class _StoreScreenState extends State<StoreScreen> {
 
   void _filterItems() {
     setState(() {
-      _filteredItems =
-          _storeItems.where((item) {
-            final name = item['name'].toString().toLowerCase();
-            final dev = item['dev'].toString().toLowerCase();
-            final query = _searchQuery.toLowerCase();
+      _filteredItems = _storeItems.where((item) {
+        final name = item['name'].toString().toLowerCase();
+        final dev = item['dev'].toString().toLowerCase();
+        final query = _searchQuery.toLowerCase();
 
-            return name.contains(query) || dev.contains(query);
-          }).toList();
+        return name.contains(query) || dev.contains(query);
+      }).toList();
     });
   }
 
   void _copyToClipboard(String text) {
     Clipboard.setData(ClipboardData(text: text.trim()));
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(const SnackBar(content: Text('URL copied to clipboard')));
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(context.tr(TranslationKeys.storeScreenUrlCopied))),
+    );
   }
 
   Future<void> _addToSubscriptions(String name, String url) async {
@@ -97,15 +102,19 @@ class _StoreScreenState extends State<StoreScreen> {
       if (provider.subscriptions.any((s) => s.name == name)) {
         ErrorSnackbar.show(
           context,
-          'A subscription with this name already exists',
+          context.tr(TranslationKeys.storeScreenSubscriptionExists),
         );
         return;
       }
 
       // Show loading indicator
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(const SnackBar(content: Text('Adding subscription...')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.tr(TranslationKeys.storeScreenAddingSubscription),
+          ),
+        ),
+      );
 
       // Add subscription
       await provider.addSubscription(name, url.trim());
@@ -122,11 +131,18 @@ class _StoreScreenState extends State<StoreScreen> {
         provider.clearError();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Subscription added successfully')),
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.storeScreenSubscriptionAdded),
+            ),
+          ),
         );
       }
     } catch (e) {
-      ErrorSnackbar.show(context, 'Error: ${e.toString()}');
+      ErrorSnackbar.show(
+        context,
+        context.tr(TranslationKeys.errorUnknown) + ': ${e.toString()}',
+      );
     }
   }
 
@@ -134,7 +150,10 @@ class _StoreScreenState extends State<StoreScreen> {
     final Uri url = Uri.parse('https://t.me/h3dev');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        ErrorSnackbar.show(context, 'Could not launch Telegram');
+        ErrorSnackbar.show(
+          context,
+          context.tr(TranslationKeys.storeScreenCouldNotLaunch),
+        );
       }
     }
   }
@@ -153,9 +172,9 @@ class _StoreScreenState extends State<StoreScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Add New',
-                  style: TextStyle(
+                Text(
+                  context.tr(TranslationKeys.storeScreenAddNew),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -168,9 +187,9 @@ class _StoreScreenState extends State<StoreScreen> {
                     color: Colors.blue,
                     size: 28,
                   ),
-                  title: const Text(
-                    'Contact on Telegram',
-                    style: TextStyle(color: Colors.white),
+                  title: Text(
+                    context.tr(TranslationKeys.storeScreenContactTelegram),
+                    style: const TextStyle(color: Colors.white),
                   ),
                   onTap: () {
                     Navigator.of(context).pop();
@@ -180,9 +199,9 @@ class _StoreScreenState extends State<StoreScreen> {
                 const SizedBox(height: 10),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.grey),
+                  child: Text(
+                    context.tr(TranslationKeys.storeScreenCancel),
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ),
               ],
@@ -197,7 +216,7 @@ class _StoreScreenState extends State<StoreScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Subscription Store'),
+        title: Text(context.tr(TranslationKeys.storeScreenSubscriptionStore)),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
         actions: [
@@ -222,7 +241,7 @@ class _StoreScreenState extends State<StoreScreen> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Search by name or developer',
+                  hintText: context.tr(TranslationKeys.storeScreenSearchHint),
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   filled: true,
                   fillColor: Colors.white.withOpacity(0.1),
@@ -243,166 +262,182 @@ class _StoreScreenState extends State<StoreScreen> {
             ),
             const SizedBox(height: 8),
             Expanded(
-              child:
-                  _isLoading
-                      ? const Center(child: CircularProgressIndicator())
-                      : _errorMessage.isNotEmpty
-                      ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              _errorMessage,
-                              style: const TextStyle(color: Colors.white70),
-                              textAlign: TextAlign.center,
+              child: _isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : _errorMessage.isNotEmpty
+                  ? Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            _errorMessage,
+                            style: const TextStyle(color: Colors.white70),
+                            textAlign: TextAlign.center,
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: _fetchStoreData,
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: AppTheme.primaryGreen,
                             ),
-                            const SizedBox(height: 16),
-                            ElevatedButton(
-                              onPressed: _fetchStoreData,
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryGreen,
-                              ),
-                              child: const Text('Retry'),
+                            child: Text(
+                              context.tr(TranslationKeys.storeScreenRetry),
                             ),
-                          ],
-                        ),
-                      )
-                      : _filteredItems.isEmpty
-                      ? const Center(
-                        child: Text(
-                          'No subscriptions found',
-                          style: TextStyle(color: Colors.white70),
-                        ),
-                      )
-                      : ListView.builder(
-                        padding: const EdgeInsets.all(16),
-                        itemCount: _filteredItems.length,
-                        itemBuilder: (context, index) {
-                          final item = _filteredItems[index];
-                          return Card(
-                            margin: const EdgeInsets.only(bottom: 16),
-                            color: Colors.white.withOpacity(0.1),
-                            elevation: 4,
-                            shadowColor: Colors.black.withOpacity(0.3),
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(16),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceBetween,
+                          ),
+                        ],
+                      ),
+                    )
+                  : _filteredItems.isEmpty
+                  ? Center(
+                      child: Text(
+                        context.tr(TranslationKeys.storeScreenNoSubscriptions),
+                        style: const TextStyle(color: Colors.white70),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.all(16),
+                      itemCount: _filteredItems.length,
+                      itemBuilder: (context, index) {
+                        final item = _filteredItems[index];
+                        return Card(
+                          margin: const EdgeInsets.only(bottom: 16),
+                          color: Colors.white.withOpacity(0.1),
+                          elevation: 4,
+                          shadowColor: Colors.black.withOpacity(0.3),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        item['name'] ??
+                                            context.tr(
+                                              TranslationKeys
+                                                  .storeScreenUnknown,
+                                            ),
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 20,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                // Developer name below subscription name
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 4.0),
+                                  child: Text(
+                                    item['dev'] ??
+                                        context.tr(
+                                          TranslationKeys.storeScreenUnknown,
+                                        ),
+                                    style: const TextStyle(
+                                      color: Colors.white60,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Container(
+                                  padding: const EdgeInsets.all(12),
+                                  decoration: BoxDecoration(
+                                    color: Colors.black.withValues(alpha: 0.3),
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: Colors.white.withValues(
+                                        alpha: 0.1,
+                                      ),
+                                      width: 1,
+                                    ),
+                                  ),
+                                  child: Row(
                                     children: [
+                                      const Icon(
+                                        Icons.link,
+                                        color: Colors.white54,
+                                        size: 16,
+                                      ),
+                                      const SizedBox(width: 8),
                                       Expanded(
                                         child: Text(
-                                          item['name'] ?? 'Unknown',
+                                          item['url'] ?? '',
                                           style: const TextStyle(
-                                            color: Colors.white,
-                                            fontSize: 20,
-                                            fontWeight: FontWeight.bold,
+                                            color: Colors.white70,
+                                            fontFamily: 'monospace',
+                                            fontSize: 13,
                                           ),
                                           overflow: TextOverflow.ellipsis,
                                         ),
                                       ),
-                                    ],
-                                  ),
-                                  // Developer name below subscription name
-                                  Padding(
-                                    padding: const EdgeInsets.only(top: 4.0),
-                                    child: Text(
-                                      item['dev'] ?? 'Unknown',
-                                      style: const TextStyle(
-                                        color: Colors.white60,
-                                        fontSize: 13,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Container(
-                                    padding: const EdgeInsets.all(12),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black.withOpacity(0.3),
-                                      borderRadius: BorderRadius.circular(12),
-                                      border: Border.all(
-                                        color: Colors.white.withOpacity(0.1),
-                                        width: 1,
-                                      ),
-                                    ),
-                                    child: Row(
-                                      children: [
-                                        const Icon(
-                                          Icons.link,
-                                          color: Colors.white54,
-                                          size: 16,
+                                      IconButton(
+                                        icon: const Icon(
+                                          Icons.copy,
+                                          color: AppTheme.primaryGreen,
+                                          size: 20,
                                         ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(
-                                            item['url'] ?? '',
-                                            style: const TextStyle(
-                                              color: Colors.white70,
-                                              fontFamily: 'monospace',
-                                              fontSize: 13,
-                                            ),
-                                            overflow: TextOverflow.ellipsis,
-                                          ),
+                                        onPressed: () =>
+                                            _copyToClipboard(item['url'] ?? ''),
+                                        tooltip: context.tr(
+                                          TranslationKeys.storeScreenCopyUrl,
                                         ),
-                                        IconButton(
-                                          icon: const Icon(
-                                            Icons.copy,
-                                            color: AppTheme.primaryGreen,
-                                            size: 20,
-                                          ),
-                                          onPressed:
-                                              () => _copyToClipboard(
-                                                item['url'] ?? '',
-                                              ),
-                                          tooltip: 'Copy URL',
-                                          padding: EdgeInsets.zero,
-                                          constraints: const BoxConstraints(),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  const SizedBox(height: 16),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.end,
-                                    children: [
-                                      ElevatedButton.icon(
-                                        icon: const Icon(Icons.add),
-                                        label: const Text('Add to App'),
-                                        onPressed:
-                                            () => _addToSubscriptions(
-                                              item['name'] ?? 'Unknown',
-                                              item['url'] ?? '',
-                                            ),
-                                        style: ElevatedButton.styleFrom(
-                                          backgroundColor:
-                                              AppTheme.primaryGreen,
-                                          foregroundColor: Colors.white,
-                                          elevation: 3,
-                                          padding: const EdgeInsets.symmetric(
-                                            horizontal: 16,
-                                            vertical: 10,
-                                          ),
-                                          shape: RoundedRectangleBorder(
-                                            borderRadius: BorderRadius.circular(
-                                              10,
-                                            ),
-                                          ),
-                                        ),
+                                        padding: EdgeInsets.zero,
+                                        constraints: const BoxConstraints(),
                                       ),
                                     ],
                                   ),
-                                ],
-                              ),
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.end,
+                                  children: [
+                                    ElevatedButton.icon(
+                                      icon: const Icon(Icons.add),
+                                      label: Text(
+                                        context.tr(
+                                          TranslationKeys.storeScreenAddToApp,
+                                        ),
+                                      ),
+                                      onPressed: () => _addToSubscriptions(
+                                        item['name'] ??
+                                            context.tr(
+                                              TranslationKeys
+                                                  .storeScreenUnknown,
+                                            ),
+                                        item['url'] ?? '',
+                                      ),
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: AppTheme.primaryGreen,
+                                        foregroundColor: Colors.white,
+                                        elevation: 3,
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 16,
+                                          vertical: 10,
+                                        ),
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(
+                                            10,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                      ),
+                          ),
+                        );
+                      },
+                    ),
             ),
           ],
         ),

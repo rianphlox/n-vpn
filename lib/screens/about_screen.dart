@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../providers/language_provider.dart';
+import '../utils/app_localizations.dart';
 
 class AboutScreen extends StatelessWidget {
   const AboutScreen({Key? key}) : super(key: key);
@@ -13,9 +16,20 @@ class AboutScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, _) {
+        return Directionality(
+          textDirection: languageProvider.textDirection,
+          child: _buildAboutScreen(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildAboutScreen(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('About'),
+        title: Text(context.tr(TranslationKeys.aboutTitle)),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
       ),
@@ -47,17 +61,20 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 8),
 
             // App Version
-            const Text(
-              'Version 3.1.0',
-              style: TextStyle(fontSize: 16, color: Colors.grey),
+            Text(
+              context.tr(
+                TranslationKeys.aboutVersion,
+                parameters: {'version': '3.2.0'},
+              ),
+              style: const TextStyle(fontSize: 16, color: Colors.grey),
             ),
 
             const SizedBox(height: 8),
 
             // Tagline
-            const Text(
-              'Fast, Unlimited, Safe and Free',
-              style: TextStyle(
+            Text(
+              context.tr(TranslationKeys.aboutTagline),
+              style: const TextStyle(
                 fontSize: 16,
                 fontStyle: FontStyle.italic,
                 color: Colors.grey,
@@ -68,14 +85,14 @@ class AboutScreen extends StatelessWidget {
             const SizedBox(height: 30),
 
             // Developer Info
-            const Text(
-              'Developed by',
-              style: TextStyle(fontSize: 14, color: Colors.grey),
+            Text(
+              context.tr(TranslationKeys.aboutDevelopedBy),
+              style: const TextStyle(fontSize: 14, color: Colors.grey),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Hossein Pira & hidedev16',
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            Text(
+              context.tr(TranslationKeys.aboutDevelopers),
+              style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
             ),
 
             const SizedBox(height: 40),
@@ -92,9 +109,9 @@ class AboutScreen extends StatelessWidget {
                   ).colorScheme.outline.withValues(alpha: 0.2),
                 ),
               ),
-              child: const Text(
-                'Proxy Cloud is a powerful Flutter application designed to provide secure, private internet access through V2Ray VPN technology and Telegram MTProto proxies. With an intuitive dark-themed interface and comprehensive features, Proxy Cloud puts you in control of your online privacy without any subscription fees or hidden costs.',
-                style: TextStyle(fontSize: 16, height: 1.5),
+              child: Text(
+                context.tr(TranslationKeys.aboutDescription),
+                style: const TextStyle(fontSize: 16, height: 1.5),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -112,7 +129,9 @@ class AboutScreen extends StatelessWidget {
                       _launchUrl('https://t.me/irdevs_dns');
                     },
                     icon: const Icon(Icons.telegram),
-                    label: const Text('Telegram Channel'),
+                    label: Text(
+                      context.tr(TranslationKeys.aboutTelegramChannel),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF0088cc),
                       foregroundColor: Colors.white,
@@ -134,7 +153,7 @@ class AboutScreen extends StatelessWidget {
                       _launchUrl('https://github.com/code3-dev/ProxyCloud');
                     },
                     icon: const Icon(Icons.code),
-                    label: const Text('GitHub Source'),
+                    label: Text(context.tr(TranslationKeys.aboutGithubSource)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blueGrey,
                       foregroundColor: Colors.white,
@@ -158,7 +177,7 @@ class AboutScreen extends StatelessWidget {
                       );
                     },
                     icon: const Icon(Icons.privacy_tip_outlined),
-                    label: const Text('Privacy Policy'),
+                    label: Text(context.tr(TranslationKeys.aboutPrivacyPolicy)),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.teal,
                       foregroundColor: Colors.white,
@@ -182,7 +201,9 @@ class AboutScreen extends StatelessWidget {
                       );
                     },
                     icon: const Icon(Icons.gavel_outlined),
-                    label: const Text('Terms of Service'),
+                    label: Text(
+                      context.tr(TranslationKeys.aboutTermsOfService),
+                    ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.deepPurple,
                       foregroundColor: Colors.white,
@@ -200,7 +221,7 @@ class AboutScreen extends StatelessWidget {
 
             // Footer
             Text(
-              '© 2025 Proxy Cloud',
+              context.tr(TranslationKeys.aboutCopyright),
               style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
               textAlign: TextAlign.center,
             ),

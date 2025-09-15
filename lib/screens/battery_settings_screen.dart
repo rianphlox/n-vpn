@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_localizations.dart';
+import '../providers/language_provider.dart';
 
 class BatterySettingsScreen extends StatefulWidget {
   const BatterySettingsScreen({super.key});
@@ -16,17 +19,21 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       const platform = MethodChannel('com.cloud.pira/settings');
       await platform.invokeMethod('openBatteryOptimizationSettings');
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Battery optimization settings opened'),
+          SnackBar(
+            content: Text(
+              context.tr(
+                TranslationKeys.batterySettingsBatteryOptimizationOpened,
+              ),
+            ),
             backgroundColor: AppTheme.primaryGreen,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -34,7 +41,12 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error opening settings: $e'),
+            content: Text(
+              context.tr(
+                TranslationKeys.batterySettingsErrorOpening,
+                parameters: {'error': e.toString()},
+              ),
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -53,17 +65,19 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       const platform = MethodChannel('com.cloud.pira/settings');
       await platform.invokeMethod('openGeneralBatterySettings');
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('General battery settings opened'),
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.batterySettingsGeneralBatteryOpened),
+            ),
             backgroundColor: AppTheme.primaryGreen,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -71,7 +85,12 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error opening settings: $e'),
+            content: Text(
+              context.tr(
+                TranslationKeys.batterySettingsErrorOpening,
+                parameters: {'error': e.toString()},
+              ),
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -90,17 +109,19 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
     setState(() {
       _isLoading = true;
     });
-    
+
     try {
       const platform = MethodChannel('com.cloud.pira/settings');
       await platform.invokeMethod('openAppSettings');
-      
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('App settings opened'),
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.batterySettingsAppSettingsOpened),
+            ),
             backgroundColor: AppTheme.primaryGreen,
-            duration: Duration(seconds: 2),
+            duration: const Duration(seconds: 2),
           ),
         );
       }
@@ -108,7 +129,12 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Error opening settings: $e'),
+            content: Text(
+              context.tr(
+                TranslationKeys.batterySettingsErrorOpening,
+                parameters: {'error': e.toString()},
+              ),
+            ),
             backgroundColor: Colors.red,
             duration: const Duration(seconds: 3),
           ),
@@ -125,10 +151,21 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, _) {
+        return Directionality(
+          textDirection: languageProvider.textDirection,
+          child: _buildBatterySettingsScreen(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildBatterySettingsScreen(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
-        title: const Text('Battery & Background Access'),
+        title: Text(context.tr(TranslationKeys.batterySettingsTitle)),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
         leading: IconButton(
@@ -160,9 +197,9 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                     color: AppTheme.primaryGreen,
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Background Access Management',
-                    style: TextStyle(
+                  Text(
+                    context.tr(TranslationKeys.batterySettingsHeaderTitle),
+                    style: const TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
@@ -171,11 +208,10 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    'Manage battery optimization and background access settings to ensure ProxyCloud works properly.',
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[400],
+                    context.tr(
+                      TranslationKeys.batterySettingsHeaderDescription,
                     ),
+                    style: TextStyle(fontSize: 14, color: Colors.grey[400]),
                     textAlign: TextAlign.center,
                   ),
                 ],
@@ -186,10 +222,17 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
 
             // Battery Optimization Section
             _buildSectionCard(
-              title: 'Battery Optimization',
-              description: 'Disable battery optimization for ProxyCloud to prevent the system from limiting background activity.',
+              context,
+              title: context.tr(
+                TranslationKeys.batterySettingsBatteryOptimization,
+              ),
+              description: context.tr(
+                TranslationKeys.batterySettingsBatteryOptimizationDesc,
+              ),
               icon: Icons.battery_saver,
-              buttonText: 'Open Battery Optimization',
+              buttonText: context.tr(
+                TranslationKeys.batterySettingsOpenBatteryOptimization,
+              ),
               onPressed: _isLoading ? null : _openBatteryOptimizationSettings,
             ),
 
@@ -197,10 +240,15 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
 
             // General Battery Settings Section
             _buildSectionCard(
-              title: 'General Battery Settings',
-              description: 'Access general battery and power management settings.',
+              context,
+              title: context.tr(TranslationKeys.batterySettingsGeneralBattery),
+              description: context.tr(
+                TranslationKeys.batterySettingsGeneralBatteryDesc,
+              ),
               icon: Icons.settings_power,
-              buttonText: 'Open Battery Settings',
+              buttonText: context.tr(
+                TranslationKeys.batterySettingsOpenBatterySettings,
+              ),
               onPressed: _isLoading ? null : _openGeneralBatterySettings,
             ),
 
@@ -208,10 +256,15 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
 
             // App Settings Section
             _buildSectionCard(
-              title: 'App Settings',
-              description: 'Access detailed app settings including permissions and battery usage.',
+              context,
+              title: context.tr(TranslationKeys.batterySettingsAppSettings),
+              description: context.tr(
+                TranslationKeys.batterySettingsAppSettingsDesc,
+              ),
               icon: Icons.app_settings_alt,
-              buttonText: 'Open App Settings',
+              buttonText: context.tr(
+                TranslationKeys.batterySettingsOpenAppSettings,
+              ),
               onPressed: _isLoading ? null : _openAppSettings,
             ),
 
@@ -233,15 +286,11 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 children: [
                   Row(
                     children: [
-                      Icon(
-                        Icons.info_outline,
-                        color: Colors.blue,
-                        size: 20,
-                      ),
+                      Icon(Icons.info_outline, color: Colors.blue, size: 20),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Why disable battery optimization?',
-                        style: TextStyle(
+                      Text(
+                        context.tr(TranslationKeys.batterySettingsWhyDisable),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.blue,
@@ -250,12 +299,9 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    '• Ensures VPN stays connected in background\n'
-                    '• Prevents automatic disconnection when screen is off\n'
-                    '• Maintains real-time connection monitoring\n'
-                    '• Improves overall app reliability',
-                    style: TextStyle(
+                  Text(
+                    context.tr(TranslationKeys.batterySettingsBenefitsList),
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white70,
                       height: 1.5,
@@ -289,9 +335,11 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                         size: 20,
                       ),
                       const SizedBox(width: 8),
-                      const Text(
-                        'Important Note',
-                        style: TextStyle(
+                      Text(
+                        context.tr(
+                          TranslationKeys.batterySettingsImportantNote,
+                        ),
+                        style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
                           color: Colors.orange,
@@ -300,9 +348,9 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                     ],
                   ),
                   const SizedBox(height: 12),
-                  const Text(
-                    'Settings may vary depending on your device manufacturer (Samsung, Huawei, Xiaomi, etc.). Look for "Battery Optimization", "Power Management", or "Background Apps" in your device settings.',
-                    style: TextStyle(
+                  Text(
+                    context.tr(TranslationKeys.batterySettingsDeviceNote),
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Colors.white70,
                       height: 1.5,
@@ -317,7 +365,8 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
     );
   }
 
-  Widget _buildSectionCard({
+  Widget _buildSectionCard(
+    BuildContext context, {
     required String title,
     required String description,
     required IconData icon,
@@ -359,10 +408,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                       const SizedBox(height: 4),
                       Text(
                         description,
-                        style: TextStyle(
-                          fontSize: 14,
-                          color: Colors.grey[400],
-                        ),
+                        style: TextStyle(fontSize: 14, color: Colors.grey[400]),
                       ),
                     ],
                   ),
@@ -380,12 +426,16 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                         height: 16,
                         child: CircularProgressIndicator(
                           strokeWidth: 2,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
                         ),
                       )
                     : Icon(Icons.open_in_new, size: 18),
                 label: Text(
-                  _isLoading ? 'Opening...' : buttonText,
+                  _isLoading
+                      ? context.tr(TranslationKeys.batterySettingsOpening)
+                      : buttonText,
                   style: const TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,

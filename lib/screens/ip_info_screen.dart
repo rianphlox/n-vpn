@@ -4,6 +4,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import '../providers/v2ray_provider.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_localizations.dart';
 
 class IpInfoScreen extends StatefulWidget {
   const IpInfoScreen({Key? key}) : super(key: key);
@@ -30,11 +31,10 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
     });
 
     try {
-      final response =
-          await Provider.of<V2RayProvider>(
-            context,
-            listen: false,
-          ).v2rayService.fetchIpInfo();
+      final response = await Provider.of<V2RayProvider>(
+        context,
+        listen: false,
+      ).v2rayService.fetchIpInfo();
 
       if (response.success) {
         // Fetch the full details from the API
@@ -77,14 +77,14 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
     return Scaffold(
       backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
-        title: const Text('IP Information'),
+        title: Text(context.tr('ip_info.title')),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: _isLoading ? null : _fetchIpInfo,
-            tooltip: 'Refresh',
+            tooltip: context.tr('common.refresh'),
           ),
         ],
       ),
@@ -105,7 +105,7 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
             const Icon(Icons.error_outline, color: Colors.red, size: 48),
             const SizedBox(height: 16),
             Text(
-              'Error',
+              context.tr('common.error'),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -132,7 +132,7 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text('Try Again'),
+              child: Text(context.tr('common.retry')),
             ),
           ],
         ),
@@ -140,10 +140,10 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
     }
 
     if (_ipData == null) {
-      return const Center(
+      return Center(
         child: Text(
-          'No IP information available',
-          style: TextStyle(color: Colors.white70),
+          context.tr('ip_info.no_info_available'),
+          style: const TextStyle(color: Colors.white70),
         ),
       );
     }
@@ -175,21 +175,27 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Summary',
-              style: TextStyle(
+            Text(
+              context.tr('ip_info.summary'),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
-            _buildInfoRow('IP Address', _ipData!['ip'] ?? 'Unknown'),
             _buildInfoRow(
-              'Location',
-              '${_ipData!['country_name'] ?? 'Unknown'} - ${_ipData!['city_name'] ?? 'Unknown'}',
+              context.tr('ip_info.ip_address'),
+              _ipData!['ip'] ?? context.tr('common.unknown'),
             ),
-            _buildInfoRow('ISP', _ipData!['isp_name'] ?? 'Unknown'),
+            _buildInfoRow(
+              context.tr('ip_info.location'),
+              '${_ipData!['country_name'] ?? context.tr('common.unknown')} - ${_ipData!['city_name'] ?? context.tr('common.unknown')}',
+            ),
+            _buildInfoRow(
+              context.tr('ip_info.isp'),
+              _ipData!['isp_name'] ?? context.tr('common.unknown'),
+            ),
           ],
         ),
       ),
@@ -206,19 +212,31 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Details',
-              style: TextStyle(
+            Text(
+              context.tr('ip_info.details'),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
-            _buildInfoRow('Query Type', _ipData!['query_type'] ?? 'Unknown'),
-            _buildInfoRow('Query Text', _ipData!['query_text'] ?? 'Unknown'),
-            _buildInfoRow('Reverse DNS', _ipData!['reverse'] ?? 'None'),
-            _buildInfoRow('Level', _ipData!['level'] ?? 'Unknown'),
+            _buildInfoRow(
+              context.tr('ip_info.query_type'),
+              _ipData!['query_type'] ?? context.tr('common.unknown'),
+            ),
+            _buildInfoRow(
+              context.tr('ip_info.query_text'),
+              _ipData!['query_text'] ?? context.tr('common.unknown'),
+            ),
+            _buildInfoRow(
+              context.tr('ip_info.reverse_dns'),
+              _ipData!['reverse'] ?? context.tr('ip_info.none'),
+            ),
+            _buildInfoRow(
+              context.tr('ip_info.level'),
+              _ipData!['level'] ?? context.tr('common.unknown'),
+            ),
           ],
         ),
       ),
@@ -235,9 +253,9 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Location',
-              style: TextStyle(
+            Text(
+              context.tr('ip_info.location'),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -245,30 +263,37 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
             ),
             const SizedBox(height: 16),
             _buildInfoRow(
-              'Country',
-              '${_ipData!['country_name'] ?? 'Unknown'} (${_ipData!['country_code'] ?? 'Unknown'})',
+              context.tr('ip_info.country'),
+              '${_ipData!['country_name'] ?? context.tr('common.unknown')} (${_ipData!['country_code'] ?? context.tr('common.unknown')})',
             ),
             _buildInfoRow(
-              'Region',
-              '${_ipData!['region_name'] ?? 'Unknown'} (${_ipData!['region_code'] ?? 'Unknown'})',
-            ),
-            _buildInfoRow('City', _ipData!['city_name'] ?? 'Unknown'),
-            _buildInfoRow(
-              'Continent',
-              '${_ipData!['continent_name'] ?? 'Unknown'} (${_ipData!['continent_code'] ?? 'Unknown'})',
+              context.tr('ip_info.region'),
+              '${_ipData!['region_name'] ?? context.tr('common.unknown')} (${_ipData!['region_code'] ?? context.tr('common.unknown')})',
             ),
             _buildInfoRow(
-              'Postal Code',
-              _ipData!['postal_code']?.toString() ?? 'Unknown',
-            ),
-            _buildInfoRow('Time Zone', _ipData!['time_zone'] ?? 'Unknown'),
-            _buildInfoRow(
-              'Coordinates',
-              '${_ipData!['latitude']?.toString() ?? 'Unknown'}, ${_ipData!['longitude']?.toString() ?? 'Unknown'}',
+              context.tr('ip_info.city'),
+              _ipData!['city_name'] ?? context.tr('common.unknown'),
             ),
             _buildInfoRow(
-              'Accuracy Radius',
-              '${_ipData!['accuracy_radius']?.toString() ?? 'Unknown'} km',
+              context.tr('ip_info.continent'),
+              '${_ipData!['continent_name'] ?? context.tr('common.unknown')} (${_ipData!['continent_code'] ?? context.tr('common.unknown')})',
+            ),
+            _buildInfoRow(
+              context.tr('ip_info.postal_code'),
+              _ipData!['postal_code']?.toString() ??
+                  context.tr('common.unknown'),
+            ),
+            _buildInfoRow(
+              context.tr('ip_info.time_zone'),
+              _ipData!['time_zone'] ?? context.tr('common.unknown'),
+            ),
+            _buildInfoRow(
+              context.tr('ip_info.coordinates'),
+              '${_ipData!['latitude']?.toString() ?? context.tr('common.unknown')}, ${_ipData!['longitude']?.toString() ?? context.tr('common.unknown')}',
+            ),
+            _buildInfoRow(
+              context.tr('ip_info.accuracy_radius'),
+              '${_ipData!['accuracy_radius']?.toString() ?? context.tr('common.unknown')} ${context.tr('ip_info.km')}',
             ),
           ],
         ),
@@ -286,19 +311,22 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Network',
-              style: TextStyle(
+            Text(
+              context.tr('ip_info.network'),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
-            _buildInfoRow('ISP', _ipData!['isp_name'] ?? 'Unknown'),
             _buildInfoRow(
-              'AS Number',
-              _ipData!['as_number']?.toString() ?? 'Unknown',
+              context.tr('ip_info.isp'),
+              _ipData!['isp_name'] ?? context.tr('common.unknown'),
+            ),
+            _buildInfoRow(
+              context.tr('ip_info.as_number'),
+              _ipData!['as_number']?.toString() ?? context.tr('common.unknown'),
             ),
           ],
         ),
@@ -336,5 +364,3 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
     );
   }
 }
-
-// End of file

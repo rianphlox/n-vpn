@@ -9,7 +9,6 @@ import 'package:proxycloud/models/subscription.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:proxycloud/services/ping_service.dart';
-import 'package:proxycloud/services/vpn_traffic_background_service.dart';
 
 class IpInfo {
   final String ip;
@@ -167,7 +166,7 @@ class V2RayService extends ChangeNotifier {
       print('Detected disconnection from notification');
       _activeConfig = null;
       _onDisconnected?.call();
-      
+
       // Save the disconnected state immediately
       _clearActiveConfig();
     }
@@ -269,7 +268,9 @@ class V2RayService extends ChangeNotifier {
       Future.delayed(const Duration(seconds: 2), () {
         fetchIpInfo()
             .then((ipInfo) {
-              debugPrint('IP Info fetched after connection: ${ipInfo.ip} - ${ipInfo.country}');
+              debugPrint(
+                'IP Info fetched after connection: ${ipInfo.ip} - ${ipInfo.country}',
+              );
             })
             .catchError((e) {
               debugPrint('Error fetching IP info after connection: $e');
@@ -374,7 +375,7 @@ class V2RayService extends ChangeNotifier {
 
           // Start usage monitoring
           _startUsageMonitoring();
-          
+
           // Notify listeners to update UI
           notifyListeners();
         } else {
@@ -397,32 +398,35 @@ class V2RayService extends ChangeNotifier {
       notifyListeners();
     }
   }
-  
+
   Future<void> _restoreConnectionTime() async {
     final prefs = await SharedPreferences.getInstance();
     final lastConnectionTimeStr = prefs.getString('last_connection_time');
-    
+
     if (lastConnectionTimeStr != null) {
       try {
         final lastConnectionTime = DateTime.parse(lastConnectionTimeStr);
         final now = DateTime.now();
         final elapsedSeconds = now.difference(lastConnectionTime).inSeconds;
-        
+
         // Load existing connected seconds
         _connectedSeconds = prefs.getInt('connected_seconds') ?? 0;
-        
+
         // If the app was closed recently (less than 1 hour), add the elapsed time
         if (elapsedSeconds > 0 && elapsedSeconds < 60 * 60) {
           _connectedSeconds += elapsedSeconds;
-          debugPrint('Restored connection time: ${getFormattedConnectedTime()}, added ${elapsedSeconds}s since last save');
+          debugPrint(
+            'Restored connection time: ${getFormattedConnectedTime()}, added ${elapsedSeconds}s since last save',
+          );
         } else {
-          debugPrint('Restored connection time: ${getFormattedConnectedTime()}, no elapsed time added (gap: ${elapsedSeconds}s)');
+          debugPrint(
+            'Restored connection time: ${getFormattedConnectedTime()}, no elapsed time added (gap: ${elapsedSeconds}s)',
+          );
         }
-        
+
         // Update last connection time to now for future tracking
         _lastConnectionTime = now;
         await _saveUsageStats();
-        
       } catch (e) {
         debugPrint('Error parsing last connection time: $e');
         _lastConnectionTime = DateTime.now();
@@ -432,7 +436,9 @@ class V2RayService extends ChangeNotifier {
       // No saved connection time, start fresh but keep existing connected seconds
       _lastConnectionTime = DateTime.now();
       _connectedSeconds = prefs.getInt('connected_seconds') ?? 0;
-      debugPrint('No previous connection time found, keeping existing time: ${getFormattedConnectedTime()}');
+      debugPrint(
+        'No previous connection time found, keeping existing time: ${getFormattedConnectedTime()}',
+      );
       await _saveUsageStats();
     }
   }
@@ -990,7 +996,7 @@ class V2RayService extends ChangeNotifier {
           if (_currentStatus != null) {
             // Get real-time traffic data from V2Ray status
             final status = _currentStatus!;
-            
+
             // Update cumulative statistics with real data
             // Note: V2Ray status provides cumulative data, so we store the latest values
             _uploadBytes = status.upload;
@@ -1061,8 +1067,10 @@ class V2RayService extends ChangeNotifier {
     } else {
       _lastConnectionTime = null;
     }
-    
-    debugPrint('Loaded usage stats: Upload: ${getFormattedUpload()}, Download: ${getFormattedDownload()}, Time: ${getFormattedConnectedTime()}');
+
+    debugPrint(
+      'Loaded usage stats: Upload: ${getFormattedUpload()}, Download: ${getFormattedDownload()}, Time: ${getFormattedConnectedTime()}',
+    );
   }
 
   Future<void> resetUsageStats() async {

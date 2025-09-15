@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:async';
 import '../theme/app_theme.dart';
+import '../utils/app_localizations.dart';
 
 class HostCheckerScreen extends StatefulWidget {
   const HostCheckerScreen({Key? key}) : super(key: key);
@@ -96,7 +97,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
 
     if (url.isEmpty) {
       setState(() {
-        _errorMessage = 'Please enter a URL';
+        _errorMessage = context.tr(TranslationKeys.hostCheckerErrorEmptyUrl);
       });
       return;
     }
@@ -104,7 +105,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
     // Validate URL format
     if (!url.startsWith('http://') && !url.startsWith('https://')) {
       setState(() {
-        _errorMessage = 'URL must start with http:// or https://';
+        _errorMessage = context.tr(TranslationKeys.hostCheckerErrorInvalidUrl);
       });
       return;
     }
@@ -123,7 +124,12 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
           .timeout(
             Duration(seconds: _timeoutSeconds),
             onTimeout: () {
-              throw Exception('Request timed out after $_timeoutSeconds seconds');
+              throw Exception(
+                context.tr(
+                  TranslationKeys.hostCheckerErrorTimeout,
+                  parameters: {'seconds': _timeoutSeconds.toString()},
+                ),
+              );
             },
           );
 
@@ -152,8 +158,9 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
           'headers': <String, String>{},
           'contentLength': 0,
           'timeoutUsed': _timeoutSeconds,
-          'errorMessage':
-              'Could not connect to host. Please check your internet connection or the URL.',
+          'errorMessage': context.tr(
+            TranslationKeys.hostCheckerErrorConnection,
+          ),
         };
       });
     }
@@ -164,7 +171,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
     return Scaffold(
       backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
-        title: const Text('Host Checker'),
+        title: Text(context.tr(TranslationKeys.hostCheckerTitle)),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
       ),
@@ -204,26 +211,22 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
                     controller: _urlController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: 'Enter URL',
+                      hintText: context.tr(TranslationKeys.hostCheckerEnterUrl),
                       hintStyle: TextStyle(color: Colors.grey[400]),
                       border: InputBorder.none,
                       prefixIcon: const Icon(
                         Icons.link,
                         color: AppTheme.primaryGreen,
                       ),
-                      suffixIcon:
-                          _urlController.text.isNotEmpty
-                              ? IconButton(
-                                icon: const Icon(
-                                  Icons.clear,
-                                  color: Colors.grey,
-                                ),
-                                onPressed: () {
-                                  _urlController.clear();
-                                  setState(() {});
-                                },
-                              )
-                              : null,
+                      suffixIcon: _urlController.text.isNotEmpty
+                          ? IconButton(
+                              icon: const Icon(Icons.clear, color: Colors.grey),
+                              onPressed: () {
+                                _urlController.clear();
+                                setState(() {});
+                              },
+                            )
+                          : null,
                     ),
                     onChanged: (_) => setState(() {}),
                     keyboardType: TextInputType.url,
@@ -236,7 +239,9 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
                     Icons.arrow_drop_down,
                     color: AppTheme.primaryGreen,
                   ),
-                  tooltip: 'Select a default URL',
+                  tooltip: context.tr(
+                    TranslationKeys.hostCheckerSelectDefaultUrl,
+                  ),
                   onSelected: (String url) {
                     setState(() {
                       _urlController.text = url;
@@ -259,24 +264,23 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
         Wrap(
           spacing: 8,
           runSpacing: 8,
-          children:
-              _defaultUrls.take(8).map((url) {
-                return InkWell(
-                  onTap: () {
-                    setState(() {
-                      _urlController.text = url;
-                    });
-                  },
-                  child: Chip(
-                    backgroundColor: AppTheme.cardDark,
-                    label: Text(
-                      _urlDisplayNames[url] ?? url,
-                      style: const TextStyle(color: Colors.white, fontSize: 12),
-                    ),
-                    padding: const EdgeInsets.symmetric(horizontal: 4),
-                  ),
-                );
-              }).toList(),
+          children: _defaultUrls.take(8).map((url) {
+            return InkWell(
+              onTap: () {
+                setState(() {
+                  _urlController.text = url;
+                });
+              },
+              child: Chip(
+                backgroundColor: AppTheme.cardDark,
+                label: Text(
+                  _urlDisplayNames[url] ?? url,
+                  style: const TextStyle(color: Colors.white, fontSize: 12),
+                ),
+                padding: const EdgeInsets.symmetric(horizontal: 4),
+              ),
+            );
+          }).toList(),
         ),
       ],
     );
@@ -286,9 +290,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
     return Card(
       color: AppTheme.cardDark,
       elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -296,15 +298,11 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
           children: [
             Row(
               children: [
-                const Icon(
-                  Icons.timer,
-                  color: AppTheme.primaryGreen,
-                  size: 20,
-                ),
+                const Icon(Icons.timer, color: AppTheme.primaryGreen, size: 20),
                 const SizedBox(width: 8),
-                const Text(
-                  'Timeout Settings',
-                  style: TextStyle(
+                Text(
+                  context.tr(TranslationKeys.hostCheckerTimeoutSettings),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 16,
                     fontWeight: FontWeight.w500,
@@ -317,11 +315,11 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
               children: [
                 Expanded(
                   child: Text(
-                    'Timeout: $_timeoutSeconds seconds',
-                    style: const TextStyle(
-                      color: Colors.white70,
-                      fontSize: 14,
+                    context.tr(
+                      TranslationKeys.hostCheckerTimeoutSeconds,
+                      parameters: {'seconds': _timeoutSeconds.toString()},
                     ),
+                    style: const TextStyle(color: Colors.white70, fontSize: 14),
                   ),
                 ),
                 const SizedBox(width: 16),
@@ -345,19 +343,23 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
                       ),
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
-                        borderSide: const BorderSide(color: AppTheme.primaryGreen),
+                        borderSide: const BorderSide(
+                          color: AppTheme.primaryGreen,
+                        ),
                       ),
                     ),
                     dropdownColor: AppTheme.cardDark,
                     style: const TextStyle(color: Colors.white),
                     items: [5, 10, 15, 20, 30, 45, 60]
-                        .map((seconds) => DropdownMenuItem<int>(
-                              value: seconds,
-                              child: Text(
-                                '${seconds}s',
-                                style: const TextStyle(color: Colors.white),
-                              ),
-                            ))
+                        .map(
+                          (seconds) => DropdownMenuItem<int>(
+                            value: seconds,
+                            child: Text(
+                              '${seconds}s',
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                          ),
+                        )
                         .toList(),
                     onChanged: (value) {
                       if (value != null) {
@@ -386,32 +388,34 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
         disabledBackgroundColor: AppTheme.primaryGreen.withOpacity(0.5),
       ),
-      child:
-          _isLoading
-              ? const SizedBox(
-                height: 20,
-                width: 20,
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
-                ),
-              )
-              : const Text(
-                'Check Host',
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+      child: _isLoading
+          ? const SizedBox(
+              height: 20,
+              width: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
               ),
+            )
+          : Text(
+              context.tr(TranslationKeys.hostCheckerCheckHost),
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
     );
   }
 
   Widget _buildResultSection() {
     if (_isLoading) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Checking host...', style: TextStyle(color: Colors.white70)),
+            const CircularProgressIndicator(),
+            const SizedBox(height: 16),
+            Text(
+              context.tr(TranslationKeys.hostCheckerCheckingHost),
+              style: const TextStyle(color: Colors.white70),
+            ),
           ],
         ),
       );
@@ -425,7 +429,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
             const Icon(Icons.error_outline, color: Colors.red, size: 48),
             const SizedBox(height: 16),
             Text(
-              'Error',
+              context.tr(TranslationKeys.commonError),
               style: TextStyle(
                 fontSize: 20,
                 fontWeight: FontWeight.bold,
@@ -451,7 +455,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
             Icon(Icons.public, color: Colors.grey[400], size: 64),
             const SizedBox(height: 16),
             Text(
-              'Enter a URL and click "Check Host"',
+              context.tr(TranslationKeys.hostCheckerEnterUrlInstruction),
               style: TextStyle(color: Colors.grey[400]),
               textAlign: TextAlign.center,
             ),
@@ -487,9 +491,9 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Status',
-              style: TextStyle(
+            Text(
+              context.tr(TranslationKeys.hostCheckerStatus),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -501,10 +505,9 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color:
-                        isSuccess
-                            ? Colors.green.withOpacity(0.1)
-                            : Colors.red.withOpacity(0.1),
+                    color: isSuccess
+                        ? Colors.green.withOpacity(0.1)
+                        : Colors.red.withOpacity(0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
                   child: Icon(
@@ -519,7 +522,9 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        isSuccess ? 'Success' : 'Failed',
+                        isSuccess
+                            ? context.tr(TranslationKeys.hostCheckerSuccess)
+                            : context.tr(TranslationKeys.hostCheckerFailed),
                         style: TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.bold,
@@ -529,13 +534,19 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
                       const SizedBox(height: 4),
                       if (statusCode > 0)
                         Text(
-                          'Status Code: $statusCode',
+                          context.tr(
+                            TranslationKeys.hostCheckerStatusCode,
+                            parameters: {'code': statusCode.toString()},
+                          ),
                           style: const TextStyle(color: Colors.white70),
                         ),
                       if (responseTime > 0) ...[
                         const SizedBox(height: 4),
                         Text(
-                          'Response Time: ${responseTime}ms',
+                          context.tr(
+                            TranslationKeys.hostCheckerResponseTime,
+                            parameters: {'time': responseTime.toString()},
+                          ),
                           style: const TextStyle(color: Colors.white70),
                         ),
                       ],
@@ -571,24 +582,33 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text(
-              'Response Details',
-              style: TextStyle(
+            Text(
+              context.tr(TranslationKeys.hostCheckerResponseDetails),
+              style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
               ),
             ),
             const SizedBox(height: 16),
-            _buildInfoRow('URL', _urlController.text),
-            _buildInfoRow('Timeout Used', '${timeoutUsed}s'),
+            _buildInfoRow(
+              context.tr(TranslationKeys.hostCheckerUrl),
+              _urlController.text,
+            ),
+            _buildInfoRow(
+              context.tr(TranslationKeys.hostCheckerTimeoutUsed),
+              '${timeoutUsed}s',
+            ),
             if (contentLength != null && contentLength > 0)
-              _buildInfoRow('Content Length', '${(contentLength / 1024).toStringAsFixed(2)} KB'),
+              _buildInfoRow(
+                context.tr(TranslationKeys.hostCheckerContentLength),
+                '${(contentLength / 1024).toStringAsFixed(2)} KB',
+              ),
             if (isSuccess) ...[
               const SizedBox(height: 8),
-              const Text(
-                'Headers and cookies information hidden for security reasons',
-                style: TextStyle(
+              Text(
+                context.tr(TranslationKeys.hostCheckerHeadersSecurityNote),
+                style: const TextStyle(
                   fontSize: 14,
                   fontStyle: FontStyle.italic,
                   color: Colors.white70,

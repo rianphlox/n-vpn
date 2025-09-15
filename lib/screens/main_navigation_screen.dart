@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/v2ray_provider.dart';
+import '../providers/language_provider.dart';
+import '../utils/app_localizations.dart';
 import '../theme/app_theme.dart';
 import '../widgets/error_snackbar.dart';
 import 'home_screen.dart';
@@ -39,7 +41,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final Uri url = Uri.parse('https://t.me/h3dev');
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        ErrorSnackbar.show(context, 'Could not launch Telegram');
+        ErrorSnackbar.show(
+          context,
+          TrHelper.errorUrlFormat(context, 'https://t.me/h3dev'),
+        );
       }
     }
   }
@@ -58,9 +63,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                const Text(
-                  'Contact',
-                  style: TextStyle(
+                Text(
+                  context.tr(TranslationKeys.commonContact),
+                  style: const TextStyle(
                     color: Colors.white,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -73,9 +78,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                     color: Colors.blue,
                     size: 28,
                   ),
-                  title: const Text(
-                    'Contact on Telegram',
-                    style: TextStyle(color: Colors.white),
+                  title: Text(
+                    context.tr(TranslationKeys.commonContactOnTelegram),
+                    style: const TextStyle(color: Colors.white),
                   ),
                   onTap: () {
                     Navigator.of(context).pop();
@@ -85,9 +90,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 const SizedBox(height: 10),
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text(
-                    'Cancel',
-                    style: TextStyle(color: Colors.grey),
+                  child: Text(
+                    context.tr(TranslationKeys.commonCancel),
+                    style: const TextStyle(color: Colors.grey),
                   ),
                 ),
               ],
@@ -100,42 +105,61 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: IndexedStack(index: _currentIndex, children: _screens),
-      bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: AppTheme.primaryDark,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.2),
-              blurRadius: 10,
-              offset: const Offset(0, -3),
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return Directionality(
+          textDirection: languageProvider.textDirection,
+          child: Scaffold(
+            body: IndexedStack(index: _currentIndex, children: _screens),
+            bottomNavigationBar: Container(
+              decoration: BoxDecoration(
+                color: AppTheme.primaryDark,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black.withOpacity(0.2),
+                    blurRadius: 10,
+                    offset: const Offset(0, -3),
+                  ),
+                ],
+              ),
+              child: BottomNavigationBar(
+                currentIndex: _currentIndex,
+                onTap: (index) {
+                  setState(() {
+                    _currentIndex = index;
+                  });
+                },
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                selectedItemColor: AppTheme.primaryGreen,
+                unselectedItemColor: Colors.grey,
+                type: BottomNavigationBarType.fixed,
+                selectedFontSize: 12,
+                unselectedFontSize: 10,
+                iconSize: 24,
+                items: [
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.vpn_key),
+                    label: context.tr(TranslationKeys.navVpn),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.telegram),
+                    label: context.tr(TranslationKeys.navProxy),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.store),
+                    label: context.tr(TranslationKeys.navStore),
+                  ),
+                  BottomNavigationBarItem(
+                    icon: const Icon(Icons.build),
+                    label: context.tr(TranslationKeys.navTools),
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
-        child: BottomNavigationBar(
-          currentIndex: _currentIndex,
-          onTap: (index) {
-            setState(() {
-              _currentIndex = index;
-            });
-          },
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          selectedItemColor: AppTheme.primaryGreen,
-          unselectedItemColor: Colors.grey,
-          type: BottomNavigationBarType.fixed,
-          selectedFontSize: 12,
-          unselectedFontSize: 10,
-          iconSize: 24,
-          items: const [
-            BottomNavigationBarItem(icon: Icon(Icons.vpn_key), label: 'VPN'),
-            BottomNavigationBarItem(icon: Icon(Icons.telegram), label: 'Proxy'),
-            BottomNavigationBarItem(icon: Icon(Icons.store), label: 'Store'),
-            BottomNavigationBarItem(icon: Icon(Icons.build), label: 'Tools'),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 }

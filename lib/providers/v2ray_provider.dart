@@ -4,7 +4,6 @@ import '../models/v2ray_config.dart';
 import '../models/subscription.dart';
 import '../services/v2ray_service.dart';
 import '../services/server_service.dart';
-import '../services/vpn_traffic_background_service.dart';
 
 class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   final V2RayService _v2rayService = V2RayService();
@@ -29,7 +28,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   String get errorMessage => _errorMessage;
   V2RayService get v2rayService => _v2rayService;
   bool get isProxyMode => _isProxyMode;
-  
+
   // Expose V2Ray status for real-time traffic monitoring
   V2RayStatus? get currentStatus => _v2rayService.currentStatus;
 
@@ -65,7 +64,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
       if (activeConfig != null) {
         print('Active config found: ${activeConfig.remark}');
         bool configFound = false;
-        
+
         for (var config in _configs) {
           if (config.fullConfig == activeConfig.fullConfig) {
             config.isConnected = true;
@@ -90,7 +89,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
             }
           }
         }
-        
+
         if (!configFound) {
           print('No matching config found in list for active VPN connection');
           // The active config is not in our current list
@@ -172,10 +171,9 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
         }
 
         // Keep existing subscription configs
-        final subscriptionConfigs =
-            _configs
-                .where((c) => subscriptionConfigIds.contains(c.id))
-                .toList();
+        final subscriptionConfigs = _configs
+            .where((c) => subscriptionConfigIds.contains(c.id))
+            .toList();
 
         // Add default servers to the configs list
         _configs = [...subscriptionConfigs, ...servers];
@@ -234,16 +232,18 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
         final existingConfigIds = _configs.map((c) => c.id).toSet();
 
         // Check if any config IDs in the subscription are missing from the configs list
-        final missingConfigIds =
-            configIds.where((id) => !existingConfigIds.contains(id)).toList();
+        final missingConfigIds = configIds
+            .where((id) => !existingConfigIds.contains(id))
+            .toList();
 
         if (missingConfigIds.isNotEmpty) {
           print(
             'Warning: Found ${missingConfigIds.length} missing configs for subscription ${subscription.name}',
           );
           // Update the subscription to remove missing config IDs
-          final updatedConfigIds =
-              configIds.where((id) => existingConfigIds.contains(id)).toList();
+          final updatedConfigIds = configIds
+              .where((id) => existingConfigIds.contains(id))
+              .toList();
           final index = _subscriptions.indexWhere(
             (s) => s.id == subscription.id,
           );
@@ -282,7 +282,9 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
         if (subscription.configIds.contains(config.id)) {
           final updatedConfigIds = List<String>.from(subscription.configIds)
             ..remove(config.id);
-          _subscriptions[i] = subscription.copyWith(configIds: updatedConfigIds);
+          _subscriptions[i] = subscription.copyWith(
+            configIds: updatedConfigIds,
+          );
         }
       }
 
@@ -306,10 +308,10 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
       if (config == null) {
         throw Exception('Invalid configuration format');
       }
-      
+
       // Add the config to the list
       await addConfig(config);
-      
+
       return config;
     } catch (e) {
       _setError('Failed to import configuration: $e');
@@ -612,10 +614,13 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
 
       for (int attempt = 1; attempt <= maxAttempts; attempt++) {
         try {
-          debugPrint('Connection attempt $attempt/$maxAttempts for ${config.remark}');
-          
+          debugPrint(
+            'Connection attempt $attempt/$maxAttempts for ${config.remark}',
+          );
+
           // Connect to server with timeout
-          success = await _v2rayService.connect(config, _isProxyMode)
+          success = await _v2rayService
+              .connect(config, _isProxyMode)
               .timeout(
                 const Duration(seconds: 30), // Timeout for connection
                 onTimeout: () {
@@ -629,7 +634,8 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
             break;
           } else {
             // Connection failed but no exception was thrown
-            lastError = 'Failed to connect to ${config.remark} on attempt $attempt';
+            lastError =
+                'Failed to connect to ${config.remark} on attempt $attempt';
             debugPrint(lastError);
 
             // If this is not the last attempt, wait before retrying
@@ -657,7 +663,9 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
       if (success) {
         try {
           // Wait for connection to stabilize
-          await Future.delayed(const Duration(seconds: 2)); // Reduced from 3 to 2 seconds
+          await Future.delayed(
+            const Duration(seconds: 2),
+          ); // Reduced from 3 to 2 seconds
 
           // Update config status safely
           for (int i = 0; i < _configs.length; i++) {
@@ -684,7 +692,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
             debugPrint('Error resetting usage stats: $e');
             // Don't fail the connection for this
           }
-          
+
           debugPrint('Successfully connected to ${config.remark}');
         } catch (e) {
           debugPrint('Error in post-connection setup: $e');
@@ -692,7 +700,9 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
           _setError('Connected but failed to update settings: $e');
         }
       } else {
-        _setError('Failed to connect to ${config.remark} after $maxAttempts attempts: $lastError');
+        _setError(
+          'Failed to connect to ${config.remark} after $maxAttempts attempts: $lastError',
+        );
       }
     } catch (e) {
       debugPrint('Unexpected error in connection process: $e');
@@ -789,7 +799,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
     print('App lifecycle state changed: $state');
-    
+
     // Handle app lifecycle changes
     if (state == AppLifecycleState.resumed) {
       // When app is resumed, check connection status after a delay
@@ -817,7 +827,7 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
 
       // Update all configs based on the actual status
       bool statusChanged = false;
-      
+
       if (activeConfig != null && isActuallyConnected) {
         // VPN is connected, update the matching config
         for (int i = 0; i < _configs.length; i++) {

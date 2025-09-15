@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../models/v2ray_config.dart';
 import '../providers/v2ray_provider.dart';
+import '../providers/language_provider.dart';
+import '../utils/app_localizations.dart';
 
 class ServerListItem extends StatefulWidget {
   final V2RayConfig config;
@@ -27,10 +29,25 @@ class _ServerListItemState extends State<ServerListItem> {
 
   @override
   Widget build(BuildContext context) {
-    final provider = Provider.of<V2RayProvider>(context);
-    final isActive = provider.activeConfig?.id == widget.config.id;
-    final isSelected = provider.selectedConfig?.id == widget.config.id;
+    return Consumer2<V2RayProvider, LanguageProvider>(
+      builder: (context, provider, languageProvider, _) {
+        final isActive = provider.activeConfig?.id == widget.config.id;
+        final isSelected = provider.selectedConfig?.id == widget.config.id;
 
+        return Directionality(
+          textDirection: languageProvider.textDirection,
+          child: _buildServerItem(context, provider, isActive, isSelected),
+        );
+      },
+    );
+  }
+
+  Widget _buildServerItem(
+    BuildContext context,
+    V2RayProvider provider,
+    bool isActive,
+    bool isSelected,
+  ) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       elevation: isSelected ? 4 : 1,
@@ -75,27 +92,44 @@ class _ServerListItemState extends State<ServerListItem> {
                           showDialog(
                             context: context,
                             builder: (context) => AlertDialog(
-                              title: const Text('Delete Configuration'),
+                              title: Text(
+                                context.tr(
+                                  TranslationKeys
+                                      .serverListItemDeleteConfiguration,
+                                ),
+                              ),
                               content: Text(
-                                'Are you sure you want to delete ${widget.config.remark}?',
+                                context.tr(
+                                  TranslationKeys
+                                      .serverListItemDeleteConfirmation,
+                                  parameters: {'server': widget.config.remark},
+                                ),
                               ),
                               actions: [
                                 TextButton(
                                   onPressed: () => Navigator.pop(context),
-                                  child: const Text('Cancel'),
+                                  child: Text(
+                                    context.tr(TranslationKeys.commonCancel),
+                                  ),
                                 ),
                                 TextButton(
                                   onPressed: () {
                                     provider.removeConfig(widget.config);
                                     Navigator.pop(context);
                                   },
-                                  child: const Text('Delete'),
+                                  child: Text(
+                                    context.tr(
+                                      TranslationKeys.serverListItemDelete,
+                                    ),
+                                  ),
                                 ),
                               ],
                             ),
                           );
                         },
-                        tooltip: 'Delete',
+                        tooltip: context.tr(
+                          TranslationKeys.serverListItemDeleteTooltip,
+                        ),
                       ),
                     ],
                   ),
@@ -164,7 +198,13 @@ class _ServerListItemState extends State<ServerListItem> {
                             : Theme.of(context).colorScheme.primary,
                         foregroundColor: Colors.white,
                       ),
-                      child: Text(isActive ? 'Disconnect' : 'Connect'),
+                      child: Text(
+                        isActive
+                            ? context.tr(
+                                TranslationKeys.serverListItemDisconnect,
+                              )
+                            : context.tr(TranslationKeys.serverListItemConnect),
+                      ),
                     ),
                 ],
               ),
@@ -195,7 +235,9 @@ class _ServerListItemState extends State<ServerListItem> {
     final subscriptions = provider.subscriptions;
 
     // Find which subscription this config belongs to
-    String subscriptionName = 'Default';
+    String subscriptionName = context.tr(
+      TranslationKeys.serverListItemDefaultSubscription,
+    );
     for (var subscription in subscriptions) {
       if (subscription.configIds.contains(widget.config.id)) {
         subscriptionName = subscription.name;

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:url_launcher/url_launcher.dart';
 import 'package:proxycloud/models/app_update.dart';
+import '../utils/app_localizations.dart';
 
 class UpdateService {
   static const String updateUrl =
@@ -30,12 +31,12 @@ class UpdateService {
       context: context,
       barrierDismissible: false,
       builder: (context) => AlertDialog(
-        title: const Text('Update Available'),
+        title: Text(context.tr(TranslationKeys.updateServiceUpdateAvailable)),
         content: Column(
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('New version: ${update.version}'),
+            Text(context.tr(TranslationKeys.updateServiceNewVersion, parameters: {'version': update.version})),
             const SizedBox(height: 8),
             Text(update.messText),
           ],
@@ -43,14 +44,14 @@ class UpdateService {
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text('Later'),
+            child: Text(context.tr(TranslationKeys.updateServiceLater)),
           ),
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _launchUrl(update.url.trim());
             },
-            child: const Text('Download'),
+            child: Text(context.tr(TranslationKeys.updateServiceDownload)),
           ),
         ],
       ),
@@ -58,10 +59,12 @@ class UpdateService {
   }
 
   // Launch URL
-  Future<void> _launchUrl(String url) async {
+  Future<void> _launchUrl(String url, [BuildContext? context]) async {
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       debugPrint('Could not launch $url');
+      // If context is available, we could show a localized error message
+      // For now, keeping the debug print as it's mainly for development
     }
   }
 }

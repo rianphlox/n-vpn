@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../services/v2ray_service.dart';
+import '../utils/app_localizations.dart';
+import '../providers/language_provider.dart';
 import 'package:flutter/foundation.dart';
 
 class BlockedAppsScreen extends StatefulWidget {
@@ -82,7 +85,9 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
           final appMap = app as Map<String, dynamic>? ?? {};
           appInfoList.add(
             AppInfo(
-              name: appMap['name'] ?? 'Unknown',
+              name:
+                  appMap['name'] ??
+                  context.tr(TranslationKeys.blockedAppsUnknownApp),
               packageName: appMap['packageName'] ?? '',
               isSystemApp: appMap['isSystemApp'] ?? false,
             ),
@@ -109,9 +114,16 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to load apps: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr(
+                TranslationKeys.blockedAppsFailedToLoad,
+                parameters: {'error': e.toString()},
+              ),
+            ),
+          ),
+        );
       }
     }
   }
@@ -135,8 +147,8 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
           SnackBar(
             content: Text(
               _selectedApps.isEmpty
-                  ? 'No apps selected for blocking'
-                  : 'Blocked apps saved successfully',
+                  ? context.tr(TranslationKeys.blockedAppsNoAppsSelected)
+                  : context.tr(TranslationKeys.blockedAppsSavedSuccessfully),
             ),
           ),
         );
@@ -144,7 +156,14 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save blocked apps: $e')),
+          SnackBar(
+            content: Text(
+              context.tr(
+                TranslationKeys.blockedAppsFailedToSave,
+                parameters: {'error': e.toString()},
+              ),
+            ),
+          ),
         );
       }
     } finally {
@@ -156,10 +175,21 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, _) {
+        return Directionality(
+          textDirection: languageProvider.textDirection,
+          child: _buildBlockedAppsScreen(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildBlockedAppsScreen(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
-        title: const Text('Blocked Apps'),
+        title: Text(context.tr(TranslationKeys.blockedAppsTitle)),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
         actions: [
@@ -167,7 +197,9 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
           if (_selectedApps.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.clear_all),
-              tooltip: 'Clear all selections',
+              tooltip: context.tr(
+                TranslationKeys.blockedAppsClearAllSelections,
+              ),
               onPressed: () {
                 setState(() {
                   _selectedApps = [];
@@ -176,7 +208,10 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
             ),
           TextButton(
             onPressed: _saveBlockedApps,
-            child: const Text('Save', style: TextStyle(color: Colors.white)),
+            child: Text(
+              context.tr(TranslationKeys.commonSave),
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -192,7 +227,9 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
                     onChanged: _filterApps,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: 'Search apps...',
+                      hintText: context.tr(
+                        TranslationKeys.blockedAppsSearchApps,
+                      ),
                       hintStyle: TextStyle(
                         color: Colors.white.withValues(alpha: 0.5),
                       ),
@@ -212,8 +249,12 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
                       ? Center(
                           child: Text(
                             _availableApps.isEmpty
-                                ? 'No apps found'
-                                : 'No matching apps',
+                                ? context.tr(
+                                    TranslationKeys.blockedAppsNoAppsFound,
+                                  )
+                                : context.tr(
+                                    TranslationKeys.blockedAppsNoMatchingApps,
+                                  ),
                             style: const TextStyle(color: Colors.white),
                           ),
                         )
@@ -230,7 +271,9 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
                                 horizontal: 8,
                                 vertical: 4,
                               ),
-                              color: AppTheme.primaryDark.withValues(alpha: 0.8),
+                              color: AppTheme.primaryDark.withValues(
+                                alpha: 0.8,
+                              ),
                               child: ListTile(
                                 leading: CircleAvatar(
                                   backgroundColor: app.isSystemApp

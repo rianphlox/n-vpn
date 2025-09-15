@@ -8,6 +8,7 @@ import 'package:proxycloud/models/subscription.dart';
 import 'package:proxycloud/providers/v2ray_provider.dart';
 import 'package:proxycloud/services/v2ray_service.dart';
 import 'package:proxycloud/theme/app_theme.dart';
+import 'package:proxycloud/utils/app_localizations.dart';
 
 class ServerSelectionScreen extends StatefulWidget {
   final List<V2RayConfig> configs;
@@ -41,9 +42,13 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
       if (clipboardData == null ||
           clipboardData.text == null ||
           clipboardData.text!.isEmpty) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Clipboard is empty')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.serverSelectionClipboardEmpty),
+            ),
+          ),
+        );
         return;
       }
 
@@ -52,12 +57,18 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
 
       if (config != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Configuration imported successfully')),
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.serverSelectionImportSuccess),
+            ),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Failed to import configuration: Invalid format'),
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.serverSelectionImportFailed),
+            ),
             backgroundColor: Colors.red,
           ),
         );
@@ -65,7 +76,9 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Error importing configuration: ${e.toString()}'),
+          content: Text(
+            context.tr(TranslationKeys.serverSelectionImportFailed),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -79,11 +92,22 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
         listen: false,
       ).removeConfig(config);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Configuration deleted successfully')),
+        SnackBar(
+          content: Text(
+            context.tr(TranslationKeys.serverSelectionDeleteSuccess),
+          ),
+        ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Failed to delete configuration: $e')),
+        SnackBar(
+          content: Text(
+            context.tr(
+              TranslationKeys.serverSelectionDeleteFailed,
+              parameters: {'error': e.toString()},
+            ),
+          ),
+        ),
       );
     }
   }
@@ -239,7 +263,10 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
 
         try {
           _autoConnectStatusStream.add(
-            'Testing batch of ${currentBatch.length} servers...',
+            context.tr(
+              TranslationKeys.serverSelectionTestingBatch,
+              parameters: {'count': currentBatch.length.toString()},
+            ),
           );
         } catch (e) {
           debugPrint('Error updating status stream: $e');
@@ -254,7 +281,7 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
             debugPrint('Batch timeout reached, moving to next batch');
             try {
               _autoConnectStatusStream.add(
-                'Batch timeout, trying next servers...',
+                context.tr(TranslationKeys.serverSelectionBatchTimeout),
               );
             } catch (e) {
               debugPrint('Error updating status stream on timeout: $e');
@@ -302,7 +329,13 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
         try {
           if (mounted) {
             _autoConnectStatusStream.add(
-              'Connecting to ${selectedConfig.remark} (${_pings[selectedConfig.id]}ms)',
+              context.tr(
+                TranslationKeys.serverSelectionFastestConnection,
+                parameters: {
+                  'server': selectedConfig.remark,
+                  'ping': _pings[selectedConfig.id].toString(),
+                },
+              ),
             );
           }
 
@@ -325,7 +358,15 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
               }
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(
-                  content: Text('Failed to connect: ${e.toString()}'),
+                  content: Text(
+                    context.tr(
+                      TranslationKeys.serverSelectionConnectFailed,
+                      parameters: {
+                        'server': selectedConfig.remark,
+                        'error': e.toString(),
+                      },
+                    ),
+                  ),
                   backgroundColor: Colors.red,
                 ),
               );
@@ -338,14 +379,16 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
         // No suitable server found
         if (mounted) {
           try {
-            _autoConnectStatusStream.add('No suitable server found');
+            _autoConnectStatusStream.add(
+              context.tr(TranslationKeys.serverSelectionNoSuitableServer),
+            );
 
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop(); // Close auto-connect dialog
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
+                SnackBar(
                   content: Text(
-                    'No server with valid ping found. Please try again.',
+                    context.tr(TranslationKeys.serverSelectionNoSuitableServer),
                   ),
                   backgroundColor: Colors.orange,
                 ),
@@ -367,7 +410,12 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
           }
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
-              content: Text('Error during auto-select: ${e.toString()}'),
+              content: Text(
+                context.tr(
+                  TranslationKeys.serverSelectionErrorUpdating,
+                  parameters: {'error': e.toString()},
+                ),
+              ),
               backgroundColor: Colors.red,
             ),
           );
@@ -402,7 +450,12 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
       // Safely update status stream
       if (mounted && !completer.isCompleted) {
         try {
-          _autoConnectStatusStream.add('Testing ${config.remark}...');
+          _autoConnectStatusStream.add(
+            context.tr(
+              TranslationKeys.serverSelectionTestingServer,
+              parameters: {'server': config.remark},
+            ),
+          );
         } catch (e) {
           debugPrint('Error updating status stream: $e');
         }
@@ -452,7 +505,10 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
         if (mounted && !completer.isCompleted) {
           try {
             _autoConnectStatusStream.add(
-              '${config.remark} responded with ${ping}ms',
+              context.tr(
+                TranslationKeys.serverSelectionLowestPing,
+                parameters: {'server': config.remark, 'ping': ping.toString()},
+              ),
             );
             _cancelAllPingTasks();
             completer.complete(config);
@@ -467,7 +523,10 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
         if (mounted && !completer.isCompleted) {
           try {
             _autoConnectStatusStream.add(
-              '${config.remark} failed or timed out',
+              context.tr(
+                TranslationKeys.serverSelectionTimeout,
+                parameters: {'server': config.remark},
+              ),
             );
           } catch (e) {
             debugPrint('Error updating failed status for ${config.remark}: $e');
@@ -527,7 +586,7 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
                 ),
               )
             : const Icon(Icons.network_check),
-        tooltip: 'Test Ping',
+        tooltip: context.tr(TranslationKeys.serverSelectionTestPing),
         onPressed: _isPingingServers
             ? null
             : () async {
@@ -648,7 +707,7 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
           _sortByPing ? Icons.sort : Icons.sort_outlined,
           color: _sortByPing ? AppTheme.primaryGreen : null,
         ),
-        tooltip: 'Sort by Ping',
+        tooltip: context.tr(TranslationKeys.serverSelectionSortByPing),
         onPressed: () {
           setState(() {
             if (_sortByPing) {
@@ -725,7 +784,7 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
             )
           : null,
       appBar: AppBar(
-        title: const Text('Select Server'),
+        title: Text(context.tr(TranslationKeys.serverSelectionTitle)),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
         actions: [
@@ -736,9 +795,13 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
               onPressed: () async {
                 try {
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('Updating servers...'),
-                      duration: Duration(seconds: 1),
+                    SnackBar(
+                      content: Text(
+                        context.tr(
+                          TranslationKeys.serverSelectionUpdatingServers,
+                        ),
+                      ),
+                      duration: const Duration(seconds: 1),
                     ),
                   );
 
@@ -774,20 +837,29 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
                     provider.clearError();
                   } else {
                     ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Servers updated successfully'),
+                      SnackBar(
+                        content: Text(
+                          context.tr(
+                            TranslationKeys.serverSelectionServersUpdated,
+                          ),
+                        ),
                       ),
                     );
                   }
                 } catch (e) {
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text('Error updating servers: ${e.toString()}'),
+                      content: Text(
+                        context.tr(
+                          TranslationKeys.serverSelectionErrorUpdating,
+                          parameters: {'error': e.toString()},
+                        ),
+                      ),
                     ),
                   );
                 }
               },
-              tooltip: 'Update Servers',
+              tooltip: context.tr(TranslationKeys.serverSelectionUpdateServers),
             ),
         ],
       ),
@@ -834,7 +906,10 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
             child: filteredConfigs.isEmpty
                 ? Center(
                     child: Text(
-                      'No servers available for $_selectedFilter',
+                      context.tr(
+                        TranslationKeys.serverSelectionNoServers,
+                        parameters: {'filter': _selectedFilter},
+                      ),
                       style: const TextStyle(color: Colors.grey),
                     ),
                   )
@@ -867,19 +942,25 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
                                         builder: (context) => AlertDialog(
                                           backgroundColor:
                                               AppTheme.secondaryDark,
-                                          title: const Text(
-                                            'Connection Active',
+                                          title: Text(
+                                            context.tr(
+                                              TranslationKeys
+                                                  .serverSelectionConnectionActive,
+                                            ),
                                           ),
-                                          content: const Text(
-                                            'Please disconnect from VPN before selecting a different server.',
+                                          content: Text(
+                                            context.tr(
+                                              TranslationKeys
+                                                  .serverSelectionDisconnectFirst,
+                                            ),
                                           ),
                                           actions: [
                                             TextButton(
                                               onPressed: () =>
                                                   Navigator.pop(context),
-                                              child: const Text(
-                                                'OK',
-                                                style: TextStyle(
+                                              child: Text(
+                                                context.tr('common.ok'),
+                                                style: const TextStyle(
                                                   color: AppTheme.primaryGreen,
                                                 ),
                                               ),
@@ -894,7 +975,12 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
                                         builder: (context) => AlertDialog(
                                           backgroundColor:
                                               AppTheme.secondaryDark,
-                                          title: const Text('Auto Select'),
+                                          title: Text(
+                                            context.tr(
+                                              TranslationKeys
+                                                  .serverSelectionAutoSelect,
+                                            ),
+                                          ),
                                           content: Column(
                                             mainAxisSize: MainAxisSize.min,
                                             children: [
@@ -905,8 +991,11 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
                                                     >(AppTheme.primaryGreen),
                                               ),
                                               const SizedBox(height: 16),
-                                              const Text(
-                                                'Testing servers for fastest connection...',
+                                              Text(
+                                                context.tr(
+                                                  TranslationKeys
+                                                      .serverSelectionTestingServers,
+                                                ),
                                               ),
                                               const SizedBox(height: 8),
                                               StreamBuilder<String>(
@@ -915,7 +1004,10 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
                                                 builder: (context, snapshot) {
                                                   return Text(
                                                     snapshot.data ??
-                                                        'Starting tests...',
+                                                        context.tr(
+                                                          TranslationKeys
+                                                              .serverSelectionTestingServers,
+                                                        ),
                                                     style: const TextStyle(
                                                       fontSize: 12,
                                                       color: Colors.grey,
@@ -947,23 +1039,29 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
                                     ),
                                   ),
                                   const SizedBox(width: 16),
-                                  const Expanded(
+                                  Expanded(
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Auto Select',
-                                          style: TextStyle(
+                                          context.tr(
+                                            TranslationKeys
+                                                .serverSelectionAutoSelect,
+                                          ),
+                                          style: const TextStyle(
                                             fontSize: 16,
                                             fontWeight: FontWeight.bold,
                                             color: Colors.white,
                                           ),
                                         ),
-                                        SizedBox(height: 4),
+                                        const SizedBox(height: 4),
                                         Text(
-                                          'Connect to server with lowest ping',
-                                          style: TextStyle(
+                                          context.tr(
+                                            TranslationKeys
+                                                .serverSelectionAutoSelectDescription,
+                                          ),
+                                          style: const TextStyle(
                                             color: Colors.grey,
                                             fontSize: 14,
                                           ),
@@ -1006,17 +1104,25 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
                                       context: context,
                                       builder: (context) => AlertDialog(
                                         backgroundColor: AppTheme.secondaryDark,
-                                        title: const Text('Connection Active'),
-                                        content: const Text(
-                                          'Please disconnect from VPN before selecting a different server.',
+                                        title: Text(
+                                          context.tr(
+                                            TranslationKeys
+                                                .serverSelectionConnectionActive,
+                                          ),
+                                        ),
+                                        content: Text(
+                                          context.tr(
+                                            TranslationKeys
+                                                .serverSelectionDisconnectFirst,
+                                          ),
                                         ),
                                         actions: [
                                           TextButton(
                                             onPressed: () =>
                                                 Navigator.pop(context),
-                                            child: const Text(
-                                              'OK',
-                                              style: TextStyle(
+                                            child: Text(
+                                              context.tr('common.ok'),
+                                              style: const TextStyle(
                                                 color: AppTheme.primaryGreen,
                                               ),
                                             ),
@@ -1041,7 +1147,14 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
                                         ).showSnackBar(
                                           SnackBar(
                                             content: Text(
-                                              'Failed to connect to ${config.remark}: $e',
+                                              context.tr(
+                                                TranslationKeys
+                                                    .serverSelectionConnectFailed,
+                                                parameters: {
+                                                  'server': config.remark,
+                                                  'error': e.toString(),
+                                                },
+                                              ),
                                             ),
                                             backgroundColor: Colors.red,
                                           ),
@@ -1260,16 +1373,18 @@ void showServerSelectionScreen({
       context: context,
       builder: (context) => AlertDialog(
         backgroundColor: AppTheme.secondaryDark,
-        title: const Text('Connection Active'),
-        content: const Text(
-          'Please disconnect from VPN before selecting a different server.',
+        title: Text(
+          context.tr(TranslationKeys.serverSelectionConnectionActive),
+        ),
+        content: Text(
+          context.tr(TranslationKeys.serverSelectionDisconnectFirst),
         ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context),
-            child: const Text(
-              'OK',
-              style: TextStyle(color: AppTheme.primaryGreen),
+            child: Text(
+              context.tr('common.ok'),
+              style: const TextStyle(color: AppTheme.primaryGreen),
             ),
           ),
         ],

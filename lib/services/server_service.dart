@@ -120,7 +120,9 @@ class ServerService {
           String address = parser.address;
           int port = parser.port;
 
-          debugPrint('Parsed URI with FlutterV2ray: remark=${parser.remark}, address=$address, port=$port');
+          debugPrint(
+            'Parsed URI with FlutterV2ray: remark=${parser.remark}, address=$address, port=$port',
+          );
 
           return V2RayConfig(
             id: DateTime.now().millisecondsSinceEpoch.toString(),

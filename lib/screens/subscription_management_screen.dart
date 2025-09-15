@@ -4,6 +4,7 @@ import '../models/subscription.dart';
 import '../providers/v2ray_provider.dart';
 import '../theme/app_theme.dart';
 import '../widgets/error_snackbar.dart';
+import '../utils/app_localizations.dart';
 
 class SubscriptionManagementScreen extends StatefulWidget {
   const SubscriptionManagementScreen({Key? key}) : super(key: key);
@@ -51,8 +52,10 @@ class _SubscriptionManagementScreenState
 
     if (name.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a name for the subscription'),
+        SnackBar(
+          content: Text(
+            context.tr(TranslationKeys.subscriptionManagementEnterName),
+          ),
         ),
       );
       return;
@@ -60,34 +63,11 @@ class _SubscriptionManagementScreenState
 
     if (url.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Please enter a URL for the subscription'),
+        SnackBar(
+          content: Text(
+            context.tr(TranslationKeys.subscriptionManagementEnterUrl),
+          ),
         ),
-      );
-      return;
-    }
-
-    // Check if name is 'Default' or 'default'
-    if (name.toLowerCase() == 'default') {
-      await showDialog(
-        context: context,
-        builder:
-            (context) => AlertDialog(
-              backgroundColor: AppTheme.secondaryDark,
-              title: const Text('Reserved Name'),
-              content: const Text(
-                'The name "Default" is reserved for system use. Please choose a different name.',
-              ),
-              actions: [
-                TextButton(
-                  onPressed: () => Navigator.pop(context),
-                  child: const Text(
-                    'OK',
-                    style: TextStyle(color: AppTheme.primaryGreen),
-                  ),
-                ),
-              ],
-            ),
       );
       return;
     }
@@ -103,23 +83,29 @@ class _SubscriptionManagementScreenState
         // Show error dialog for duplicate name
         await showDialog(
           context: context,
-          builder:
-              (context) => AlertDialog(
-                backgroundColor: AppTheme.secondaryDark,
-                title: const Text('Duplicate Name'),
-                content: Text(
-                  'A subscription with the name "$name" already exists. Please choose a different name.',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'OK',
-                      style: TextStyle(color: AppTheme.primaryGreen),
-                    ),
-                  ),
-                ],
+          builder: (context) => AlertDialog(
+            backgroundColor: AppTheme.secondaryDark,
+            title: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementDuplicateNameTitle,
               ),
+            ),
+            content: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementNameExists,
+                parameters: {'name': name},
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  context.tr(TranslationKeys.commonOk),
+                  style: const TextStyle(color: AppTheme.primaryGreen),
+                ),
+              ),
+            ],
+          ),
         );
         return;
       }
@@ -134,23 +120,29 @@ class _SubscriptionManagementScreenState
         // Show error dialog for duplicate name
         await showDialog(
           context: context,
-          builder:
-              (context) => AlertDialog(
-                backgroundColor: AppTheme.secondaryDark,
-                title: const Text('Duplicate Name'),
-                content: Text(
-                  'A subscription with the name "$name" already exists. Please choose a different name.',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context),
-                    child: const Text(
-                      'OK',
-                      style: TextStyle(color: AppTheme.primaryGreen),
-                    ),
-                  ),
-                ],
+          builder: (context) => AlertDialog(
+            backgroundColor: AppTheme.secondaryDark,
+            title: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementDuplicateNameTitle,
               ),
+            ),
+            content: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementNameExists,
+                parameters: {'name': name},
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: Text(
+                  context.tr(TranslationKeys.commonOk),
+                  style: const TextStyle(color: AppTheme.primaryGreen),
+                ),
+              ),
+            ],
+          ),
         );
         return;
       }
@@ -160,7 +152,13 @@ class _SubscriptionManagementScreenState
       if (_isUpdating && _currentSubscriptionId != null) {
         // Show loading indicator
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Updating subscription...')),
+          SnackBar(
+            content: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementUpdatingSubscription,
+              ),
+            ),
+          ),
         );
 
         // Find the subscription to update
@@ -186,14 +184,26 @@ class _SubscriptionManagementScreenState
           provider.clearError();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Subscription updated successfully')),
+            SnackBar(
+              content: Text(
+                context.tr(
+                  TranslationKeys.subscriptionManagementSubscriptionUpdated,
+                ),
+              ),
+            ),
           );
         }
       } else {
         // Show loading indicator
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(const SnackBar(content: Text('Adding subscription...')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementAddingSubscription,
+              ),
+            ),
+          ),
+        );
 
         // Add new subscription
         await provider.addSubscription(name, url);
@@ -210,7 +220,13 @@ class _SubscriptionManagementScreenState
           provider.clearError();
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Subscription added successfully')),
+            SnackBar(
+              content: Text(
+                context.tr(
+                  TranslationKeys.subscriptionManagementSubscriptionAdded,
+                ),
+              ),
+            ),
           );
         }
       }
@@ -218,7 +234,10 @@ class _SubscriptionManagementScreenState
       // Reset the form
       _resetForm();
     } catch (e) {
-      ErrorSnackbar.show(context, 'Error: ${e.toString()}');
+      ErrorSnackbar.show(
+        context,
+        '${context.tr(TranslationKeys.errorUnknown)}: ${e.toString()}',
+      );
     }
   }
 
@@ -230,30 +249,36 @@ class _SubscriptionManagementScreenState
     final confirmed =
         await showDialog<bool>(
           context: context,
-          builder:
-              (context) => AlertDialog(
-                backgroundColor: AppTheme.secondaryDark,
-                title: const Text('Delete Subscription'),
-                content: Text(
-                  'Are you sure you want to delete "${subscription.name}"? This will also remove all servers from this subscription.',
-                ),
-                actions: [
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, false),
-                    child: const Text(
-                      'Cancel',
-                      style: TextStyle(color: AppTheme.primaryGreen),
-                    ),
-                  ),
-                  TextButton(
-                    onPressed: () => Navigator.pop(context, true),
-                    child: const Text(
-                      'Delete',
-                      style: TextStyle(color: Colors.red),
-                    ),
-                  ),
-                ],
+          builder: (context) => AlertDialog(
+            backgroundColor: AppTheme.secondaryDark,
+            title: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementDeleteSubscription,
               ),
+            ),
+            content: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementDeleteConfirmation,
+                parameters: {'name': subscription.name},
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(
+                  context.tr(TranslationKeys.commonCancel),
+                  style: const TextStyle(color: AppTheme.primaryGreen),
+                ),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(
+                  context.tr(TranslationKeys.commonDelete),
+                  style: const TextStyle(color: Colors.red),
+                ),
+              ),
+            ],
+          ),
         ) ??
         false;
 
@@ -264,7 +289,13 @@ class _SubscriptionManagementScreenState
         await provider.removeSubscription(subscription);
 
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Subscription deleted successfully')),
+          SnackBar(
+            content: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementSubscriptionDeleted,
+              ),
+            ),
+          ),
         );
 
         // If we were editing this subscription, reset the form
@@ -272,7 +303,10 @@ class _SubscriptionManagementScreenState
           _resetForm();
         }
       } catch (e) {
-        ErrorSnackbar.show(context, 'Error: ${e.toString()}');
+        ErrorSnackbar.show(
+          context,
+          '${context.tr(TranslationKeys.errorUnknown)}: ${e.toString()}',
+        );
       }
     }
   }
@@ -283,7 +317,11 @@ class _SubscriptionManagementScreenState
     try {
       // Show loading indicator
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Updating all subscriptions...')),
+        SnackBar(
+          content: Text(
+            context.tr(TranslationKeys.subscriptionManagementUpdatingAll),
+          ),
+        ),
       );
 
       await provider.updateAllSubscriptions();
@@ -300,13 +338,18 @@ class _SubscriptionManagementScreenState
         provider.clearError();
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('All subscriptions updated successfully'),
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.subscriptionManagementAllUpdated),
+            ),
           ),
         );
       }
     } catch (e) {
-      ErrorSnackbar.show(context, 'Error: ${e.toString()}');
+      ErrorSnackbar.show(
+        context,
+        '${context.tr(TranslationKeys.errorUnknown)}: ${e.toString()}',
+      );
     }
   }
 
@@ -315,19 +358,23 @@ class _SubscriptionManagementScreenState
     return Scaffold(
       backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
-        title: const Text('Manage Subs'),
+        title: Text(
+          context.tr(TranslationKeys.subscriptionManagementManageSubs),
+        ),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.help_outline),
             onPressed: () => _showHelpDialog(context),
-            tooltip: 'Help',
+            tooltip: context.tr(TranslationKeys.subscriptionManagementHelp),
           ),
           IconButton(
             icon: const Icon(Icons.refresh_rounded),
             onPressed: () => _updateAllSubscriptions(context),
-            tooltip: 'Update All Subscriptions',
+            tooltip: context.tr(
+              TranslationKeys.subscriptionManagementUpdateAll,
+            ),
           ),
         ],
       ),
@@ -352,8 +399,14 @@ class _SubscriptionManagementScreenState
                       children: [
                         Text(
                           _isUpdating
-                              ? 'Edit Subscription'
-                              : 'Add Subscription',
+                              ? context.tr(
+                                  TranslationKeys
+                                      .subscriptionManagementEditSubscription,
+                                )
+                              : context.tr(
+                                  TranslationKeys
+                                      .subscriptionManagementAddSubscription,
+                                ),
                           style: const TextStyle(
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
@@ -362,9 +415,11 @@ class _SubscriptionManagementScreenState
                         const SizedBox(height: 16),
                         TextField(
                           controller: _nameController,
-                          decoration: const InputDecoration(
-                            labelText: 'Name',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: context.tr(
+                              TranslationKeys.subscriptionManagementName,
+                            ),
+                            border: const OutlineInputBorder(),
                             filled: true,
                             fillColor: AppTheme.secondaryDark,
                           ),
@@ -372,9 +427,11 @@ class _SubscriptionManagementScreenState
                         const SizedBox(height: 12),
                         TextField(
                           controller: _urlController,
-                          decoration: const InputDecoration(
-                            labelText: 'URL',
-                            border: OutlineInputBorder(),
+                          decoration: InputDecoration(
+                            labelText: context.tr(
+                              TranslationKeys.subscriptionManagementUrl,
+                            ),
+                            border: const OutlineInputBorder(),
                             filled: true,
                             fillColor: AppTheme.secondaryDark,
                           ),
@@ -386,16 +443,31 @@ class _SubscriptionManagementScreenState
                             if (_isUpdating)
                               TextButton(
                                 onPressed: _resetForm,
-                                child: const Text('Cancel'),
+                                child: Text(
+                                  context.tr(
+                                    TranslationKeys
+                                        .subscriptionManagementCancel,
+                                  ),
+                                ),
                               ),
                             const SizedBox(width: 8),
                             ElevatedButton(
-                              onPressed:
-                                  () => _addOrUpdateSubscription(context),
+                              onPressed: () =>
+                                  _addOrUpdateSubscription(context),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppTheme.primaryGreen,
                               ),
-                              child: Text(_isUpdating ? 'Update' : 'Add'),
+                              child: Text(
+                                _isUpdating
+                                    ? context.tr(
+                                        TranslationKeys
+                                            .subscriptionManagementUpdate,
+                                      )
+                                    : context.tr(
+                                        TranslationKeys
+                                            .subscriptionManagementAdd,
+                                      ),
+                              ),
                             ),
                           ],
                         ),
@@ -407,92 +479,105 @@ class _SubscriptionManagementScreenState
 
               // Subscription List
               Expanded(
-                child:
-                    provider.isLoading
-                        ? const Center(child: CircularProgressIndicator())
-                        : subscriptions.isEmpty
-                        ? const Center(
-                          child: Text('No subscriptions added yet'),
-                        )
-                        : ListView.builder(
-                          itemCount: subscriptions.length,
-                          padding: const EdgeInsets.all(16),
-                          itemBuilder: (context, index) {
-                            final subscription = subscriptions[index];
-
-                            return Card(
-                              margin: const EdgeInsets.only(bottom: 12),
-                              color: AppTheme.cardDark,
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: ListTile(
-                                title: Text(subscription.name),
-                                subtitle: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      subscription.url,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      'Last updated: ${_formatDate(subscription.lastUpdated)}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Servers: ${subscription.configIds.length}',
-                                      style: const TextStyle(
-                                        fontSize: 12,
-                                        color: Colors.grey,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                trailing: Row(
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    IconButton(
-                                      icon: const Icon(
-                                        Icons.edit,
-                                        color: Colors.blue,
-                                      ),
-                                      onPressed:
-                                          () => _prepareForUpdate(subscription),
-                                      tooltip: 'Edit',
-                                    ),
-                                    IconButton(
-                                      icon: Icon(
-                                        Icons.delete,
-                                        color:
-                                            subscription.name.toLowerCase() ==
-                                                    'default subscription'
-                                                ? Colors.grey
-                                                : Colors.red,
-                                      ),
-                                      onPressed:
-                                          subscription.name.toLowerCase() ==
-                                                  'default subscription'
-                                              ? null
-                                              : () => _deleteSubscription(
-                                                context,
-                                                subscription,
-                                              ),
-                                      tooltip:
-                                          subscription.name.toLowerCase() ==
-                                                  'default subscription'
-                                              ? 'Cannot delete default subscription'
-                                              : 'Delete',
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            );
-                          },
+                child: provider.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : subscriptions.isEmpty
+                    ? Center(
+                        child: Text(
+                          context.tr(
+                            TranslationKeys
+                                .subscriptionManagementNoSubscriptions,
+                          ),
                         ),
+                      )
+                    : ListView.builder(
+                        itemCount: subscriptions.length,
+                        padding: const EdgeInsets.all(16),
+                        itemBuilder: (context, index) {
+                          final subscription = subscriptions[index];
+
+                          return Card(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            color: AppTheme.cardDark,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: ListTile(
+                              title: Text(subscription.name),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    subscription.url,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${context.tr(TranslationKeys.subscriptionManagementLastUpdated)}${_formatDate(subscription.lastUpdated)}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                  Text(
+                                    '${context.tr(TranslationKeys.subscriptionManagementServers)}${subscription.configIds.length}',
+                                    style: const TextStyle(
+                                      fontSize: 12,
+                                      color: Colors.grey,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              trailing: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(
+                                      Icons.edit,
+                                      color: Colors.blue,
+                                    ),
+                                    onPressed: () =>
+                                        _prepareForUpdate(subscription),
+                                    tooltip: context.tr(
+                                      TranslationKeys
+                                          .subscriptionManagementEdit,
+                                    ),
+                                  ),
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.delete,
+                                      color:
+                                          subscription.name.toLowerCase() ==
+                                              'default subscription'
+                                          ? Colors.grey
+                                          : Colors.red,
+                                    ),
+                                    onPressed:
+                                        subscription.name.toLowerCase() ==
+                                            'default subscription'
+                                        ? null
+                                        : () => _deleteSubscription(
+                                            context,
+                                            subscription,
+                                          ),
+                                    tooltip:
+                                        subscription.name.toLowerCase() ==
+                                            'default subscription'
+                                        ? context.tr(
+                                            TranslationKeys
+                                                .subscriptionManagementCannotDeleteDefault,
+                                          )
+                                        : context.tr(
+                                            TranslationKeys
+                                                .subscriptionManagementDelete,
+                                          ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        },
+                      ),
               ),
             ],
           );
@@ -506,101 +591,120 @@ class _SubscriptionManagementScreenState
     final difference = now.difference(date);
 
     if (difference.inDays > 0) {
-      return '${difference.inDays} ${difference.inDays == 1 ? 'day' : 'days'} ago';
+      return '${difference.inDays} ${difference.inDays == 1 ? context.tr(TranslationKeys.subscriptionManagementDay) : context.tr(TranslationKeys.subscriptionManagementDays)} ${context.tr(TranslationKeys.subscriptionManagementAgo)}';
     } else if (difference.inHours > 0) {
-      return '${difference.inHours} ${difference.inHours == 1 ? 'hour' : 'hours'} ago';
+      return '${difference.inHours} ${difference.inHours == 1 ? context.tr(TranslationKeys.subscriptionManagementHour) : context.tr(TranslationKeys.subscriptionManagementHours)} ${context.tr(TranslationKeys.subscriptionManagementAgo)}';
     } else if (difference.inMinutes > 0) {
-      return '${difference.inMinutes} ${difference.inMinutes == 1 ? 'minute' : 'minutes'} ago';
+      return '${difference.inMinutes} ${difference.inMinutes == 1 ? context.tr(TranslationKeys.subscriptionManagementMinute) : context.tr(TranslationKeys.subscriptionManagementMinutes)} ${context.tr(TranslationKeys.subscriptionManagementAgo)}';
     } else {
-      return 'Just now';
+      return context.tr(TranslationKeys.subscriptionManagementJustNow);
     }
   }
 
   void _showHelpDialog(BuildContext context) {
     showDialog(
       context: context,
-      builder:
-          (context) => AlertDialog(
-            backgroundColor: AppTheme.secondaryDark,
-            title: Row(
-              children: [
-                const Icon(Icons.help_outline, color: AppTheme.primaryGreen),
-                const SizedBox(width: 10),
-                const Text('How to Add?'),
-              ],
-            ),
-            content: SingleChildScrollView(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text(
-                    'To add a subscription, you need a URL that contains V2Ray configurations.',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Format Requirements:'),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryDark,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('• HTTP or HTTPS URL with V2Ray configs'),
-                        Text('• One configuration per line'),
-                        Text('• Supports vless://, vmess://, ss://, etc.'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text('Example:'),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.all(12),
-                    decoration: BoxDecoration(
-                      color: AppTheme.primaryDark,
-                      borderRadius: BorderRadius.circular(8),
-                    ),
-                    child: const Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('vless://...'),
-                        Text('vmess://...'),
-                        Text('ss://...'),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  const Text(
-                    'Steps:',
-                    style: TextStyle(fontWeight: FontWeight.bold),
-                  ),
-                  const SizedBox(height: 8),
-                  const Text('1. Enter a unique name for your subscription'),
-                  const Text(
-                    '2. Enter the URL containing V2Ray configurations',
-                  ),
-                  const Text('3. Click "Add" to save your subscription'),
-                  const Text(
-                    '4. Use the refresh button to update configurations',
-                  ),
-                ],
+      builder: (context) => AlertDialog(
+        backgroundColor: AppTheme.secondaryDark,
+        title: Row(
+          children: [
+            const Icon(Icons.help_outline, color: AppTheme.primaryGreen),
+            const SizedBox(width: 10),
+            Text(context.tr(TranslationKeys.subscriptionManagementHowToAdd)),
+          ],
+        ),
+        content: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                context.tr(
+                  TranslationKeys.subscriptionManagementUniqueNameForSub,
+                ),
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text(
-                  'Got it',
-                  style: TextStyle(color: AppTheme.primaryGreen),
+              const SizedBox(height: 16),
+              Text(
+                context.tr(
+                  TranslationKeys.subscriptionManagementFormatRequirements,
                 ),
               ),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryDark,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      context.tr(
+                        TranslationKeys.subscriptionManagementV2RayConfigs,
+                      ),
+                    ),
+                    Text(
+                      context.tr(
+                        TranslationKeys.subscriptionManagementOnePerLine,
+                      ),
+                    ),
+                    Text(
+                      context.tr(
+                        TranslationKeys.subscriptionManagementSupports,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(context.tr(TranslationKeys.subscriptionManagementExample)),
+              const SizedBox(height: 8),
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: AppTheme.primaryDark,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: const Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('vless://...'),
+                    Text('vmess://...'),
+                    Text('ss://...'),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+              Text(
+                context.tr(TranslationKeys.subscriptionManagementSteps),
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                '1. ${context.tr(TranslationKeys.subscriptionManagementUniqueName)}',
+              ),
+              Text(
+                '2. ${context.tr(TranslationKeys.subscriptionManagementUrlWithConfigs)}',
+              ),
+              Text(
+                '3. ${context.tr(TranslationKeys.subscriptionManagementAdd)}',
+              ),
+              Text('4. ${context.tr(TranslationKeys.commonRefresh)}'),
             ],
           ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: Text(
+              context.tr(TranslationKeys.subscriptionManagementGotIt),
+              style: const TextStyle(color: AppTheme.primaryGreen),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }

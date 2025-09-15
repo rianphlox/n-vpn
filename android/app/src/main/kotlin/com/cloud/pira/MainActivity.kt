@@ -8,7 +8,6 @@ class MainActivity : FlutterActivity() {
         super.configureFlutterEngine(flutterEngine)
         AppListMethodChannel.registerWith(flutterEngine, context)
         PingMethodChannel.registerWith(flutterEngine, context)
-        VpnTrafficMethodChannel.registerWith(flutterEngine, context)
         SettingsMethodChannel.registerWith(flutterEngine, context)
     }
 }

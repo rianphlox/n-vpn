@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import '../providers/v2ray_provider.dart';
+import '../providers/language_provider.dart';
+import '../utils/app_localizations.dart';
 import '../widgets/connection_button.dart';
 import '../widgets/server_selector.dart';
 import '../widgets/background_gradient.dart';
@@ -47,10 +49,10 @@ class _HomeScreenState extends State<HomeScreen> {
     try {
       final provider = Provider.of<V2RayProvider>(context, listen: false);
       final activeConfig = provider.activeConfig;
-      
+
       if (activeConfig != null && activeConfig.fullConfig.isNotEmpty) {
         await Clipboard.setData(ClipboardData(text: activeConfig.fullConfig));
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Row(
@@ -64,8 +66,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'V2Ray link copied to clipboard',
-                    style: TextStyle(color: Colors.white),
+                    context.tr('home.v2ray_link_copied'),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -84,16 +86,12 @@ class _HomeScreenState extends State<HomeScreen> {
             content: Row(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Icon(
-                  Icons.error_outline,
-                  color: Colors.red,
-                  size: 18,
-                ),
+                Icon(Icons.error_outline, color: Colors.red, size: 18),
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    'No V2Ray configuration available to share',
-                    style: TextStyle(color: Colors.white),
+                    context.tr('home.no_v2ray_config'),
+                    style: const TextStyle(color: Colors.white),
                   ),
                 ),
               ],
@@ -113,16 +111,12 @@ class _HomeScreenState extends State<HomeScreen> {
           content: Row(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Icon(
-                Icons.error_outline,
-                color: Colors.red,
-                size: 18,
-              ),
+              Icon(Icons.error_outline, color: Colors.red, size: 18),
               const SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Error copying to clipboard: ${e.toString()}',
-                  style: TextStyle(color: Colors.white),
+                  '${context.tr('home.error_copying')}: ${e.toString()}',
+                  style: const TextStyle(color: Colors.white),
                 ),
               ),
             ],
@@ -130,9 +124,7 @@ class _HomeScreenState extends State<HomeScreen> {
           backgroundColor: Colors.red.shade700,
           duration: const Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(8),
-          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
         ),
       );
     }
@@ -140,112 +132,126 @@ class _HomeScreenState extends State<HomeScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return BackgroundGradient(
-      child: Scaffold(
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          title: const Text('Proxy Cloud'),
-          backgroundColor: Colors.transparent,
-          elevation: 0,
-          centerTitle: false,
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.refresh),
-              onPressed: () async {
-                final provider = Provider.of<V2RayProvider>(
-                  context,
-                  listen: false,
-                );
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return Directionality(
+          textDirection: languageProvider.textDirection,
+          child: BackgroundGradient(
+            child: Scaffold(
+              backgroundColor: Colors.transparent,
+              appBar: AppBar(
+                title: Text(context.tr(TranslationKeys.homeTitle)),
+                backgroundColor: Colors.transparent,
+                elevation: 0,
+                centerTitle: false,
+                actions: [
+                  IconButton(
+                    icon: const Icon(Icons.refresh),
+                    onPressed: () async {
+                      final provider = Provider.of<V2RayProvider>(
+                        context,
+                        listen: false,
+                      );
 
-                // Show loading indicator
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Updating all subscriptions...'),
+                      // Show loading indicator
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                            context.tr('home.updating_subscriptions'),
+                          ),
+                        ),
+                      );
+
+                      // Update all subscriptions instead of just fetching servers
+                      await provider.updateAllSubscriptions();
+                      provider.fetchNotificationStatus();
+
+                      // Show success message
+                      if (provider.errorMessage.isEmpty) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(
+                            content: Text(
+                              context.tr('home.subscriptions_updated'),
+                            ),
+                          ),
+                        );
+                      } else {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(provider.errorMessage)),
+                        );
+                        provider.clearError();
+                      }
+                    },
+                    tooltip: context.tr(TranslationKeys.homeRefresh),
                   ),
-                );
-
-                // Update all subscriptions instead of just fetching servers
-                await provider.updateAllSubscriptions();
-                provider.fetchNotificationStatus();
-
-                // Show success message
-                if (provider.errorMessage.isEmpty) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text('All subscriptions updated successfully'),
-                    ),
-                  );
-                } else {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(content: Text(provider.errorMessage)),
-                  );
-                  provider.clearError();
-                }
-              },
-              tooltip: 'Update All Subscriptions',
-            ),
-            IconButton(
-              icon: const Icon(Icons.vpn_key),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const SubscriptionManagementScreen(),
+                  IconButton(
+                    icon: const Icon(Icons.vpn_key),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) =>
+                              const SubscriptionManagementScreen(),
+                        ),
+                      );
+                    },
+                    tooltip: context.tr(TranslationKeys.homeSubscriptions),
                   ),
-                );
-              },
-              tooltip: 'Add Subscription',
-            ),
-            IconButton(
-              icon: const Icon(Icons.info_outline),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const AboutScreen()),
-                );
-              },
-              tooltip: 'About',
-            ),
-          ],
-        ),
-        body: Column(
-          children: [
-            // Connection status removed as requested
+                  IconButton(
+                    icon: const Icon(Icons.info_outline),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AboutScreen(),
+                        ),
+                      );
+                    },
+                    tooltip: context.tr(TranslationKeys.homeAbout),
+                  ),
+                ],
+              ),
+              body: Column(
+                children: [
+                  // Connection status removed as requested
 
-            // Main content
-            Expanded(
-              child: Consumer<V2RayProvider>(
-                builder: (context, provider, _) {
-                  return SingleChildScrollView(
-                    physics: const BouncingScrollPhysics(),
-                    child: Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 20),
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          // Server selector (now includes Proxy Mode Switch)
-                          const ServerSelector(),
+                  // Main content
+                  Expanded(
+                    child: Consumer<V2RayProvider>(
+                      builder: (context, provider, _) {
+                        return SingleChildScrollView(
+                          physics: const BouncingScrollPhysics(),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(vertical: 20),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // Server selector (now includes Proxy Mode Switch)
+                                const ServerSelector(),
 
-                          const SizedBox(height: 20),
+                                const SizedBox(height: 20),
 
-                          // Connection button
-                          const ConnectionButton(),
+                                // Connection button
+                                const ConnectionButton(),
 
-                          const SizedBox(height: 40),
+                                const SizedBox(height: 40),
 
-                          // Connection stats
-                          if (provider.activeConfig != null)
-                            _buildConnectionStats(provider),
-                        ],
-                      ),
+                                // Connection stats
+                                if (provider.activeConfig != null)
+                                  _buildConnectionStats(provider),
+                              ],
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  );
-                },
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
+          ),
+        );
+      },
     );
   }
 
@@ -277,21 +283,24 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Connection Statistics',
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              Text(
+                context.tr('home.connection_statistics'),
+                style: const TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 16),
               _buildStatRow(
                 Icons.timer,
-                'Connected Time',
+                context.tr(TranslationKeys.homeConnectionTime),
                 v2rayService.getFormattedConnectedTime(),
               ),
               const Divider(height: 24),
-              
+
               // Total traffic usage
               _buildTrafficRow(
-                'Total Traffic',
+                context.tr('home.traffic_usage'),
                 v2rayService.getFormattedUpload(),
                 v2rayService.getFormattedDownload(),
                 v2rayService.getFormattedTotalTraffic(),
@@ -304,8 +313,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 _buildIpInfoRow(ipInfo)
               else
                 _buildIpErrorRow(
-                  'IP Information',
-                  ipInfo?.errorMessage ?? 'cant get ip',
+                  context.tr('home.ip_information'),
+                  ipInfo?.errorMessage ?? context.tr('home.cant_get_ip'),
                   () async {
                     // Retry fetching IP info
                     await v2rayService.fetchIpInfo();
@@ -344,11 +353,7 @@ class _HomeScreenState extends State<HomeScreen> {
           borderRadius: BorderRadius.circular(12),
           child: Padding(
             padding: const EdgeInsets.all(4.0),
-            child: Icon(
-              Icons.share,
-              size: 18,
-              color: AppTheme.primaryGreen,
-            ),
+            child: Icon(Icons.share, size: 18, color: AppTheme.primaryGreen),
           ),
         ),
       ],
@@ -413,14 +418,14 @@ class _HomeScreenState extends State<HomeScreen> {
       children: [
         const Icon(Icons.public, size: 18, color: AppTheme.textGrey),
         const SizedBox(width: 12),
-        const Text(
-          'IP Information',
-          style: TextStyle(color: AppTheme.textGrey),
+        Text(
+          context.tr('home.ip_information'),
+          style: const TextStyle(color: AppTheme.textGrey),
         ),
         const Spacer(),
-        const Text(
-          'Fetching...',
-          style: TextStyle(
+        Text(
+          context.tr('home.fetching'),
+          style: const TextStyle(
             fontWeight: FontWeight.bold,
             color: AppTheme.primaryGreen,
           ),
@@ -440,7 +445,12 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildTrafficRow(String label, String upload, String download, String total) {
+  Widget _buildTrafficRow(
+    String label,
+    String upload,
+    String download,
+    String total,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -487,10 +497,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       download,
-                      style: const TextStyle(
-                        color: Colors.blue,
-                        fontSize: 12,
-                      ),
+                      style: const TextStyle(color: Colors.blue, fontSize: 12),
                     ),
                     const Text(
                       ' ↓',

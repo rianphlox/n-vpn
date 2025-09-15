@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+import '../providers/language_provider.dart';
 
 class AppTheme {
   // Primary colors
@@ -31,8 +33,31 @@ class AppTheme {
     colors: [primaryDark, secondaryDark],
   );
 
-  // Theme data
-  static ThemeData darkTheme() {
+  // Theme data with conditional font support
+  static ThemeData darkTheme([String languageCode = 'en']) {
+    final isRtlLanguage = languageCode == 'fa' || languageCode == 'ar';
+
+    // Use Vazirmatn font for Persian and Arabic, Poppins for others
+    final baseTextTheme = isRtlLanguage
+        ? GoogleFonts.vazirmatnTextTheme(ThemeData.dark().textTheme)
+        : GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme);
+
+    final baseAppBarTextStyle = isRtlLanguage
+        ? GoogleFonts.vazirmatn(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: textLight,
+          )
+        : GoogleFonts.poppins(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: textLight,
+          );
+
+    final baseButtonTextStyle = isRtlLanguage
+        ? GoogleFonts.vazirmatn(fontSize: 16, fontWeight: FontWeight.w600)
+        : GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600);
+
     return ThemeData.dark().copyWith(
       scaffoldBackgroundColor: primaryDark,
       primaryColor: primaryGreen,
@@ -46,11 +71,7 @@ class AppTheme {
         backgroundColor: secondaryDark,
         elevation: 0,
         centerTitle: true,
-        titleTextStyle: GoogleFonts.poppins(
-          fontSize: 20,
-          fontWeight: FontWeight.w600,
-          color: textLight,
-        ),
+        titleTextStyle: baseAppBarTextStyle,
         iconTheme: const IconThemeData(color: textLight),
       ),
       cardTheme: CardThemeData(
@@ -67,13 +88,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(30),
           ),
-          textStyle: GoogleFonts.poppins(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-          ),
+          textStyle: baseButtonTextStyle,
         ),
       ),
-      textTheme: GoogleFonts.poppinsTextTheme(ThemeData.dark().textTheme),
+      textTheme: baseTextTheme,
       dividerTheme: const DividerThemeData(
         color: Color(0xFF323232),
         thickness: 1,

@@ -1,9 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:file_picker/file_picker.dart';
+import '../providers/language_provider.dart';
+import '../utils/app_localizations.dart';
 import '../theme/app_theme.dart';
 
 class BackupRestoreScreen extends StatefulWidget {
@@ -56,11 +59,17 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       await file.writeAsString(jsonString);
 
       setState(() {
-        _statusMessage = 'Backup saved to Downloads/$fileName';
+        _statusMessage = context.tr(
+          TranslationKeys.backupRestoreBackupSaved,
+          parameters: {'fileName': 'Downloads/$fileName'},
+        );
       });
     } catch (e) {
       setState(() {
-        _statusMessage = 'Error exporting data: $e';
+        _statusMessage = context.tr(
+          TranslationKeys.backupRestoreErrorExporting,
+          parameters: {'error': e.toString()},
+        );
       });
     } finally {
       setState(() {
@@ -83,7 +92,9 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
 
       if (result == null || result.files.isEmpty) {
         setState(() {
-          _statusMessage = 'No file selected';
+          _statusMessage = context.tr(
+            TranslationKeys.backupRestoreNoFileSelected,
+          );
         });
         return;
       }
@@ -107,12 +118,14 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
       );
 
       setState(() {
-        _statusMessage =
-            'Data imported successfully. Please restart the app to show data.';
+        _statusMessage = context.tr(TranslationKeys.backupRestoreDataImported);
       });
     } catch (e) {
       setState(() {
-        _statusMessage = 'Error importing data: $e';
+        _statusMessage = context.tr(
+          TranslationKeys.backupRestoreErrorImporting,
+          parameters: {'error': e.toString()},
+        );
       });
     } finally {
       setState(() {
@@ -123,10 +136,21 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
 
   @override
   Widget build(BuildContext context) {
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, _) {
+        return Directionality(
+          textDirection: languageProvider.textDirection,
+          child: _buildBackupRestoreScreen(context),
+        );
+      },
+    );
+  }
+
+  Widget _buildBackupRestoreScreen(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
-        title: const Text('Backup & Restore'),
+        title: Text(context.tr(TranslationKeys.backupRestoreTitle)),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
       ),
@@ -146,18 +170,20 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Backup Data',
-                      style: TextStyle(
+                    Text(
+                      context.tr(TranslationKeys.backupRestoreBackupData),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Export your subscriptions, local servers, and blocked apps to a JSON file.',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    Text(
+                      context.tr(
+                        TranslationKeys.backupRestoreBackupDescription,
+                      ),
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -170,7 +196,11 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
                       ),
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Export Now'),
+                          : Text(
+                              context.tr(
+                                TranslationKeys.backupRestoreExportNow,
+                              ),
+                            ),
                     ),
                   ],
                 ),
@@ -188,18 +218,20 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text(
-                      'Restore Data',
-                      style: TextStyle(
+                    Text(
+                      context.tr(TranslationKeys.backupRestoreRestoreData),
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Colors.white,
                       ),
                     ),
                     const SizedBox(height: 8),
-                    const Text(
-                      'Import subscriptions, local servers, and blocked apps from a JSON file.',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
+                    Text(
+                      context.tr(
+                        TranslationKeys.backupRestoreRestoreDescription,
+                      ),
+                      style: const TextStyle(fontSize: 14, color: Colors.grey),
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
@@ -212,7 +244,11 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
                       ),
                       child: _isLoading
                           ? const CircularProgressIndicator(color: Colors.white)
-                          : const Text('Import Now'),
+                          : Text(
+                              context.tr(
+                                TranslationKeys.backupRestoreImportNow,
+                              ),
+                            ),
                     ),
                   ],
                 ),

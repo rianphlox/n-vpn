@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
 import '../theme/app_theme.dart';
 import '../widgets/error_snackbar.dart';
+import '../utils/app_localizations.dart'; // Added import for translations
 
 class VpnSettingsScreen extends StatefulWidget {
   const VpnSettingsScreen({Key? key}) : super(key: key);
@@ -58,7 +59,8 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
           // Save the updated config back to SharedPreferences
           await prefs.setString('active_config', jsonEncode(configMap));
         } catch (e) {
-          print('Error updating active config: $e');
+          // Using debugPrint instead of print for production code
+          debugPrint('Error updating active config: $e');
         }
       }
 
@@ -74,7 +76,12 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
         isLoading = false;
       });
       if (mounted) {
-        ErrorSnackbar.show(context, 'Error loading settings: $e');
+        ErrorSnackbar.show(
+          context,
+          context
+              .tr(TranslationKeys.vpnSettingsErrorLoading)
+              .replaceAll('{error}', e.toString()),
+        );
       }
     }
   }
@@ -104,8 +111,8 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
 
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Settings saved successfully'),
+          SnackBar(
+            content: Text(context.tr(TranslationKeys.vpnSettingsSavedSuccess)),
             backgroundColor: AppTheme.primaryGreen,
           ),
         );
@@ -115,7 +122,12 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
         isLoading = false;
       });
       if (mounted) {
-        ErrorSnackbar.show(context, 'Error saving settings: $e');
+        ErrorSnackbar.show(
+          context,
+          context
+              .tr(TranslationKeys.vpnSettingsErrorSaving)
+              .replaceAll('{error}', e.toString()),
+        );
       }
     }
   }
@@ -165,273 +177,300 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
     return Scaffold(
       backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
-        title: const Text('VPN Settings'),
+        title: Text(context.tr(TranslationKeys.vpnSettingsTitle)),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
         actions: [
           IconButton(
             icon: const Icon(Icons.save),
             onPressed: _saveSettings,
-            tooltip: 'Save Settings',
+            tooltip: context.tr(TranslationKeys.vpnSettingsSave),
           ),
         ],
       ),
-      body:
-          isLoading
-              ? const Center(
-                child: CircularProgressIndicator(color: AppTheme.primaryGreen),
-              )
-              : SingleChildScrollView(
-                padding: const EdgeInsets.all(16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Card(
-                      color: AppTheme.secondaryDark,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Bypass Subnets',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+      body: isLoading
+          ? const Center(
+              child: CircularProgressIndicator(color: AppTheme.primaryGreen),
+            )
+          : SingleChildScrollView(
+              padding: const EdgeInsets.all(16.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Card(
+                    color: AppTheme.secondaryDark,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                context.tr(
+                                  TranslationKeys.vpnSettingsBypassSubnets,
                                 ),
-                                Switch(
-                                  value: isEnabled,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      isEnabled = value;
-                                    });
-                                  },
-                                  activeColor: AppTheme.primaryGreen,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Enter subnet addresses (one per line) that should bypass the VPN',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
                               ),
+                              Switch(
+                                value: isEnabled,
+                                onChanged: (value) {
+                                  setState(() {
+                                    isEnabled = value;
+                                  });
+                                },
+                                // Updated deprecated activeColor to activeThumbColor
+                                activeThumbColor: AppTheme.primaryGreen,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.tr(
+                              TranslationKeys.vpnSettingsBypassSubnetsDesc,
                             ),
-                            const SizedBox(height: 16),
-                            TextField(
-                              controller: bypassSubnetController,
-                              decoration: InputDecoration(
-                                hintText: 'Enter subnet addresses...',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                  ),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: bypassSubnetController,
+                            decoration: InputDecoration(
+                              hintText: context.tr(
+                                TranslationKeys.vpnSettingsBypassSubnetsHint,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.primaryGreen,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: AppTheme.cardDark,
+                            ),
+                            style: const TextStyle(fontSize: 14),
+                            maxLines: 10,
+                            minLines: 5,
+                            enabled: isEnabled,
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: isEnabled
+                                    ? _resetToDefaultSubnets
+                                    : null,
+                                child: Text(
+                                  context.tr(
+                                    TranslationKeys.vpnSettingsResetDefault,
+                                  ),
+                                  style: const TextStyle(
                                     color: AppTheme.primaryGreen,
                                   ),
                                 ),
-                                filled: true,
-                                fillColor: AppTheme.cardDark,
                               ),
-                              style: const TextStyle(fontSize: 14),
-                              maxLines: 10,
-                              minLines: 5,
-                              enabled: isEnabled,
-                            ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton(
-                                  onPressed:
-                                      isEnabled ? _resetToDefaultSubnets : null,
-                                  child: const Text(
-                                    'Reset to Default',
-                                    style: TextStyle(
-                                      color: AppTheme.primaryGreen,
-                                    ),
+                              const SizedBox(width: 8),
+                              TextButton(
+                                onPressed: isEnabled
+                                    ? () {
+                                        setState(() {
+                                          bypassSubnetController.clear();
+                                        });
+                                      }
+                                    : null,
+                                child: Text(
+                                  context.tr(
+                                    TranslationKeys.vpnSettingsClearAll,
+                                  ),
+                                  style: const TextStyle(
+                                    color: Colors.redAccent,
                                   ),
                                 ),
-                                const SizedBox(width: 8),
-                                TextButton(
-                                  onPressed:
-                                      isEnabled
-                                          ? () {
-                                            setState(() {
-                                              bypassSubnetController.clear();
-                                            });
-                                          }
-                                          : null,
-                                  child: const Text(
-                                    'Clear All',
-                                    style: TextStyle(color: Colors.redAccent),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ],
-                        ),
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 16),
+                  ),
+                  const SizedBox(height: 16),
 
-                    // Connection Type card removed - using VPN mode only
-                    Card(
-                      color: AppTheme.secondaryDark,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text(
-                                  'Custom DNS',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold,
-                                  ),
+                  // Connection Type card removed - using VPN mode only
+                  Card(
+                    color: AppTheme.secondaryDark,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Text(
+                                context.tr(
+                                  TranslationKeys.vpnSettingsCustomDns,
                                 ),
-                                Switch(
-                                  value: isDnsEnabled,
-                                  onChanged: (value) {
-                                    setState(() {
-                                      isDnsEnabled = value;
-                                    });
-                                  },
-                                  activeColor: AppTheme.primaryGreen,
+                                style: const TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
                                 ),
-                              ],
-                            ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Enter DNS server addresses (one per line)',
-                              style: TextStyle(
-                                fontSize: 14,
-                                color: Colors.grey,
                               ),
+                              Switch(
+                                value: isDnsEnabled,
+                                onChanged: (value) {
+                                  setState(() {
+                                    isDnsEnabled = value;
+                                  });
+                                },
+                                // Updated deprecated activeColor to activeThumbColor
+                                activeThumbColor: AppTheme.primaryGreen,
+                              ),
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.tr(
+                              TranslationKeys.vpnSettingsCustomDnsDesc,
                             ),
-                            const SizedBox(height: 16),
-                            TextField(
-                              controller: dnsServerController,
-                              decoration: InputDecoration(
-                                hintText: 'Enter DNS server addresses...',
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
-                                    color: Colors.grey,
-                                  ),
+                            style: const TextStyle(
+                              fontSize: 14,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          TextField(
+                            controller: dnsServerController,
+                            decoration: InputDecoration(
+                              hintText: context.tr(
+                                TranslationKeys.vpnSettingsCustomDnsHint,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: Colors.grey,
                                 ),
-                                focusedBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                  borderSide: const BorderSide(
+                              ),
+                              focusedBorder: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(8),
+                                borderSide: const BorderSide(
+                                  color: AppTheme.primaryGreen,
+                                ),
+                              ),
+                              filled: true,
+                              fillColor: AppTheme.cardDark,
+                            ),
+                            style: const TextStyle(fontSize: 14),
+                            maxLines: 3,
+                            minLines: 1,
+                            enabled: isDnsEnabled,
+                          ),
+                          const SizedBox(height: 16),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            children: [
+                              TextButton(
+                                onPressed: isDnsEnabled
+                                    ? () {
+                                        setState(() {
+                                          dnsServerController.text = '1.1.1.1';
+                                        });
+                                      }
+                                    : null,
+                                child: Text(
+                                  context.tr(
+                                    TranslationKeys.vpnSettingsDnsResetDefault,
+                                  ),
+                                  style: const TextStyle(
                                     color: AppTheme.primaryGreen,
                                   ),
                                 ),
-                                filled: true,
-                                fillColor: AppTheme.cardDark,
                               ),
-                              style: const TextStyle(fontSize: 14),
-                              maxLines: 3,
-                              minLines: 1,
-                              enabled: isDnsEnabled,
+                            ],
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.tr(
+                              TranslationKeys.vpnSettingsChangesEffect,
                             ),
-                            const SizedBox(height: 16),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
-                              children: [
-                                TextButton(
-                                  onPressed:
-                                      isDnsEnabled
-                                          ? () {
-                                            setState(() {
-                                              dnsServerController.text =
-                                                  '1.1.1.1';
-                                            });
-                                          }
-                                          : null,
-                                  child: const Text(
-                                    'Reset to Default',
-                                    style: TextStyle(
-                                      color: AppTheme.primaryGreen,
-                                    ),
-                                  ),
-                                ),
-                              ],
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.orangeAccent,
                             ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Changes will take effect on the next connection.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.orangeAccent,
-                              ),
-                            ),
-                          ],
-                        ),
+                          ),
+                        ],
                       ),
                     ),
-                    const SizedBox(height: 16),
-                    Card(
-                      color: AppTheme.secondaryDark,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            const Text(
-                              'About Bypass Subnets',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                              ),
+                  ),
+                  const SizedBox(height: 16),
+                  Card(
+                    color: AppTheme.secondaryDark,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            context.tr(TranslationKeys.vpnSettingsAboutBypass),
+                            style: const TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
                             ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Bypass subnets allow you to specify IP ranges that should not go through the VPN tunnel. This is useful for local network access or specific services that should connect directly.',
-                              style: TextStyle(fontSize: 14),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.tr(
+                              TranslationKeys.vpnSettingsAboutBypassDesc,
                             ),
-                            const SizedBox(height: 8),
-                            const Text(
-                              'Example: 192.168.1.0/24 will bypass all traffic to your local network if your router uses that subnet.',
-                              style: TextStyle(fontSize: 14),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            context.tr(
+                              TranslationKeys.vpnSettingsAboutBypassExample,
                             ),
-                            SizedBox(height: 8),
-                            Text(
-                              'Changes will take effect on the next VPN connection.',
-                              style: TextStyle(
-                                fontSize: 14,
-                                fontStyle: FontStyle.italic,
-                                color: Colors.orangeAccent,
-                              ),
+                            style: const TextStyle(fontSize: 14),
+                          ),
+                          SizedBox(height: 8),
+                          Text(
+                            context.tr(
+                              TranslationKeys.vpnSettingsChangesEffect,
                             ),
-                          ],
-                        ),
+                            style: TextStyle(
+                              fontSize: 14,
+                              fontStyle: FontStyle.italic,
+                              color: Colors.orangeAccent,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
+            ),
     );
   }
 }

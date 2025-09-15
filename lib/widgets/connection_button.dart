@@ -93,7 +93,9 @@ class ConnectionButton extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppTheme.connectingYellow.withValues(alpha: 0.7),
+                            color: AppTheme.connectingYellow.withValues(
+                              alpha: 0.7,
+                            ),
                             width: 2,
                           ),
                         ),

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../theme/app_theme.dart';
 import '../services/update_service.dart';
 import '../models/app_update.dart';
+import '../utils/app_localizations.dart';
+import '../providers/language_provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'ip_info_screen.dart';
 import 'host_checker_screen.dart';
@@ -13,6 +16,7 @@ import 'per_app_tunnel_screen.dart';
 import 'backup_restore_screen.dart';
 import 'wallpaper_settings_screen.dart';
 import 'battery_settings_screen.dart';
+import 'language_settings_screen.dart';
 
 class ToolsScreen extends StatefulWidget {
   const ToolsScreen({super.key});
@@ -43,173 +47,193 @@ class _ToolsScreenState extends State<ToolsScreen> {
     final Uri uri = Uri.parse(url);
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Could not open $url')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(TrHelper.errorUrlFormat(context, url))),
+        );
       }
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: AppTheme.primaryDark,
-      appBar: AppBar(
-        title: const Text('Tools'),
-        backgroundColor: AppTheme.primaryDark,
-        elevation: 0,
-      ),
-      body: ListView(
-        padding: const EdgeInsets.all(16.0),
-        children: [
-          if (_update != null) _buildUpdateCard(context, _update!),
-          _buildToolCard(
-            context,
-            title: 'Subscription Manager',
-            description:
-                'Add, edit, delete and update your V2Ray subscriptions',
-            icon: Icons.subscriptions,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SubscriptionManagementScreen(),
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        return Directionality(
+          textDirection: languageProvider.textDirection,
+          child: Scaffold(
+            backgroundColor: AppTheme.primaryDark,
+            appBar: AppBar(
+              title: Text(context.tr(TranslationKeys.toolsTitle)),
+              backgroundColor: AppTheme.primaryDark,
+              elevation: 0,
+            ),
+            body: ListView(
+              padding: const EdgeInsets.all(16.0),
+              children: [
+                if (_update != null) _buildUpdateCard(context, _update!),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsLanguageSettings),
+                  description: context.tr(
+                    TranslationKeys.toolsLanguageSettingsDesc,
+                  ),
+                  icon: Icons.language,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LanguageSettingsScreen(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          _buildToolCard(
-            context,
-            title: 'IP Information',
-            description:
-                'View detailed information about your current IP address',
-            icon: Icons.public,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => const IpInfoScreen()),
-              );
-            },
-          ),
-          _buildToolCard(
-            context,
-            title: 'Host Checker',
-            description:
-                'Check status, response time and details of any web host',
-            icon: Icons.link,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const HostCheckerScreen(),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsSubscriptionManager),
+                  description: context.tr('tools.subscription_manager_desc'),
+                  icon: Icons.subscriptions,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) =>
+                            const SubscriptionManagementScreen(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          _buildToolCard(
-            context,
-            title: 'Speed Test',
-            description: 'Test your internet connection speed',
-            icon: Icons.speed,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const SpeedtestScreen(),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsIpInformation),
+                  description: context.tr('tools.ip_information_desc'),
+                  icon: Icons.public,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const IpInfoScreen(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          _buildToolCard(
-            context,
-            title: 'VPN Settings',
-            description: 'Configure bypass subnets and other VPN options',
-            icon: Icons.settings,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const VpnSettingsScreen(),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsHostChecker),
+                  description: context.tr('tools.host_checker_desc'),
+                  icon: Icons.link,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const HostCheckerScreen(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          _buildToolCard(
-            context,
-            title: 'Battery & Background Access',
-            description: 'Manage battery optimization and background access settings',
-            icon: Icons.battery_charging_full,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const BatterySettingsScreen(),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsSpeedTest),
+                  description: context.tr('tools.speed_test_desc'),
+                  icon: Icons.speed,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const SpeedtestScreen(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          _buildToolCard(
-            context,
-            title: 'Blocked Apps',
-            description: 'Select apps to exclude from the VPN tunnel',
-            icon: Icons.block,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const BlockedAppsScreen(),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsBlockedApps),
+                  description: context.tr('tools.blocked_apps_desc'),
+                  icon: Icons.block,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BlockedAppsScreen(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          _buildToolCard(
-            context,
-            title: 'Per-App Tunnel',
-            description:
-                'Select apps that should use the VPN tunnel (others will be blocked)',
-            icon: Icons.shield_moon,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const PerAppTunnelScreen(),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsPerAppTunnel),
+                  description: context.tr('tools.per_app_tunnel_desc'),
+                  icon: Icons.shield_moon,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PerAppTunnelScreen(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          _buildToolCard(
-            context,
-            title: 'Home Wallpaper',
-            description:
-                'Set custom wallpaper for home screen background',
-            icon: Icons.wallpaper,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const WallpaperSettingsScreen(),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsHomeWallpaper),
+                  description: context.tr('tools.home_wallpaper_desc'),
+                  icon: Icons.wallpaper,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WallpaperSettingsScreen(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-          _buildToolCard(
-            context,
-            title: 'Backup & Restore',
-            description:
-                'Export or import subscriptions, servers, and blocked apps',
-            icon: Icons.backup,
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(
-                  builder: (context) => const BackupRestoreScreen(),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsVpnSettings),
+                  description: context.tr('tools.vpn_settings_desc'),
+                  icon: Icons.settings,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const VpnSettingsScreen(),
+                      ),
+                    );
+                  },
                 ),
-              );
-            },
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsBatteryBackground),
+                  description: context.tr('tools.battery_background_desc'),
+                  icon: Icons.battery_charging_full,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BatterySettingsScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsBackupRestore),
+                  description: context.tr('tools.backup_restore_desc'),
+                  icon: Icons.backup,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const BackupRestoreScreen(),
+                      ),
+                    );
+                  },
+                ),
+                // Add more tools here in the future
+              ],
+            ),
           ),
-          // Add more tools here in the future
-        ],
-      ),
+        );
+      },
     );
   }
 
@@ -313,7 +337,11 @@ class _ToolsScreenState extends State<ToolsScreen> {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        'New version: ${update.version}',
+                        TrHelper.versionFormat(
+                          context,
+                          update.version,
+                          isNew: true,
+                        ),
                         style: TextStyle(fontSize: 14, color: Colors.grey[400]),
                       ),
                     ],
@@ -328,14 +356,14 @@ class _ToolsScreenState extends State<ToolsScreen> {
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 Text(
-                  'Current version: ${AppUpdate.currentAppVersion}',
+                  TrHelper.versionFormat(context, AppUpdate.currentAppVersion),
                   style: TextStyle(fontSize: 12, color: Colors.grey[400]),
                 ),
                 const Spacer(),
                 ElevatedButton(
                   onPressed: () => _launchUrl(update.url.trim()),
                   style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
-                  child: const Text('Update Now'),
+                  child: Text(context.tr('tools.update_now')),
                 ),
               ],
             ),

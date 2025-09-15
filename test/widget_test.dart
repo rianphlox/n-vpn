@@ -7,24 +7,23 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:proxycloud/providers/language_provider.dart';
 
 import 'package:proxycloud/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('App loads correctly', (WidgetTester tester) async {
+    // Create a mock language provider
+    final languageProvider = LanguageProvider();
+    await languageProvider.initialize();
+
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp(privacyAccepted: false));
+    await tester.pumpWidget(MyApp(
+      privacyAccepted: false,
+      languageProvider: languageProvider,
+    ));
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
-
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verify that the privacy screen loads
+    expect(find.text('Privacy Policy'), findsOneWidget);
   });
 }

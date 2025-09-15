@@ -3,6 +3,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import '../theme/app_theme.dart';
 import '../services/v2ray_service.dart';
 import 'package:flutter/foundation.dart';
+import '../utils/app_localizations.dart';
 
 class PerAppTunnelScreen extends StatefulWidget {
   const PerAppTunnelScreen({super.key});
@@ -81,7 +82,7 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
           final appMap = app as Map<String, dynamic>? ?? {};
           appInfoList.add(
             AppInfo(
-              name: appMap['name'] ?? 'Unknown',
+              name: appMap['name'] ?? context.tr('common.unknown'),
               packageName: appMap['packageName'] ?? '',
               isSystemApp: appMap['isSystemApp'] ?? false,
             ),
@@ -114,9 +115,9 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
         _isLoading = false;
       });
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Failed to load apps: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('${context.tr('common.error')}: $e')),
+        );
       }
     }
   }
@@ -147,8 +148,8 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
           SnackBar(
             content: Text(
               _selectedApps.isEmpty
-                  ? 'All apps are blocked from tunnel'
-                  : 'Per-app tunnel updated successfully',
+                  ? context.tr('per_app_tunnel.all_blocked')
+                  : context.tr('per_app_tunnel.updated_successfully'),
             ),
           ),
         );
@@ -156,7 +157,9 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Failed to save per-app tunnel: $e')),
+          SnackBar(
+            content: Text('${context.tr('per_app_tunnel.failed_save')}: $e'),
+          ),
         );
       }
     } finally {
@@ -171,7 +174,7 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
     return Scaffold(
       backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
-        title: const Text('Per-App Tunnel'),
+        title: Text(context.tr('per_app_tunnel.title')),
         backgroundColor: AppTheme.primaryDark,
         elevation: 0,
         actions: [
@@ -179,7 +182,7 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
           if (_availableApps.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.select_all),
-              tooltip: 'Select all apps (tunnel all) ',
+              tooltip: context.tr('per_app_tunnel.select_all_tooltip'),
               onPressed: () {
                 setState(() {
                   _selectedApps = _availableApps
@@ -192,7 +195,7 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
           if (_selectedApps.isNotEmpty)
             IconButton(
               icon: const Icon(Icons.clear_all),
-              tooltip: 'Clear all selections (block all)',
+              tooltip: context.tr('per_app_tunnel.clear_selection_tooltip'),
               onPressed: () {
                 setState(() {
                   _selectedApps = [];
@@ -201,7 +204,10 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
             ),
           TextButton(
             onPressed: _savePerAppTunnel,
-            child: const Text('Save', style: TextStyle(color: Colors.white)),
+            child: Text(
+              context.tr('common.save'),
+              style: const TextStyle(color: Colors.white),
+            ),
           ),
         ],
       ),
@@ -216,8 +222,10 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
                     vertical: 8,
                   ),
                   child: Text(
-                    'Select apps to use the VPN tunnel. Unselected apps will be blocked.',
-                    style: TextStyle(color: Colors.white.withValues(alpha: 0.85)),
+                    context.tr('per_app_tunnel.info_banner'),
+                    style: TextStyle(
+                      color: Colors.white.withValues(alpha: 0.85),
+                    ),
                   ),
                 ),
                 // Search bar
@@ -228,7 +236,7 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
                     onChanged: _filterApps,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: 'Search apps...',
+                      hintText: context.tr('per_app_tunnel.search_hint'),
                       hintStyle: TextStyle(
                         color: Colors.white.withValues(alpha: 0.6),
                       ),
@@ -247,10 +255,10 @@ class _PerAppTunnelScreenState extends State<PerAppTunnelScreen> {
                 ),
                 Expanded(
                   child: _filteredApps.isEmpty
-                      ? const Center(
+                      ? Center(
                           child: Text(
-                            'No apps found',
-                            style: TextStyle(color: Colors.white70),
+                            context.tr('per_app_tunnel.no_apps_found'),
+                            style: const TextStyle(color: Colors.white70),
                           ),
                         )
                       : ListView.separated(
