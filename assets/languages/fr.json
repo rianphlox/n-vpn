@@ -484,7 +484,7 @@
   "vpn_settings": {
     "title": "Paramètres VPN",
     "save": "Enregistrer les Paramètres",
-    "bypass_subnets": "Sous-réseaux de Contournement",
+    "bypass_subnets": "Bypass Subnets",
     "bypass_subnets_desc": "Entrez les adresses de sous-réseau (une par ligne) qui doivent contourner le VPN",
     "bypass_subnets_hint": "Entrez les adresses de sous-réseau...",
     "reset_default": "Réinitialiser par Défaut",
