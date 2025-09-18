@@ -363,7 +363,7 @@ class _SubscriptionManagementScreenState
         // Create updated subscription with default URL
         final updatedSubscription = subscription.copyWith(
           url:
-              'https://cdn.jsdelivr.net/gh/darkvpnapp/CloudflarePlus@refs/heads/main/proxy',
+              'https://raw.githubusercontent.com/darkvpnapp/CloudflarePlus/refs/heads/main/proxy',
         );
 
         // Update the subscription
