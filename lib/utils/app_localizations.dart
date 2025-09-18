@@ -172,6 +172,17 @@ class TranslationKeys {
   static const String homeRefresh = 'home.refresh';
   static const String homeSubscriptions = 'home.subscriptions';
   static const String homeAbout = 'home.about';
+  static const String homeConnectionStatistics = 'home.connection_statistics';
+  static const String homeCheckingConfig = 'home.checking_config';
+  static const String homeConfigOk = 'home.config_ok';
+  static const String homeConfigNotWorking = 'home.config_not_working';
+  static const String homeCheckConfig = 'home.check_config';
+  static const String homeCantGetIp = 'home.cant_get_ip';
+  static const String homeFetching = 'home.fetching';
+  static const String homeV2rayLinkCopied = 'home.v2ray_link_copied';
+  static const String homeNoV2rayConfig = 'home.no_v2ray_config';
+  static const String homeErrorCopying = 'home.error_copying';
+  static const String homeIpInformation = 'home.ip_information';
 
   // Common
   static const String commonOk = 'common.ok';
@@ -200,6 +211,7 @@ class TranslationKeys {
   static const String commonSearch = 'common.search';
   static const String commonContact = 'common.contact';
   static const String commonContactOnTelegram = 'common.contact_on_telegram';
+  static const String commonDismiss = 'common.dismiss';
 
   // Server Selector
   static const String serverSelectorConnectionActive =
@@ -509,6 +521,10 @@ class TranslationKeys {
   static const String selectLanguageTitle = 'select_language_title';
   static const String selectLanguageSubtitle = 'select_language_subtitle';
 
+  // Channels and Sponsors
+  static const String channelsAndSponsorsTitle = 'channels_and_sponsors_title';
+  static const String internetForAll = 'internet_for_all';
+
   // Server Selection
   static const String serverSelectionTitle = 'server_selection.title';
   static const String serverSelectionSelectServer =
@@ -592,15 +608,11 @@ class TranslationKeys {
   static const String storeScreenCouldNotLaunch =
       'store_screen.could_not_launch';
 
-  // Subscription Management Screen
+  // Subscription Management
   static const String subscriptionManagementTitle =
       'subscription_management.title';
   static const String subscriptionManagementManageSubs =
-      'subscription_management.manage_subs';
-  static const String subscriptionManagementHelp =
-      'subscription_management.help';
-  static const String subscriptionManagementUpdateAll =
-      'subscription_management.update_all';
+      'subscription_management.manage_subscriptions';
   static const String subscriptionManagementAddSubscription =
       'subscription_management.add_subscription';
   static const String subscriptionManagementEditSubscription =
@@ -608,29 +620,27 @@ class TranslationKeys {
   static const String subscriptionManagementName =
       'subscription_management.name';
   static const String subscriptionManagementUrl = 'subscription_management.url';
-  static const String subscriptionManagementCancel =
-      'subscription_management.cancel';
+  static const String subscriptionManagementAdd = 'subscription_management.add';
   static const String subscriptionManagementUpdate =
       'subscription_management.update';
-  static const String subscriptionManagementAdd = 'subscription_management.add';
-  static const String subscriptionManagementNoSubscriptions =
-      'subscription_management.no_subscriptions';
-  static const String subscriptionManagementReservedNameTitle =
-      'subscription_management.reserved_name_title';
-  static const String subscriptionManagementReservedNameContent =
-      'subscription_management.reserved_name_content';
+  static const String subscriptionManagementCancel =
+      'subscription_management.cancel';
+  static const String subscriptionManagementEnterName =
+      'subscription_management.enter_name';
+  static const String subscriptionManagementEnterUrl =
+      'subscription_management.enter_url';
   static const String subscriptionManagementDuplicateNameTitle =
       'subscription_management.duplicate_name_title';
-  static const String subscriptionManagementDuplicateNameContent =
-      'subscription_management.duplicate_name_content';
-  static const String subscriptionManagementUpdatingSubscription =
-      'subscription_management.updating_subscription';
-  static const String subscriptionManagementSubscriptionUpdated =
-      'subscription_management.subscription_updated';
+  static const String subscriptionManagementNameExists =
+      'subscription_management.name_exists';
   static const String subscriptionManagementAddingSubscription =
       'subscription_management.adding_subscription';
   static const String subscriptionManagementSubscriptionAdded =
       'subscription_management.subscription_added';
+  static const String subscriptionManagementUpdatingSubscription =
+      'subscription_management.updating_subscription';
+  static const String subscriptionManagementSubscriptionUpdated =
+      'subscription_management.subscription_updated';
   static const String subscriptionManagementDeleteSubscription =
       'subscription_management.delete_subscription';
   static const String subscriptionManagementDeleteConfirmation =
@@ -645,30 +655,32 @@ class TranslationKeys {
       'subscription_management.cannot_delete_default';
   static const String subscriptionManagementHowToAdd =
       'subscription_management.how_to_add';
+  static const String subscriptionManagementUniqueNameForSub =
+      'subscription_management.unique_name_for_subscription';
   static const String subscriptionManagementFormatRequirements =
       'subscription_management.format_requirements';
+  static const String subscriptionManagementV2RayConfigs =
+      'subscription_management.v2ray_configs';
+  static const String subscriptionManagementOnePerLine =
+      'subscription_management.one_per_line';
+  static const String subscriptionManagementSupports =
+      'subscription_management.supports';
   static const String subscriptionManagementExample =
       'subscription_management.example';
   static const String subscriptionManagementSteps =
       'subscription_management.steps';
+  static const String subscriptionManagementUniqueName =
+      'subscription_management.unique_name_step';
+  static const String subscriptionManagementUrlWithConfigs =
+      'subscription_management.url_with_configs_step';
   static const String subscriptionManagementGotIt =
       'subscription_management.got_it';
+  static const String subscriptionManagementNoSubscriptions =
+      'subscription_management.no_subscriptions';
   static const String subscriptionManagementLastUpdated =
       'subscription_management.last_updated';
   static const String subscriptionManagementServers =
       'subscription_management.servers';
-  static const String subscriptionManagementEdit =
-      'subscription_management.edit';
-  static const String subscriptionManagementDelete =
-      'subscription_management.delete';
-  static const String subscriptionManagementDaysAgo =
-      'subscription_management.days_ago';
-  static const String subscriptionManagementHoursAgo =
-      'subscription_management.hours_ago';
-  static const String subscriptionManagementMinutesAgo =
-      'subscription_management.minutes_ago';
-  static const String subscriptionManagementJustNow =
-      'subscription_management.just_now';
   static const String subscriptionManagementDay = 'subscription_management.day';
   static const String subscriptionManagementDays =
       'subscription_management.days';
@@ -680,27 +692,25 @@ class TranslationKeys {
       'subscription_management.minute';
   static const String subscriptionManagementMinutes =
       'subscription_management.minutes';
-  static const String subscriptionManagementEnterName =
-      'subscription_management.enter_name';
-  static const String subscriptionManagementEnterUrl =
-      'subscription_management.enter_url';
-  static const String subscriptionManagementNameReserved =
-      'subscription_management.name_reserved';
-  static const String subscriptionManagementNameExists =
-      'subscription_management.name_exists';
-  static const String subscriptionManagementUniqueName =
-      'subscription_management.unique_name';
-  static const String subscriptionManagementV2RayConfigs =
-      'subscription_management.v2ray_configs';
-  static const String subscriptionManagementOnePerLine =
-      'subscription_management.one_per_line';
-  static const String subscriptionManagementSupports =
-      'subscription_management.supports';
-  static const String subscriptionManagementUniqueNameForSub =
-      'subscription_management.unique_name_for_sub';
-  static const String subscriptionManagementUrlWithConfigs =
-      'subscription_management.url_with_configs';
   static const String subscriptionManagementAgo = 'subscription_management.ago';
+  static const String subscriptionManagementJustNow =
+      'subscription_management.just_now';
+  static const String subscriptionManagementEdit =
+      'subscription_management.edit';
+  static const String subscriptionManagementDelete =
+      'subscription_management.delete';
+  static const String subscriptionManagementHelp =
+      'subscription_management.help';
+  static const String subscriptionManagementUpdateAll =
+      'subscription_management.update_all';
+  static const String subscriptionManagementResetDefaultUrl =
+      'subscription_management.reset_default_url';
+  static const String subscriptionManagementResetDefaultUrlTitle =
+      'subscription_management.reset_default_url_title';
+  static const String subscriptionManagementResetDefaultUrlConfirmation =
+      'subscription_management.reset_default_url_confirmation';
+  static const String subscriptionManagementDefaultUrlReset =
+      'subscription_management.default_url_reset';
 
   // Telegram Proxy Screen
   static const String telegramProxyTitle = 'telegram_proxy.title';
@@ -776,6 +786,14 @@ class TranslationKeys {
   static const String vpnSettingsSavedSuccess = 'vpn_settings.saved_success';
   static const String vpnSettingsErrorLoading = 'vpn_settings.error_loading';
   static const String vpnSettingsErrorSaving = 'vpn_settings.error_saving';
+
+  // Persian Gulf Page
+  static const String persianGulfTitle = 'persian_gulf.title';
+  static const String persianGulfMessage = 'persian_gulf.message';
+  static const String persianGulfCardTitle = 'persian_gulf.card_title';
+
+  // IRCF Channel
+  static const String ircfChannel = 'ircf.channel';
 }
 
 /// Translation helper functions

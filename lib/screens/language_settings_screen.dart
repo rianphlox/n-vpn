@@ -475,7 +475,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen>
             ),
           ],
         ),
-        backgroundColor: AppTheme.primaryGreen,
+        backgroundColor: const Color.fromARGB(255, 5, 83, 46),
         duration: const Duration(seconds: 4),
         behavior: SnackBarBehavior.floating,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),

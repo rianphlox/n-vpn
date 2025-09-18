@@ -9,6 +9,7 @@ import 'main_navigation_screen.dart';
 import '../utils/app_localizations.dart';
 import '../models/app_language.dart';
 import '../providers/language_provider.dart';
+import '../widgets/error_snackbar.dart';
 
 class PrivacyWelcomeScreen extends StatefulWidget {
   const PrivacyWelcomeScreen({Key? key}) : super(key: key);
@@ -21,7 +22,7 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   final int _totalPages =
-      6; // Increased from 5 to 6 to accommodate language selection
+      8; // Increased to accommodate channels, sponsors, and Persian Gulf pages
   bool _acceptedPrivacy = false;
   bool _backgroundAccessHandled = false;
   AppLanguage? _selectedLanguage;
@@ -78,6 +79,11 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
       // Changed from 3 to 4
       _showBackgroundAccessDialog();
       return;
+    }
+
+    // If on channels page, proceed to next page
+    if (_currentPage == 5) {
+      // No special handling required for channels page
     }
 
     if (_currentPage < _totalPages - 1) {
@@ -216,39 +222,6 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
     );
   }
 
-  void _openGeneralBatterySettings() async {
-    print(context.tr('privacy_welcome.opening_general_battery'));
-    try {
-      const platform = MethodChannel('com.cloud.pira/settings');
-      final result = await platform.invokeMethod('openGeneralBatterySettings');
-      print('${context.tr('privacy_welcome.general_battery_opened')}: $result');
-    } catch (e) {
-      print(
-        '${context.tr('privacy_welcome.error_opening_general_battery')}: $e',
-      );
-      // Final fallback: open app settings
-      try {
-        const platform = MethodChannel('com.cloud.pira/settings');
-        final result = await platform.invokeMethod('openAppSettings');
-        print(
-          '${context.tr('privacy_welcome.app_settings_opened_fallback')}: $result',
-        );
-      } catch (e2) {
-        print('${context.tr('privacy_welcome.all_settings_failed')}: $e2');
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${context.tr('privacy_welcome.could_not_open_settings')}: $e2',
-              ),
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-      }
-    }
-  }
-
   void _openBackgroundSettings() async {
     print(context.tr('privacy_welcome.opening_background_settings'));
     try {
@@ -338,6 +311,8 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                         _buildPrivacyPage(),
                         _buildNoLimitsPage(),
                         _buildBackgroundAccessPage(),
+                        _buildChannelsPage(), // Added channels and sponsors page
+                        _buildPersianGulfPage(), // Added Persian Gulf page
                         _buildFreeToUsePage(),
                       ],
                     ),
@@ -884,43 +859,6 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
-                // Secondary button - Open Battery Settings
-                SizedBox(
-                  width: double.infinity,
-                  child: OutlinedButton.icon(
-                    onPressed: _openGeneralBatterySettings,
-                    icon: const Icon(
-                      Icons.battery_charging_full,
-                      color: AppTheme.primaryGreen,
-                    ),
-                    label: Text(
-                      context.tr('privacy_welcome.battery_settings'),
-                      style: const TextStyle(
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        color: AppTheme.primaryGreen,
-                      ),
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppTheme.primaryGreen),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  context.tr('privacy_welcome.battery_optimization_note'),
-                  style: const TextStyle(
-                    fontSize: 14,
-                    color: Colors.white60,
-                    fontStyle: FontStyle.italic,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
                 const SizedBox(height: 24),
               ],
             ),
@@ -975,6 +913,266 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                 Text(
                   context.tr('privacy_welcome.free_to_use_subtitle'),
                   style: subtitleStyle,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildChannelsPage() {
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        final isRtlLanguage =
+            languageProvider.currentLanguage.code == 'fa' ||
+            languageProvider.currentLanguage.code == 'ar';
+
+        final titleStyle = isRtlLanguage
+            ? GoogleFonts.vazirmatn(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              )
+            : const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              );
+
+        final sloganStyle = isRtlLanguage
+            ? GoogleFonts.vazirmatn(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primaryGreen,
+              )
+            : const TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: AppTheme.primaryGreen,
+              );
+
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.group,
+                  size: 100,
+                  color: AppTheme.primaryGreen,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  context.tr(TranslationKeys.channelsAndSponsorsTitle),
+                  style: titleStyle,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  context.tr(
+                    TranslationKeys.internetForAll,
+                  ), // "Internet for all; or for no one!"
+                  style: sloganStyle,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 32),
+                // ProxyCloud Channel Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final url = Uri.parse('tg://resolve?domain=irdevs_dns');
+                      try {
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } else {
+                          ErrorSnackbar.show(
+                            context,
+                            context.tr(
+                              TranslationKeys.telegramProxyNotInstalled,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        ErrorSnackbar.show(
+                          context,
+                          context.tr(
+                            TranslationKeys.telegramProxyLaunchError,
+                            parameters: {'error': e.toString()},
+                          ),
+                        );
+                      }
+                    },
+                    icon: Image.asset(
+                      'assets/images/logo.png',
+                      width: 24,
+                      height: 24,
+                    ),
+                    label: const Text(
+                      'ProxyCloud',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
+                    ),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                // IRCF Channel Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () async {
+                      final url = Uri.parse('tg://resolve?domain=ircfspace');
+                      try {
+                        if (await canLaunchUrl(url)) {
+                          await launchUrl(
+                            url,
+                            mode: LaunchMode.externalApplication,
+                          );
+                        } else {
+                          ErrorSnackbar.show(
+                            context,
+                            context.tr(
+                              TranslationKeys.telegramProxyNotInstalled,
+                            ),
+                          );
+                        }
+                      } catch (e) {
+                        ErrorSnackbar.show(
+                          context,
+                          context.tr(
+                            TranslationKeys.telegramProxyLaunchError,
+                            parameters: {'error': e.toString()},
+                          ),
+                        );
+                      }
+                    },
+                    icon: Image.asset(
+                      'assets/images/ircf.png',
+                      width: 24,
+                      height: 24,
+                    ),
+                    label: Text(context.tr(TranslationKeys.ircfChannel)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 5, 83, 46),
+                      padding: const EdgeInsets.symmetric(vertical: 14),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildPersianGulfPage() {
+    return Consumer<LanguageProvider>(
+      builder: (context, languageProvider, child) {
+        final isRtlLanguage =
+            languageProvider.currentLanguage.code == 'fa' ||
+            languageProvider.currentLanguage.code == 'ar';
+
+        final titleStyle = isRtlLanguage
+            ? GoogleFonts.vazirmatn(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              )
+            : const TextStyle(
+                fontSize: 28,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              );
+
+        final messageStyle = isRtlLanguage
+            ? GoogleFonts.vazirmatn(fontSize: 16, color: Colors.white70)
+            : const TextStyle(fontSize: 16, color: Colors.white70);
+
+        return Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: SingleChildScrollView(
+            physics: const BouncingScrollPhysics(),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const Icon(
+                  Icons.water,
+                  size: 100,
+                  color: AppTheme.primaryGreen,
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  context.tr(TranslationKeys.persianGulfTitle),
+                  style: titleStyle,
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                // Persian Gulf image card
+                Card(
+                  color: AppTheme.cardDark,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      children: [
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(8),
+                          child: Image.asset(
+                            'assets/images/gulf.png',
+                            height: 150,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          context.tr(TranslationKeys.persianGulfCardTitle),
+                          style: isRtlLanguage
+                              ? GoogleFonts.vazirmatn(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.primaryGreen,
+                                )
+                              : const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.primaryGreen,
+                                ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                Text(
+                  context.tr(TranslationKeys.persianGulfMessage),
+                  style: messageStyle,
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 24),

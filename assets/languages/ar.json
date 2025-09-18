@@ -54,14 +54,14 @@
     "select_language": "اختر اللغة"
   },
   "home": {
-    "title": "ProxyCloud",
+    "title": "Proxy Cloud",
     "connect": "اتصال",
     "disconnect": "قطع الاتصال",
-    "connecting": "جارٍ الاتصال...",
+    "connecting": "جاري الاتصال...",
     "connected": "متصل",
     "disconnected": "غير متصل",
     "connection_failed": "فشل الاتصال",
-    "select_server": "اختر الخادم",
+    "select_server": "اختيار الخادم",
     "no_server_selected": "لم يتم اختيار خادم",
     "connection_time": "وقت الاتصال",
     "traffic_usage": "استخدام البيانات",
@@ -73,14 +73,18 @@
     "subscriptions": "الاشتراكات",
     "about": "حول",
     "connection_statistics": "إحصائيات الاتصال",
-    "ip_information": "معلومات IP",
-    "fetching": "جارٍ الاسترداد...",
-    "cant_get_ip": "لا يمكن الحصول على IP",
+    "checking_config": "جاري التحقق من التكوين...",
+    "config_ok": "التكوين صحيح",
+    "config_not_working": "التكوين لا يعمل",
+    "check_config": "التحقق من التكوين",
+    "cant_get_ip": "لا يمكن الحصول على معلومات IP",
+    "fetching": "جاري الجلب...",
     "v2ray_link_copied": "تم نسخ رابط V2Ray إلى الحافظة",
-    "no_v2ray_config": "لا توجد تكوينات V2Ray متاحة للمشاركة",
-    "error_copying": "خطأ في النسخ إلى الحافظة",
-    "updating_subscriptions": "جارٍ تحديث جميع الاشتراكات...",
-    "subscriptions_updated": "تم تحديث جميع الاشتراكات بنجاح"
+    "no_v2ray_config": "لا توجد تكوينات V2Ray متاحة",
+    "error_copying": "خطأ في النسخ",
+    "ip_information": "معلومات IP",
+    "updating_subscriptions": "جاري تحديث الاشتراكات...",
+    "subscriptions_updated": "تم تحديث الاشتراكات بنجاح"
   },
   "server_selector": {
     "connection_active": "الاتصال نشط",
@@ -295,7 +299,8 @@
     "select_all": "تحديد الكل",
     "deselect_all": "إلغاء تحديد الكل",
     "contact": "اتصال",
-    "contact_on_telegram": "الاتصال على تيليجرام"
+    "contact_on_telegram": "الاتصال على تيليجرام",
+    "dismiss": "رفض"
   },
   "errors": {
     "network_error": "حدث خطأ في الشبكة",
@@ -366,6 +371,8 @@
   "select_language_prompt": "يرجى اختيار لغة للمتابعة",
   "select_language_title": "اختر اللغة",
   "select_language_subtitle": "اختر لغتك المفضلة لواجهة التطبيق",
+  "internet_for_all": "الإنترنت للجميع؛ أو للا أحد!",
+  "channels_and_sponsors_title": "قنوات ورعاة ProxyCloud",
   "telegram_proxy": {
     "title": "بروكسيات تيليجرام",
     "refresh": "تحديث",
@@ -479,7 +486,11 @@
     "supports": "يدعم vless:// و vmess:// و ss:// وغيرها",
     "unique_name_for_sub": "أدخل اسمًا فريدًا للاشتراك الخاص بك",
     "url_with_configs": "أدخل الرابط الذي يحتوي على تكوينات V2Ray",
-    "ago": "مضت"
+    "ago": "مضت",
+    "reset_default_url": "إعادة تعيين الرابط",
+    "reset_default_url_title": "إعادة تعيين رابط الاشتراك الافتراضي",
+    "reset_default_url_confirmation": "هل أنت متأكد أنك تريد إعادة تعيين رابط الاشتراك الافتراضي إلى قيمته الأصلية؟",
+    "default_url_reset": "تمت إعادة تعيين رابط الاشتراك الافتراضي بنجاح"
   },
   "vpn_settings": {
     "title": "إعدادات VPN",
@@ -500,5 +511,13 @@
     "saved_success": "تم حفظ الإعدادات بنجاح",
     "error_loading": "خطأ في تحميل الإعدادات: {error}",
     "error_saving": "خطأ في حفظ الإعدادات: {error}"
+  },
+  "persian_gulf": {
+    "title": "الخليج الفارسي",
+    "message": "هذه هي الخليج الفارسي - كانت وستبقى",
+    "card_title": "الخليج الفارسي للأبد"
+  },
+  "ircf": {
+    "channel": "IRCF"
   }
 }

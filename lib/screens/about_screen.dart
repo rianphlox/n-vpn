@@ -145,6 +145,32 @@ class AboutScreen extends StatelessWidget {
 
                 const SizedBox(height: 12),
 
+                // IRCF Channel Button
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: () {
+                      _launchUrl('https://t.me/ircfspace');
+                    },
+                    icon: Image.asset(
+                      'assets/images/ircf.png',
+                      width: 24,
+                      height: 24,
+                    ),
+                    label: Text(context.tr(TranslationKeys.ircfChannel)),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 5, 83, 46),
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
                 // GitHub Source Button
                 SizedBox(
                   width: double.infinity,

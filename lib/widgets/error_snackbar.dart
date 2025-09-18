@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
+import '../utils/app_localizations.dart';
 
 class ErrorSnackbar {
   static void show(BuildContext context, String message) {
@@ -19,7 +20,7 @@ class ErrorSnackbar {
       margin: const EdgeInsets.all(10),
       duration: const Duration(seconds: 4),
       action: SnackBarAction(
-        label: 'DISMISS',
+        label: context.tr(TranslationKeys.commonDismiss),
         textColor: Colors.white,
         onPressed: () {
           ScaffoldMessenger.of(context).hideCurrentSnackBar();

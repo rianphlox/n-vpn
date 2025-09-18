@@ -57,6 +57,7 @@ class AppLanguage {
     AppLanguage(name: 'Español', code: 'es', flag: '🇪🇸', direction: 'ltr'),
     AppLanguage(name: 'Français', code: 'fr', flag: '🇫🇷', direction: 'ltr'),
     AppLanguage(name: 'العربية', code: 'ar', flag: '🇸🇦', direction: 'rtl'),
+    AppLanguage(name: 'Türkçe', code: 'tr', flag: '🇹🇷', direction: 'ltr'),
   ];
 
   static AppLanguage getByCode(String code) {

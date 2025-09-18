@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 import '../providers/v2ray_provider.dart';
 import '../providers/language_provider.dart';
 import '../utils/app_localizations.dart';
@@ -125,6 +126,110 @@ class _HomeScreenState extends State<HomeScreen> {
           duration: const Duration(seconds: 3),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+    }
+  }
+
+  // Check config method to test connectivity to Google
+  Future<void> _checkConfig(V2RayProvider provider) async {
+    // Show loading indicator
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Row(
+          children: [
+            SizedBox(
+              width: 16,
+              height: 16,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+              ),
+            ),
+            const SizedBox(width: 12),
+            Text(context.tr('home.checking_config')),
+          ],
+        ),
+        backgroundColor: AppTheme.cardDark,
+        duration: const Duration(seconds: 10),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+
+    try {
+      final startTime = DateTime.now();
+      final response = await http.get(Uri.parse('https://www.google.com'));
+      final endTime = DateTime.now();
+      final duration = endTime.difference(startTime);
+
+      // Close the loading snackbar
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      if (response.statusCode == 200) {
+        // Show success message with ping time
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                Icon(Icons.check_circle, color: AppTheme.primaryGreen, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${context.tr('home.config_ok')} (${duration.inMilliseconds}ms)',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: AppTheme.primaryGreen,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      } else {
+        // Show error message
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Row(
+              children: [
+                const Icon(Icons.error, color: Colors.red, size: 20),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    '${context.tr('home.config_not_working')} (${response.statusCode})',
+                    style: const TextStyle(color: Colors.white),
+                  ),
+                ),
+              ],
+            ),
+            backgroundColor: Colors.red,
+            duration: const Duration(seconds: 3),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      }
+    } catch (e) {
+      // Close the loading snackbar
+      ScaffoldMessenger.of(context).hideCurrentSnackBar();
+
+      // Show error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Row(
+            children: [
+              const Icon(Icons.error, color: Colors.red, size: 20),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  '${context.tr('home.config_not_working')}: ${e.toString()}',
+                  style: const TextStyle(color: Colors.white),
+                ),
+              ),
+            ],
+          ),
+          backgroundColor: Colors.red,
+          duration: const Duration(seconds: 3),
+          behavior: SnackBarBehavior.floating,
         ),
       );
     }
@@ -310,7 +415,7 @@ class _HomeScreenState extends State<HomeScreen> {
               if (v2rayService.isLoadingIpInfo)
                 _buildLoadingIpInfoRow()
               else if (ipInfo != null && ipInfo.success)
-                _buildIpInfoRow(ipInfo)
+                _buildIpInfoRow(ipInfo, provider)
               else
                 _buildIpErrorRow(
                   context.tr('home.ip_information'),
@@ -332,28 +437,51 @@ class _HomeScreenState extends State<HomeScreen> {
 
   // Server ping row removed
 
-  Widget _buildIpInfoRow(IpInfo ipInfo) {
-    return Row(
+  Widget _buildIpInfoRow(IpInfo ipInfo, V2RayProvider provider) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        const Icon(Icons.public, size: 18, color: AppTheme.textGrey),
-        const SizedBox(width: 12),
-        Expanded(
-          child: Text(
-            '${ipInfo.country} - ${ipInfo.city}',
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: AppTheme.primaryGreen,
+        Row(
+          children: [
+            const Icon(Icons.public, size: 18, color: AppTheme.textGrey),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Text(
+                '${ipInfo.country} - ${ipInfo.city}',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: AppTheme.primaryGreen,
+                ),
+                overflow: TextOverflow.ellipsis,
+              ),
             ),
-            overflow: TextOverflow.ellipsis,
-          ),
+            const SizedBox(width: 8),
+            InkWell(
+              onTap: () => _shareV2RayLink(context),
+              borderRadius: BorderRadius.circular(12),
+              child: Padding(
+                padding: const EdgeInsets.all(4.0),
+                child: Icon(Icons.share, size: 18, color: AppTheme.primaryGreen),
+              ),
+            ),
+          ],
         ),
-        const SizedBox(width: 8),
-        InkWell(
-          onTap: () => _shareV2RayLink(context),
-          borderRadius: BorderRadius.circular(12),
-          child: Padding(
-            padding: const EdgeInsets.all(4.0),
-            child: Icon(Icons.share, size: 18, color: AppTheme.primaryGreen),
+        const SizedBox(height: 12),
+        // Check Config button
+        SizedBox(
+          width: double.infinity,
+          child: ElevatedButton.icon(
+            onPressed: () => _checkConfig(provider),
+            icon: const Icon(Icons.check, size: 18),
+            label: Text(context.tr('home.check_config')),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: AppTheme.primaryGreen,
+              foregroundColor: Colors.white,
+              padding: const EdgeInsets.symmetric(vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
           ),
         ),
       ],
