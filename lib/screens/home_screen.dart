@@ -150,7 +150,7 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(context.tr('home.checking_config')),
           ],
         ),
-        backgroundColor: AppTheme.cardDark,
+        backgroundColor: Colors.white,
         duration: const Duration(seconds: 10),
         behavior: SnackBarBehavior.floating,
       ),
@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.check_circle, color: AppTheme.primaryGreen, size: 20),
+                Icon(Icons.check_circle, color: const Color.fromARGB(255, 6, 66, 31), size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(

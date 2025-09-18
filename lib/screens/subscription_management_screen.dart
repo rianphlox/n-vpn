@@ -19,6 +19,7 @@ class _SubscriptionManagementScreenState
   final TextEditingController _nameController = TextEditingController();
   final TextEditingController _urlController = TextEditingController();
   bool _isUpdating = false;
+  bool _isEditingDefaultSubscription = false;
   String? _currentSubscriptionId;
 
   @override
@@ -33,6 +34,7 @@ class _SubscriptionManagementScreenState
       _nameController.clear();
       _urlController.clear();
       _isUpdating = false;
+      _isEditingDefaultSubscription = false;
       _currentSubscriptionId = null;
     });
   }
@@ -42,6 +44,8 @@ class _SubscriptionManagementScreenState
       _nameController.text = subscription.name;
       _urlController.text = subscription.url;
       _isUpdating = true;
+      _isEditingDefaultSubscription =
+          subscription.name.toLowerCase() == 'default subscription';
       _currentSubscriptionId = subscription.id;
     });
   }
@@ -316,7 +320,8 @@ class _SubscriptionManagementScreenState
     Subscription subscription,
   ) async {
     // Show confirmation dialog
-    final confirmed = await showDialog<bool>(
+    final confirmed =
+        await showDialog<bool>(
           context: context,
           builder: (context) => AlertDialog(
             backgroundColor: AppTheme.secondaryDark,
@@ -327,7 +332,8 @@ class _SubscriptionManagementScreenState
             ),
             content: Text(
               context.tr(
-                TranslationKeys.subscriptionManagementResetDefaultUrlConfirmation,
+                TranslationKeys
+                    .subscriptionManagementResetDefaultUrlConfirmation,
               ),
             ),
             actions: [
@@ -366,9 +372,7 @@ class _SubscriptionManagementScreenState
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              context.tr(
-                TranslationKeys.subscriptionManagementDefaultUrlReset,
-              ),
+              context.tr(TranslationKeys.subscriptionManagementDefaultUrlReset),
             ),
           ),
         );
@@ -492,6 +496,9 @@ class _SubscriptionManagementScreenState
                         const SizedBox(height: 16),
                         TextField(
                           controller: _nameController,
+                          enabled:
+                              !_isUpdating ||
+                              (_isUpdating && !_isEditingDefaultSubscription),
                           decoration: InputDecoration(
                             labelText: context.tr(
                               TranslationKeys.subscriptionManagementName,
@@ -629,9 +636,9 @@ class _SubscriptionManagementScreenState
                                       ),
                                       onPressed: () =>
                                           _resetDefaultSubscriptionUrl(
-                                        context,
-                                        subscription,
-                                      ),
+                                            context,
+                                            subscription,
+                                          ),
                                       tooltip: context.tr(
                                         TranslationKeys
                                             .subscriptionManagementResetDefaultUrl,
