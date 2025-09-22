@@ -603,6 +603,7 @@ class V2RayService extends ChangeNotifier {
         try {
           if (line.startsWith('vmess://') ||
               line.startsWith('vless://') ||
+              line.startsWith('trojan://') ||
               line.startsWith('ss://')) {
             V2RayURL parser = FlutterV2ray.parseFromURL(line);
             String configType = '';
@@ -613,6 +614,8 @@ class V2RayService extends ChangeNotifier {
               configType = 'vless';
             } else if (line.startsWith('ss://')) {
               configType = 'shadowsocks';
+            } else if (line.startsWith('trojan://')) {
+              configType = 'trojan';
             }
 
             // Use the parsed address and port from the V2RayURL parser
@@ -946,6 +949,8 @@ class V2RayService extends ChangeNotifier {
         configType = 'vless';
       } else if (configText.startsWith('ss://')) {
         configType = 'shadowsocks';
+      } else if (configText.startsWith('trojan://')) {
+        configType = 'trojan';
       } else {
         throw Exception('Unsupported protocol');
       }
