@@ -310,8 +310,6 @@ public final class V2rayCoreManager {
         PendingIntent notificationContentPendingIntent = PendingIntent.getActivity(
                 context, 0, launchIntent, flags);
 
-        String notificationChannelID = createNotificationChannelID(v2rayConfig.APPLICATION_NAME);
-
         Intent stopIntent;
         if (AppConfigs.V2RAY_CONNECTION_MODE == AppConfigs.V2RAY_CONNECTION_MODES.PROXY_ONLY) {
             stopIntent = new Intent(context, V2rayProxyOnlyService.class);
@@ -322,14 +320,14 @@ public final class V2rayCoreManager {
         }
         stopIntent.putExtra("COMMAND", AppConfigs.V2RAY_SERVICE_COMMANDS.STOP_SERVICE);
 
-        PendingIntent pendingIntent = PendingIntent.getService(
+        PendingIntent stopPendingIntent = PendingIntent.getService(
                 context, 0, stopIntent, flags);
 
         // Build the notification
         NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, notificationChannelID)
                 .setSmallIcon(v2rayConfig.APPLICATION_ICON)
                 .setContentTitle(v2rayConfig.REMARK)
-                .addAction(0, v2rayConfig.NOTIFICATION_DISCONNECT_BUTTON_NAME, notificationContentPendingIntent)
+                .addAction(0, v2rayConfig.NOTIFICATION_DISCONNECT_BUTTON_NAME, stopPendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_MIN)
                 .setShowWhen(false)
                 .setOnlyAlertOnce(true)

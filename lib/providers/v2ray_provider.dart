@@ -1,5 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_v2ray_client/flutter_v2ray.dart';
+import 'package:flutter/services.dart';
 import '../models/v2ray_config.dart';
 import '../models/subscription.dart';
 import '../services/v2ray_service.dart';
@@ -17,6 +18,9 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   String _errorMessage = '';
   bool _isLoadingServers = false;
   bool _isProxyMode = false;
+  
+  // Method channel for VPN control
+  static const platform = MethodChannel('com.cloud.pira/vpn_control');
 
   List<V2RayConfig> get configs => _configs;
   List<Subscription> get subscriptions => _subscriptions;
@@ -35,6 +39,20 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   V2RayProvider() {
     WidgetsBinding.instance.addObserver(this);
     _initialize();
+    
+    // Set up method channel handler
+    platform.setMethodCallHandler(_handleMethodCall);
+  }
+  
+  // Handle method calls from native side
+  Future<dynamic> _handleMethodCall(MethodCall call) async {
+    switch (call.method) {
+      case 'disconnectFromNotification':
+        await _handleNotificationDisconnect();
+        break;
+      default:
+        throw MissingPluginException();
+    }
   }
 
   Future<void> _initialize() async {
@@ -772,7 +790,10 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
     notifyListeners();
   }
 
-  void _handleNotificationDisconnect() {
+  void _handleNotificationDisconnect() async {
+    // Actually disconnect the VPN service
+    await _v2rayService.disconnect();
+    
     // Update config status when disconnected from notification
     for (int i = 0; i < _configs.length; i++) {
       _configs[i].isConnected = false;
@@ -784,15 +805,13 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
     notifyListeners();
 
     // Persist the changes
-    _v2rayService
-        .saveConfigs(_configs)
-        .then((_) {
-          notifyListeners();
-        })
-        .catchError((e) {
-          print('Error saving configs after notification disconnect: $e');
-          notifyListeners();
-        });
+    try {
+      await _v2rayService.saveConfigs(_configs);
+      notifyListeners();
+    } catch (e) {
+      print('Error saving configs after notification disconnect: $e');
+      notifyListeners();
+    }
   }
 
   @override
