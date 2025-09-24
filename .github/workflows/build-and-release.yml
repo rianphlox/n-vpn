@@ -40,7 +40,8 @@ jobs:
 
       - name: Decode Keystore
         run: |
-          [System.Convert]::FromBase64String("${{ secrets.KEY_STORE }}") | Out-File -Encoding Byte keystore.jks
+          $bytes = [System.Convert]::FromBase64String("${{ secrets.KEY_STORE }}")
+          [IO.File]::WriteAllBytes("keystore.jks", $bytes)
         shell: powershell
 
       - name: Get dependencies
