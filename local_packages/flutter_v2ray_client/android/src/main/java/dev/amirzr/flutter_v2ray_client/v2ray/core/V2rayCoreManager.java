@@ -323,8 +323,10 @@ public final class V2rayCoreManager {
         PendingIntent stopPendingIntent = PendingIntent.getService(
                 context, 0, stopIntent, flags);
 
+        String notification_channelID = createNotificationChannelID(v2rayConfig.APPLICATION_NAME);
+
         // Build the notification
-        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, notificationChannelID)
+        NotificationCompat.Builder notificationBuilder = new NotificationCompat.Builder(context, notification_channelID)
                 .setSmallIcon(v2rayConfig.APPLICATION_ICON)
                 .setContentTitle(v2rayConfig.REMARK)
                 .addAction(0, v2rayConfig.NOTIFICATION_DISCONNECT_BUTTON_NAME, stopPendingIntent)

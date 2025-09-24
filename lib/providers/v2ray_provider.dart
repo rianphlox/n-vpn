@@ -48,14 +48,14 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'disconnectFromNotification':
-        await _handleNotificationDisconnectAsync();
+        await _handleNotificationDisconnect();
         break;
       default:
         throw MissingPluginException();
     }
   }
 
-  Future<void> _handleNotificationDisconnectAsync() async {
+  Future<void> _handleNotificationDisconnect() async {
     // Actually disconnect the VPN service
     await _v2rayService.disconnect();
     
@@ -79,37 +79,14 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
     }
   }
 
-  void _handleNotificationDisconnect() {
-    // Update config status when disconnected from notification
-    for (int i = 0; i < _configs.length; i++) {
-      _configs[i].isConnected = false;
-    }
-
-    _selectedConfig = null;
-
-    // Notify listeners immediately to update UI in real-time
-    notifyListeners();
-
-    // Persist the changes
-    _v2rayService
-        .saveConfigs(_configs)
-        .then((_) {
-          notifyListeners();
-        })
-        .catchError((e) {
-          print('Error saving configs after notification disconnect: $e');
-          notifyListeners();
-        });
-  }
-
   Future<void> _initialize() async {
     _setLoading(true);
     try {
       await _v2rayService.initialize();
 
       // Set up callback for notification disconnects
-      _v2rayService.setDisconnectedCallback(() {
-        _handleNotificationDisconnect();
+      _v2rayService.setDisconnectedCallback(() async {
+        await _handleNotificationDisconnect();
       });
 
       // Load configurations first

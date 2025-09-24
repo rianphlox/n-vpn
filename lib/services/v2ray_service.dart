@@ -53,7 +53,7 @@ class IpInfo {
 }
 
 class V2RayService extends ChangeNotifier {
-  Function()? _onDisconnected;
+  Future<void> Function()? _onDisconnected;
   bool _isInitialized = false;
   V2RayConfig? _activeConfig;
   Timer? _statusCheckTimer;
@@ -165,7 +165,17 @@ class V2RayService extends ChangeNotifier {
         _activeConfig != null) {
       print('Detected disconnection from notification');
       _activeConfig = null;
-      _onDisconnected?.call();
+      // Call the disconnected callback if it exists
+      if (_onDisconnected != null) {
+        // Execute the callback in a separate isolate to avoid blocking
+        Future(() async {
+          try {
+            await _onDisconnected!();
+          } catch (e) {
+            print('Error in disconnected callback: $e');
+          }
+        });
+      }
 
       // Save the disconnected state immediately
       _clearActiveConfig();
@@ -705,7 +715,7 @@ class V2RayService extends ChangeNotifier {
         .toList();
   }
 
-  void setDisconnectedCallback(Function() callback) {
+  void setDisconnectedCallback(Future<void> Function() callback) {
     _onDisconnected = callback;
     // Disable automatic monitoring to prevent false disconnects
     // _startStatusMonitoring();
