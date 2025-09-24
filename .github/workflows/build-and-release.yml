@@ -27,7 +27,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          # flutter-version: '3.32.8'
+          flutter-version: '3.32.8'
           channel: 'stable'
 
       - name: Create keystore properties file
@@ -40,8 +40,8 @@ jobs:
 
       - name: Decode Keystore
         run: |
-          echo "${{ secrets.KEY_STORE }}" | certutil -decode - > keystore.jks
-        shell: cmd
+          [System.Convert]::FromBase64String("${{ secrets.KEY_STORE }}") | Out-File -Encoding Byte keystore.jks
+        shell: powershell
 
       - name: Get dependencies
         run: flutter pub get
