@@ -30,6 +30,19 @@ jobs:
           flutter-version: '3.32.8'
           channel: 'stable'
 
+      - name: Create keystore properties file
+        run: |
+          echo storePassword=${{ secrets.KEY_STORE_PASSWORD }} > android/key.properties
+          echo keyPassword=${{ secrets.KEY_PASSWORD }} >> android/key.properties
+          echo keyAlias=${{ secrets.KEY_ALIAS }} >> android/key.properties
+          echo storeFile=../keystore.jks >> android/key.properties
+        shell: bash
+
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEY_STORE }}" | certutil -decode - > keystore.jks
+        shell: cmd
+
       - name: Get dependencies
         run: flutter pub get
 
@@ -78,7 +91,7 @@ jobs:
             
             | Architecture | Download Link |
             |-------------|---------------|
-            | Universal   | <a href="https://github.com/code3-dev/ProxyCloud/releases/latest/download/proxycloud-universal.apk"><img src="https://img.shields.io/badge/Android-Universal-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android Universal"></a> |
-            | armeabi-v7a | <a href="https://github.com/code3-dev/ProxyCloud/releases/latest/download/proxycloud-armeabi-v7a.apk"><img src="https://img.shields.io/badge/Android-armeabi--v7a-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android armeabi-v7a"></a> |
-            | arm64-v8a   | <a href="https://github.com/code3-dev/ProxyCloud/releases/latest/download/proxycloud-arm64-v8a.apk"><img src="https://img.shields.io/badge/Android-arm64--v8a-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android arm64-v8a"></a> |
-            | x86_64      | <a href="https://github.com/code3-dev/ProxyCloud/releases/latest/download/proxycloud-x86_64.apk"><img src="https://img.shields.io/badge/Android-x86_64-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android x86_64"></a> |
+            | Universal   | <a href="https://github.com/code3-dev/ProxyCloud/releases/download/${{ env.TAG_NAME }}/proxycloud-universal.apk"><img src="https://img.shields.io/badge/Android-Universal-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android Universal"></a> |
+            | armeabi-v7a | <a href="https://github.com/code3-dev/ProxyCloud/releases/download/${{ env.TAG_NAME }}/proxycloud-armeabi-v7a.apk"><img src="https://img.shields.io/badge/Android-armeabi--v7a-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android armeabi-v7a"></a> |
+            | arm64-v8a   | <a href="https://github.com/code3-dev/ProxyCloud/releases/download/${{ env.TAG_NAME }}/proxycloud-arm64-v8a.apk"><img src="https://img.shields.io/badge/Android-arm64--v8a-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android arm64-v8a"></a> |
+            | x86_64      | <a href="https://github.com/code3-dev/ProxyCloud/releases/download/${{ env.TAG_NAME }}/proxycloud-x86_64.apk"><img src="https://img.shields.io/badge/Android-x86_64-3DDC84?style=for-the-badge&logo=android&logoColor=white" alt="Android x86_64"></a> |

@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     id("com.android.application")
     id("kotlin-android")
@@ -5,9 +8,16 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+// Load keystore properties
+val keystorePropertiesFile = rootProject.file("key.properties")
+val keystoreProperties = Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
+}
+
 android {
     namespace = "com.cloud.pira"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = 36
     ndkVersion = "27.0.12077973"
 
     compileOptions {
@@ -19,22 +29,49 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
+    signingConfigs {
+        create("release") {
+            keyAlias = keystoreProperties.getProperty("keyAlias") ?: "androiddebugkey"
+            keyPassword = keystoreProperties.getProperty("keyPassword") ?: "android"
+            storeFile = file(keystoreProperties.getProperty("storeFile") ?: "keystore/debug.keystore")
+            storePassword = keystoreProperties.getProperty("storePassword") ?: "android"
+        }
+    }
+
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
         applicationId = "com.cloud.pira"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 34
-        versionName = "3.4.0"
+        versionCode = 35
+        versionName = "3.4.5"
+
+        manifestPlaceholders.put("io.flutter.embedding.android.EnableImpeller", "false")
+    }
+
+    packagingOptions {
+        jniLibs {
+            useLegacyPackaging = true
+        }
+    }
+
+    splits {
+        abi {
+            isEnable = true
+            reset()
+            include("x86_64", "armeabi-v7a", "arm64-v8a")
+            isUniversalApk = true
+        }
     }
 
     buildTypes {
-        release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
-            signingConfig = signingConfigs.getByName("debug")
+        getByName("release") {
+            signingConfig = signingConfigs.getByName("release")
+            isMinifyEnabled = false
+            isShrinkResources = false
+            ndk {
+                abiFilters.addAll(listOf("x86_64", "armeabi-v7a", "arm64-v8a"))
+                debugSymbolLevel = "FULL"
+            }
         }
     }
 }

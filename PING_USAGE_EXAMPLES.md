@@ -351,7 +351,7 @@ If you're currently using the V2Ray library's ping functionality, migration is s
 
 ```dart
 // Old way (V2Ray library)
-final delay = await flutterV2ray.getServerDelay(config: config);
+final delay = await V2ray.getServerDelay(config: config);
 
 // New way (maintains compatibility)
 final delay = await v2rayService.getServerDelay(config);

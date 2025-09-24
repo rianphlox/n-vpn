@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
-import 'package:flutter_v2ray/flutter_v2ray.dart';
+import 'package:flutter_v2ray_client/flutter_v2ray.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:proxycloud/models/v2ray_config.dart';
@@ -123,14 +123,14 @@ class V2RayService extends ChangeNotifier {
   static final V2RayService _instance = V2RayService._internal();
   factory V2RayService() => _instance;
 
-  late final FlutterV2ray _flutterV2ray;
+  late final V2ray _flutterV2ray;
 
   // Current V2Ray status from the callback
   V2RayStatus? _currentStatus;
   V2RayStatus? get currentStatus => _currentStatus;
 
   V2RayService._internal() {
-    _flutterV2ray = FlutterV2ray(
+    _flutterV2ray = V2ray(
       onStatusChanged: (status) {
         print('V2Ray status changed: $status');
         _currentStatus = status;
@@ -174,7 +174,7 @@ class V2RayService extends ChangeNotifier {
 
   Future<void> initialize() async {
     if (!_isInitialized) {
-      await _flutterV2ray.initializeV2Ray(
+      await _flutterV2ray.initialize(
         notificationIconResourceType: "mipmap",
         notificationIconResourceName: "ic_launcher",
       );
@@ -190,7 +190,7 @@ class V2RayService extends ChangeNotifier {
       await initialize();
 
       // Parse the configuration
-      V2RayURL parser = FlutterV2ray.parseFromURL(config.fullConfig);
+      V2RayURL parser = V2ray.parseFromURL(config.fullConfig);
 
       // Request permission if needed (for VPN mode)
       bool hasPermission = await _flutterV2ray.requestPermission();
@@ -520,7 +520,7 @@ class V2RayService extends ChangeNotifier {
         try {
           await initialize();
 
-          final parser = FlutterV2ray.parseFromURL(config.fullConfig);
+          final parser = V2ray.parseFromURL(config.fullConfig);
           final delay = await _flutterV2ray
               .getServerDelay(config: parser.getFullConfiguration())
               .timeout(
@@ -605,7 +605,7 @@ class V2RayService extends ChangeNotifier {
               line.startsWith('vless://') ||
               line.startsWith('trojan://') ||
               line.startsWith('ss://')) {
-            V2RayURL parser = FlutterV2ray.parseFromURL(line);
+            V2RayURL parser = V2ray.parseFromURL(line);
             String configType = '';
 
             if (line.startsWith('vmess://')) {
@@ -939,7 +939,7 @@ class V2RayService extends ChangeNotifier {
   Future<V2RayConfig?> parseSubscriptionConfig(String configText) async {
     try {
       // Try to parse as a V2Ray URL
-      final parser = FlutterV2ray.parseFromURL(configText);
+      final parser = V2ray.parseFromURL(configText);
 
       // Determine the protocol type from the URL prefix
       String configType = '';

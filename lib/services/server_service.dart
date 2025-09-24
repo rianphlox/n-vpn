@@ -2,7 +2,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/v2ray_config.dart';
 import 'package:flutter/foundation.dart';
-import 'package:flutter_v2ray/flutter_v2ray.dart';
+import 'package:flutter_v2ray_client/flutter_v2ray.dart';
 
 class ServerService {
   // Default GitHub URL for server configurations
@@ -100,13 +100,13 @@ class ServerService {
         'Parsing URI: ${uri.substring(0, uri.length > 30 ? 30 : uri.length)}...',
       );
 
-      // Use FlutterV2ray to parse the URL
+      // Use V2ray to parse the URL
       if (uri.startsWith('vmess://') ||
           uri.startsWith('vless://') ||
           uri.startsWith('trojan://') ||
           uri.startsWith('ss://')) {
         try {
-          V2RayURL parser = FlutterV2ray.parseFromURL(uri);
+          V2RayURL parser = V2ray.parseFromURL(uri);
           String configType = '';
 
           if (uri.startsWith('vmess://')) {
@@ -124,7 +124,7 @@ class ServerService {
           int port = parser.port;
 
           debugPrint(
-            'Parsed URI with FlutterV2ray: remark=${parser.remark}, address=$address, port=$port',
+            'Parsed URI with V2ray: remark=${parser.remark}, address=$address, port=$port',
           );
 
           return V2RayConfig(
@@ -136,7 +136,7 @@ class ServerService {
             fullConfig: uri,
           );
         } catch (e) {
-          debugPrint('Error parsing with FlutterV2ray: $e');
+          debugPrint('Error parsing with V2ray: $e');
           return null;
         }
       }
