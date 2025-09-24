@@ -91,7 +91,7 @@ yay -S proxycloud-gui-bin
 ### Для разработчиков
 
 #### Предварительные требования
-- Flutter SDK (версия 3.32.8)
+- Flutter SDK
 - Dart SDK
 - Android Studio / VS Code
 - Android устройство или эмулятор

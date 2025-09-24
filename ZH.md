@@ -92,7 +92,7 @@ yay -S proxycloud-gui-bin
 ### 开发者指南
 
 #### 前提条件
-- Flutter SDK (版本 3.32.8)
+- Flutter SDK
 - Dart SDK
 - Android Studio / VS Code
 - Android设备或模拟器
