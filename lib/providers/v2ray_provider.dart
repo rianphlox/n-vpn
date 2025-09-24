@@ -48,11 +48,58 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   Future<dynamic> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'disconnectFromNotification':
-        await _handleNotificationDisconnect();
+        await _handleNotificationDisconnectAsync();
         break;
       default:
         throw MissingPluginException();
     }
+  }
+
+  Future<void> _handleNotificationDisconnectAsync() async {
+    // Actually disconnect the VPN service
+    await _v2rayService.disconnect();
+    
+    // Update config status when disconnected from notification
+    for (int i = 0; i < _configs.length; i++) {
+      _configs[i].isConnected = false;
+    }
+
+    _selectedConfig = null;
+
+    // Notify listeners immediately to update UI in real-time
+    notifyListeners();
+
+    // Persist the changes
+    try {
+      await _v2rayService.saveConfigs(_configs);
+      notifyListeners();
+    } catch (e) {
+      print('Error saving configs after notification disconnect: $e');
+      notifyListeners();
+    }
+  }
+
+  void _handleNotificationDisconnect() {
+    // Update config status when disconnected from notification
+    for (int i = 0; i < _configs.length; i++) {
+      _configs[i].isConnected = false;
+    }
+
+    _selectedConfig = null;
+
+    // Notify listeners immediately to update UI in real-time
+    notifyListeners();
+
+    // Persist the changes
+    _v2rayService
+        .saveConfigs(_configs)
+        .then((_) {
+          notifyListeners();
+        })
+        .catchError((e) {
+          print('Error saving configs after notification disconnect: $e');
+          notifyListeners();
+        });
   }
 
   Future<void> _initialize() async {
@@ -788,30 +835,6 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
   void clearError() {
     _errorMessage = '';
     notifyListeners();
-  }
-
-  void _handleNotificationDisconnect() async {
-    // Actually disconnect the VPN service
-    await _v2rayService.disconnect();
-    
-    // Update config status when disconnected from notification
-    for (int i = 0; i < _configs.length; i++) {
-      _configs[i].isConnected = false;
-    }
-
-    _selectedConfig = null;
-
-    // Notify listeners immediately to update UI in real-time
-    notifyListeners();
-
-    // Persist the changes
-    try {
-      await _v2rayService.saveConfigs(_configs);
-      notifyListeners();
-    } catch (e) {
-      print('Error saving configs after notification disconnect: $e');
-      notifyListeners();
-    }
   }
 
   @override
