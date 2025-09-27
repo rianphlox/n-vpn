@@ -78,7 +78,7 @@ Or you can manually add flutter_v2ray_client into the dependencies section in yo
 
 ```yaml
 dependencies:
-  flutter_v2ray_client: ^1.0.0
+  flutter_v2ray_client: ^1.1.2
 ```
 
 <br>
@@ -97,6 +97,23 @@ V2RayURL parser = V2ray.parseFromURL(link);
 print(parser.remark);
 
 // generate full v2ray configuration (json)
+print(parser.getFullConfiguration());
+```
+
+##### XHTTP Transport Support
+The plugin now supports XHTTP transport protocol in VLESS URLs:
+
+``` dart
+import 'package:flutter_v2ray_client/flutter_v2ray.dart';
+
+// VLESS share link with XHTTP transport
+String vlessXhttpLink = "vless://ad44a6ac-311c-4c9e-bd80-c661925a9f6d@185.254.220.229:1002?mode=auto&path=%2FApi%2FAS&security=reality&encryption=none&extra=%7B%22scMaxEachPostBytes%22%3A%20750000%2C%20%22scMaxConcurrentPosts%22%3A%2040%2C%20%22scMinPostsIntervalMs%22%3A%2020%2C%20%22xPaddingBytes%22%3A%20%22500-1500%22%2C%20%22noGRPCHeader%22%3A%20false%7D&pbk=O1Qz_PG-FGREdqahdH6ZjWADCK8n97IwszExalkxunk&fp=firefox&type=xhttp&sni=cdn.jsdelivr.net&sid=77a2017d25f1be8d#%F0%9F%87%B5%F0%9F%87%B1%20%7C%20Direct%20Reality";
+V2RayURL parser = V2ray.parseFromURL(vlessXhttpLink);
+
+// Remark of the VLESS configuration
+print(parser.remark); // "🇵🇱 | Direct Reality"
+
+// Generate full VLESS configuration with XHTTP transport (json)
 print(parser.getFullConfiguration());
 ```
 

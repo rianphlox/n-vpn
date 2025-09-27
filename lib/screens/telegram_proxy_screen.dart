@@ -208,6 +208,10 @@ class _TelegramProxyScreenState extends State<TelegramProxyScreen> {
                         label: Text(
                           context.tr(TranslationKeys.telegramProxyCopyDetails),
                         ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white, // Text color
+                          side: const BorderSide(color: Colors.white), // Border color
+                        ),
                         onPressed: () {
                           Clipboard.setData(
                             ClipboardData(
@@ -233,6 +237,10 @@ class _TelegramProxyScreenState extends State<TelegramProxyScreen> {
                         icon: const Icon(Icons.link),
                         label: Text(
                           context.tr(TranslationKeys.telegramProxyCopyUrl),
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: Colors.white, // Text color
+                          side: const BorderSide(color: Colors.white), // Border color
                         ),
                         onPressed: () {
                           Clipboard.setData(

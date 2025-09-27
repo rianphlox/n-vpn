@@ -5,14 +5,14 @@ import '../providers/language_provider.dart';
 
 class AppTheme {
   // Primary colors
-  static const Color primaryGreen = Color(0xFF00C853);
+  static const Color primaryGreen = Color.fromARGB(255, 14, 117, 57);
   static const Color primaryDark = Color(0xFF121212);
   static const Color primaryDarker = Color(0xFF0A0A0A);
   static const Color secondaryDark = Color(0xFF1E1E1E);
   static const Color cardDark = Color(0xFF252525);
 
   // Accent colors
-  static const Color accentGreen = Color(0xFF69F0AE);
+  static const Color accentGreen = Color.fromARGB(255, 16, 101, 60);
   static const Color disconnectedRed = Color(0xFFFF5252);
   static const Color connectingYellow = Color(0xFFFFD740);
 
@@ -24,7 +24,7 @@ class AppTheme {
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [primaryGreen, Color(0xFF00E676)],
+    colors: [Color.fromARGB(255, 11, 95, 46), Color.fromARGB(255, 22, 122, 74)],
   );
 
   static const LinearGradient darkGradient = LinearGradient(
@@ -62,8 +62,8 @@ class AppTheme {
       scaffoldBackgroundColor: primaryDark,
       primaryColor: primaryGreen,
       colorScheme: const ColorScheme.dark().copyWith(
-        primary: primaryGreen,
-        secondary: accentGreen,
+        primary: const Color.fromARGB(255, 7, 97, 45),
+        secondary: const Color.fromARGB(255, 11, 84, 49),
         surface: primaryDark,
         error: disconnectedRed,
       ),
@@ -81,7 +81,7 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: primaryGreen,
+          backgroundColor: const Color.fromARGB(255, 11, 94, 45),
           foregroundColor: textLight,
           elevation: 4,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

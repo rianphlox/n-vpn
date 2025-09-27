@@ -22,9 +22,9 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
   final int _totalPages =
-      8; // Increased to accommodate channels, sponsors, and Persian Gulf pages
+      7; // Reduced to remove background access page, now accommodating channels, sponsors, and Persian Gulf pages
   bool _acceptedPrivacy = false;
-  bool _backgroundAccessHandled = false;
+
   AppLanguage? _selectedLanguage;
 
   @override
@@ -74,15 +74,10 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
       return;
     }
 
-    // If on background access page and not handled, show dialog
-    if (_currentPage == 4 && !_backgroundAccessHandled) {
-      // Changed from 3 to 4
-      _showBackgroundAccessDialog();
-      return;
-    }
+
 
     // If on channels page, proceed to next page
-    if (_currentPage == 5) {
+    if (_currentPage == 4) {
       // No special handling required for channels page
     }
 
@@ -172,94 +167,6 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
     }
   }
 
-  void _showBackgroundAccessDialog() {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: Text(
-            context.tr('privacy_welcome.background_access_required'),
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          content: Text(
-            context.tr('privacy_welcome.background_access_content'),
-            style: const TextStyle(color: Colors.white70),
-          ),
-          backgroundColor: AppTheme.primaryDark,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(12),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                // Stay on the current page
-              },
-              child: Text(
-                context.tr('privacy_welcome.stay'),
-                style: const TextStyle(color: Colors.white70),
-              ),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                setState(() {
-                  _backgroundAccessHandled = true;
-                });
-                _nextPage(); // Continue to next page
-              },
-              child: Text(
-                context.tr('common.next'),
-                style: const TextStyle(color: AppTheme.primaryGreen),
-              ),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  void _openBackgroundSettings() async {
-    print(context.tr('privacy_welcome.opening_background_settings'));
-    try {
-      // Use platform channel to open Android battery optimization settings
-      const platform = MethodChannel('com.cloud.pira/settings');
-      final result = await platform.invokeMethod(
-        'openBatteryOptimizationSettings',
-      );
-      print(
-        '${context.tr('privacy_welcome.settings_opened_successfully')}: $result',
-      );
-    } catch (e) {
-      print(
-        '${context.tr('privacy_welcome.error_opening_battery_settings')}: $e',
-      );
-      // Fallback: open general app settings
-      try {
-        const platform = MethodChannel('com.cloud.pira/settings');
-        final result = await platform.invokeMethod('openAppSettings');
-        print('${context.tr('privacy_welcome.app_settings_opened')}: $result');
-      } catch (e2) {
-        print(
-          '${context.tr('privacy_welcome.error_opening_app_settings')}: $e2',
-        );
-        if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(
-                '${context.tr('privacy_welcome.could_not_open_settings')}: $e2',
-              ),
-              duration: const Duration(seconds: 3),
-            ),
-          );
-        }
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -310,7 +217,6 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                         _buildWelcomePage(),
                         _buildPrivacyPage(),
                         _buildNoLimitsPage(),
-                        _buildBackgroundAccessPage(),
                         _buildChannelsPage(), // Added channels and sponsors page
                         _buildPersianGulfPage(), // Added Persian Gulf page
                         _buildFreeToUsePage(),
@@ -365,9 +271,6 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                             child: Text(
                               _currentPage == _totalPages - 1
                                   ? context.tr('privacy_welcome.get_started')
-                                  : (_currentPage == 4 && // Changed from 3 to 4
-                                        !_backgroundAccessHandled)
-                                  ? context.tr('common.next')
                                   : context.tr('common.next'),
                               style: const TextStyle(
                                 fontSize: 16,
@@ -778,86 +681,6 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                   context.tr('privacy_welcome.no_limits_subtitle'),
                   style: subtitleStyle,
                   textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildBackgroundAccessPage() {
-    return Consumer<LanguageProvider>(
-      builder: (context, languageProvider, child) {
-        final isRtlLanguage =
-            languageProvider.currentLanguage.code == 'fa' ||
-            languageProvider.currentLanguage.code == 'ar';
-
-        final titleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              )
-            : const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              );
-
-        final subtitleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(fontSize: 16, color: Colors.white70)
-            : const TextStyle(fontSize: 16, color: Colors.white70);
-
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.battery_charging_full,
-                  size: 100,
-                  color: AppTheme.primaryGreen,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  context.tr('privacy_welcome.background_access_title'),
-                  style: titleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  context.tr('privacy_welcome.background_access_subtitle'),
-                  style: subtitleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                // Primary button - Open Settings
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: _openBackgroundSettings,
-                    icon: const Icon(Icons.settings, color: Colors.white),
-                    label: Text(
-                      context.tr('privacy_welcome.open_settings'),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppTheme.primaryGreen,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
                 ),
                 const SizedBox(height: 24),
               ],

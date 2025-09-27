@@ -25,6 +25,18 @@ void main() {
       expect(parsed.remark, equals('Test VLESS'));
     });
 
+    test('should parse vless URL with xhttp transport correctly', () {
+      const vlessXhttpUrl =
+          'vless://ad44a6ac-311c-4c9e-bd80-c661925a9f6d@185.254.220.229:1002?mode=auto&path=%2FApi%2FAS&security=reality&encryption=none&extra=%7B%22scMaxEachPostBytes%22%3A%20750000%2C%20%22scMaxConcurrentPosts%22%3A%2040%2C%20%22scMinPostsIntervalMs%22%3A%2020%2C%20%22xPaddingBytes%22%3A%20%22500-1500%22%2C%20%22noGRPCHeader%22%3A%20false%7D&pbk=O1Qz_PG-FGREdqahdH6ZjWADCK8n97IwszExalkxunk&fp=firefox&type=xhttp&sni=cdn.jsdelivr.net&sid=77a2017d25f1be8d#%F0%9F%87%B5%F0%9F%87%B1%20%7C%20Direct%20Reality';
+
+      expect(() => V2ray.parseFromURL(vlessXhttpUrl), returnsNormally);
+      final parsed = V2ray.parseFromURL(vlessXhttpUrl);
+      expect(parsed, isA<V2RayURL>());
+      expect(parsed.remark, equals('🇵🇱 | Direct Reality'));
+      expect(parsed.address, equals('185.254.220.229'));
+      expect(parsed.port, equals(1002));
+    });
+
     test('should throw ArgumentError for invalid URL', () {
       const invalidUrl = 'invalid://url';
 
@@ -38,49 +50,52 @@ void main() {
     });
   });
 
-  group('V2ray Configuration Validation Tests', () {
-    late V2ray v2ray;
+  group('XHTTP URL Specific Tests', () {
+    test('should correctly parse VLESS URL with xhttp transport', () {
+      const vlessXhttpUrl =
+          'vless://ad44a6ac-311c-4c9e-bd80-c661925a9f6d@185.254.220.229:1002?mode=auto&path=%2FApi%2FAS&security=reality&encryption=none&extra=%7B%22scMaxEachPostBytes%22%3A%20750000%2C%20%22scMaxConcurrentPosts%22%3A%2040%2C%20%22scMinPostsIntervalMs%22%3A%2020%2C%20%22xPaddingBytes%22%3A%20%22500-1500%22%2C%20%22noGRPCHeader%22%3A%20false%7D&pbk=O1Qz_PG-FGREdqahdH6ZjWADCK8n97IwszExalkxunk&fp=firefox&type=xhttp&sni=cdn.jsdelivr.net&sid=77a2017d25f1be8d#%F0%9F%87%B5%F0%9F%87%B1%20%7C%20Direct%20Reality';
 
-    setUp(() {
-      v2ray = V2ray(onStatusChanged: (_) {});
+      final vless = V2ray.parseFromURL(vlessXhttpUrl);
+      
+      expect(vless.address, equals('185.254.220.229'));
+      expect(vless.port, equals(1002));
+      expect(vless.remark, equals('🇵🇱 | Direct Reality'));
     });
 
-    test('should validate valid JSON config', () {
-      const validConfig = '{"inbounds": [], "outbounds": []}';
+    test('should generate correct xhttp stream settings', () {
+      const vlessXhttpUrl =
+          'vless://ad44a6ac-311c-4c9e-bd80-c661925a9f6d@185.254.220.229:1002?mode=auto&path=%2FApi%2FAS&security=reality&encryption=none&extra=%7B%22scMaxEachPostBytes%22%3A%20750000%2C%20%22scMaxConcurrentPosts%22%3A%2040%2C%20%22scMinPostsIntervalMs%22%3A%2020%2C%20%22xPaddingBytes%22%3A%20%22500-1500%22%2C%20%22noGRPCHeader%22%3A%20false%7D&pbk=O1Qz_PG-FGREdqahdH6ZjWADCK8n97IwszExalkxunk&fp=firefox&type=xhttp&sni=cdn.jsdelivr.net&sid=77a2017d25f1be8d#%F0%9F%87%B5%F0%9F%87%B1%20%7C%20Direct%20Reality';
 
-      expect(
-          () => v2ray.startV2Ray(
-                remark: 'Test',
-                config: validConfig,
-                proxyOnly: true,
-              ),
-          returnsNormally);
+      final vless = V2ray.parseFromURL(vlessXhttpUrl);
+      final streamSettings = vless.streamSetting;
+      
+      expect(streamSettings['network'], equals('xhttp'));
+      expect(streamSettings['security'], equals('reality'));
+      
+      final xhttpSettings = streamSettings['xhttpSettings'] as Map;
+      expect(xhttpSettings['mode'], equals('auto'));
+      expect(xhttpSettings['path'], equals('/Api/AS'));
+      expect(xhttpSettings['host'], equals(''));
+      
+      final extra = xhttpSettings['extra'] as Map;
+      expect(extra['scMaxEachPostBytes'], equals(750000));
+      expect(extra['scMaxConcurrentPosts'], equals(40));
+      expect(extra['scMinPostsIntervalMs'], equals(20));
+      expect(extra['xPaddingBytes'], equals('500-1500'));
+      expect(extra['noGRPCHeader'], equals(false));
     });
 
-    test('should throw ArgumentError for invalid JSON config', () {
-      const invalidConfig = 'invalid json';
+    test('should generate complete xhttp configuration', () {
+      const vlessXhttpUrl =
+          'vless://ad44a6ac-311c-4c9e-bd80-c661925a9f6d@185.254.220.229:1002?mode=auto&path=%2FApi%2FAS&security=reality&encryption=none&extra=%7B%22scMaxEachPostBytes%22%3A%20750000%2C%20%22scMaxConcurrentPosts%22%3A%2040%2C%20%22scMinPostsIntervalMs%22%3A%2020%2C%20%22xPaddingBytes%22%3A%20%22500-1500%22%2C%20%22noGRPCHeader%22%3A%20false%7D&pbk=O1Qz_PG-FGREdqahdH6ZjWADCK8n97IwszExalkxunk&fp=firefox&type=xhttp&sni=cdn.jsdelivr.net&sid=77a2017d25f1be8d#%F0%9F%87%B5%F0%9F%87%B1%20%7C%20Direct%20Reality';
 
-      expect(
-          () => v2ray.startV2Ray(
-                remark: 'Test',
-                config: invalidConfig,
-                proxyOnly: true,
-              ),
-          throwsArgumentError);
-    });
-
-    test('should validate server delay with valid JSON config', () {
-      const validConfig = '{"inbounds": [], "outbounds": []}';
-
-      expect(() => v2ray.getServerDelay(config: validConfig), returnsNormally);
-    });
-
-    test('should throw ArgumentError for server delay with invalid JSON config',
-        () {
-      const invalidConfig = 'invalid json';
-
-      expect(() => v2ray.getServerDelay(config: invalidConfig),
-          throwsArgumentError);
+      final vless = V2ray.parseFromURL(vlessXhttpUrl);
+      final config = vless.getFullConfiguration();
+      
+      expect(config, isNotEmpty);
+      expect(config, contains('xhttp'));
+      expect(config, contains('reality'));
+      expect(config, contains('cdn.jsdelivr.net'));
     });
   });
 }

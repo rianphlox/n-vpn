@@ -160,6 +160,7 @@ abstract class V2RayURL {
     'quicSettings': null,
     'realitySettings': null,
     'grpcSettings': null,
+    'xhttpSettings': null, // Add xhttpSettings
     'dsSettings': null,
     'sockopt': null
   };
@@ -271,6 +272,15 @@ abstract class V2RayURL {
       streamSetting['grpcSettings'] = {
         'serviceName': serviceName ?? '',
         'multiMode': mode == 'multi',
+      };
+      sni = host ?? '';
+    } else if (transport == 'xhttp') {
+      // For xhttp, we'll set up the basic structure
+      // The specific xhttp settings will be populated by the VLESS parser
+      streamSetting['xhttpSettings'] = {
+        'host': host ?? '',
+        'path': path ?? '/',
+        'mode': mode ?? 'auto',
       };
       sni = host ?? '';
     }

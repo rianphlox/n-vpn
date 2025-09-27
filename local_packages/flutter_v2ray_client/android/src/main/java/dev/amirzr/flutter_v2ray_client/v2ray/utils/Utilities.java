@@ -93,23 +93,32 @@ public class Utilities {
                 return null;
             }
             try {
-                v2rayConfig.CONNECTED_V2RAY_SERVER_ADDRESS = config_json.getJSONArray("outbounds")
-                        .getJSONObject(0).getJSONObject("settings")
-                        .getJSONArray("vnext").getJSONObject(0)
-                        .getString("address");
-                v2rayConfig.CONNECTED_V2RAY_SERVER_PORT = config_json.getJSONArray("outbounds")
-                        .getJSONObject(0).getJSONObject("settings")
-                        .getJSONArray("vnext").getJSONObject(0)
-                        .getString("port");
+                // Try to get server address and port for different protocol types
+                JSONObject firstOutbound = config_json.getJSONArray("outbounds").getJSONObject(0);
+                String protocol = firstOutbound.getString("protocol");
+                
+                if ("vmess".equals(protocol) || "vless".equals(protocol)) {
+                    // Traditional V2Ray protocols with vnext
+                    v2rayConfig.CONNECTED_V2RAY_SERVER_ADDRESS = firstOutbound.getJSONObject("settings")
+                            .getJSONArray("vnext").getJSONObject(0)
+                            .getString("address");
+                    v2rayConfig.CONNECTED_V2RAY_SERVER_PORT = firstOutbound.getJSONObject("settings")
+                            .getJSONArray("vnext").getJSONObject(0)
+                            .getString("port");
+                } else if ("shadowsocks".equals(protocol) || "socks".equals(protocol) || "trojan".equals(protocol)) {
+                    // Shadowsocks, SOCKS, and Trojan protocols with servers
+                    v2rayConfig.CONNECTED_V2RAY_SERVER_ADDRESS = firstOutbound.getJSONObject("settings")
+                            .getJSONArray("servers").getJSONObject(0)
+                            .getString("address");
+                    v2rayConfig.CONNECTED_V2RAY_SERVER_PORT = firstOutbound.getJSONObject("settings")
+                            .getJSONArray("servers").getJSONObject(0)
+                            .getString("port");
+                }
             } catch (Exception e) {
-                v2rayConfig.CONNECTED_V2RAY_SERVER_ADDRESS = config_json.getJSONArray("outbounds")
-                        .getJSONObject(0).getJSONObject("settings")
-                        .getJSONArray("servers").getJSONObject(0)
-                        .getString("address");
-                v2rayConfig.CONNECTED_V2RAY_SERVER_PORT = config_json.getJSONArray("outbounds")
-                        .getJSONObject(0).getJSONObject("settings")
-                        .getJSONArray("servers").getJSONObject(0)
-                        .getString("port");
+                Log.w(V2rayCoreManager.class.getSimpleName(), "startCore warn => can't parse server address and port.", e);
+                // Set default values if parsing fails
+                v2rayConfig.CONNECTED_V2RAY_SERVER_ADDRESS = "";
+                v2rayConfig.CONNECTED_V2RAY_SERVER_PORT = "";
             }
             try {
                 if (config_json.has("policy")) {

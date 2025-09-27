@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2025-09-27
+
+### Added
+- **XHTTP Transport Support**: Added support for parsing and configuring XHTTP transport protocol in VLESS URLs
+- **Enhanced VLESS Parser**: Updated VLESS URL parser to handle XHTTP transport with extra settings
+- **XHTTP Configuration Generation**: Full JSON configuration generation for XHTTP stream settings
+- **Extra Settings Support**: Support for parsing and applying extra settings in XHTTP transport
+
 ## [1.1.0]
 
 ### Added

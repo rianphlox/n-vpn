@@ -8,7 +8,6 @@ import 'package:proxycloud/models/v2ray_config.dart';
 import 'package:proxycloud/models/subscription.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:proxycloud/services/ping_service.dart';
 
 class IpInfo {
   final String ip;
@@ -115,8 +114,7 @@ class V2RayService extends ChangeNotifier {
     } else {
       _pingCache.clear();
     }
-    // Also clear native ping service cache
-    NativePingService.clearCache();
+    // No need to clear native ping service cache since we're not using it anymore
   }
 
   // Singleton pattern
@@ -142,17 +140,11 @@ class V2RayService extends ChangeNotifier {
     // Load saved usage statistics
     _loadUsageStats();
 
-    // Initialize native ping service
-    _initializeNativePing();
+    // No need to initialize native ping service since we're using V2Ray's built-in method
   }
 
   Future<void> _initializeNativePing() async {
-    try {
-      await NativePingService.initialize();
-      debugPrint('Native ping service initialized successfully');
-    } catch (e) {
-      debugPrint('Error initializing native ping service: $e');
-    }
+    // No need to initialize native ping service since we're using V2Ray's built-in method
   }
 
   void _handleStatusChange(V2RayStatus status) {
@@ -453,7 +445,7 @@ class V2RayService extends ChangeNotifier {
     }
   }
 
-  // Get server delay/ping for a specific config using custom native implementation
+  // Get server delay/ping for a specific config using V2Ray's built-in method
   Future<int?> getServerDelay(V2RayConfig config) async {
     final configId = config.id;
     final hostKey = '${config.address}:${config.port}';
@@ -492,66 +484,38 @@ class V2RayService extends ChangeNotifier {
       _pingInProgress[configId] = true;
 
       try {
-        // Use custom native ping service for better accuracy
-        final pingResult = await NativePingService.pingHost(
-          host: config.address,
-          port: config.port,
-          timeoutMs: 8000, // 8 second timeout
-          useIcmp: true,
-          useTcp: true,
-          useCache: false, // We handle our own caching
-        );
-
-        final int? delay = pingResult.success ? pingResult.latency : null;
-
-        // Log the ping result for debugging
-        if (pingResult.success) {
-          debugPrint(
-            'Native ping for ${config.remark}: ${delay}ms (${pingResult.method})',
-          );
-        } else {
-          debugPrint(
-            'Native ping failed for ${config.remark}: ${pingResult.error}',
-          );
-        }
+        // Use V2Ray's built-in ping method for better accuracy
+        await initialize();
+        
+        final parser = V2ray.parseFromURL(config.fullConfig);
+        final delay = await _flutterV2ray
+            .getServerDelay(config: parser.getFullConfiguration())
+            .timeout(
+              const Duration(seconds: 10),
+              onTimeout: () {
+                debugPrint('V2Ray ping timeout for ${config.remark}');
+                throw Exception('V2Ray ping timeout');
+              },
+            );
 
         // Cache the result by both host and config ID
-        _pingCache[hostKey] = delay;
-        _pingCache[configId] = delay;
-
-        _pingInProgress[hostKey] = false;
-        _pingInProgress[configId] = false;
-
-        return delay;
-      } catch (e) {
-        debugPrint('Error with native ping for ${config.remark}: $e');
-
-        // Fallback to V2Ray's built-in ping if native ping fails
-        try {
-          await initialize();
-
-          final parser = V2ray.parseFromURL(config.fullConfig);
-          final delay = await _flutterV2ray
-              .getServerDelay(config: parser.getFullConfiguration())
-              .timeout(
-                const Duration(seconds: 10),
-                onTimeout: () {
-                  debugPrint('V2Ray ping timeout for ${config.remark}');
-                  throw Exception('V2Ray ping timeout');
-                },
-              );
-
-          // Cache the fallback result
-          if (delay >= -1 && delay < 10000) {
-            _pingCache[hostKey] = delay;
-            _pingCache[configId] = delay;
-            return delay;
-          }
-        } catch (fallbackError) {
-          debugPrint(
-            'Fallback V2Ray ping also failed for ${config.remark}: $fallbackError',
-          );
+        if (delay >= -1 && delay < 10000) {
+          _pingCache[hostKey] = delay;
+          _pingCache[configId] = delay;
+          
+          _pingInProgress[hostKey] = false;
+          _pingInProgress[configId] = false;
+          
+          return delay;
+        } else {
+          _pingInProgress[hostKey] = false;
+          _pingInProgress[configId] = false;
+          _pingCache[hostKey] = null;
+          _pingCache[configId] = null;
+          return null;
         }
+      } catch (e) {
+        debugPrint('Error with V2Ray ping for ${config.remark}: $e');
 
         _pingInProgress[hostKey] = false;
         _pingInProgress[configId] = false;
@@ -775,385 +739,470 @@ class V2RayService extends ChangeNotifier {
         } catch (e) {
           print('Error fetching IP info: $e');
           retryCount++;
-          await Future.delayed(const Duration(seconds: 1));
+            await Future.delayed(const Duration(seconds: 1));
+          }
         }
+      
+        // After max retries, return error
+        final errorInfo = IpInfo.error('Cannot get IP information');
+        _ipInfo = errorInfo;
+        _isLoadingIpInfo = false;
+        notifyListeners();
+        print('Failed to fetch IP info after $maxRetries attempts');
+        return errorInfo;
+      } catch (e) {
+        // Handle any unexpected errors
+        print('Unexpected error fetching IP info: $e');
+        final errorInfo = IpInfo.error('Error: $e');
+        _ipInfo = errorInfo;
+        _isLoadingIpInfo = false;
+        notifyListeners();
+        return errorInfo;
+      }
+    }
+
+    // Getter to check if connected to a server
+    bool get isConnected => _activeConfig != null;
+
+    // Getter to access the active config
+    V2RayConfig? get activeConfig => _activeConfig;
+
+    // Public method to force check connection status
+    Future<bool> isActuallyConnected() async {
+      try {
+        final delay = await _flutterV2ray.getConnectedServerDelay();
+        final isConnected = delay != null && delay >= 0;
+
+        // Don't automatically clear the active config or call onDisconnected
+        // This prevents false disconnections when switching between apps
+        // Only report the actual connection status
+
+        return isConnected;
+      } catch (e) {
+        print('Error in force connection check: $e');
+        // Don't automatically clear the active config or call onDisconnected
+        // Just report the error but maintain the connection state
+        return _activeConfig !=
+            null; // Assume still connected if we have an active config
+      }
+    }
+
+    /// Get real-time ping monitoring for the currently connected server
+    /// Returns a stream of ping results that updates at the specified interval
+    Stream<int?>? startConnectedServerPingMonitoring({
+      Duration interval = const Duration(seconds: 5),
+    }) {
+      if (_activeConfig == null) {
+        debugPrint('No active config for ping monitoring');
+        return null;
       }
 
-      // After max retries, return error
-      final errorInfo = IpInfo.error('Cannot get IP information');
-      _ipInfo = errorInfo;
-      _isLoadingIpInfo = false;
-      notifyListeners();
-      print('Failed to fetch IP info after $maxRetries attempts');
-      return errorInfo;
-    } catch (e) {
-      // Handle any unexpected errors
-      print('Unexpected error fetching IP info: $e');
-      final errorInfo = IpInfo.error('Error: $e');
-      _ipInfo = errorInfo;
-      _isLoadingIpInfo = false;
-      notifyListeners();
-      return errorInfo;
-    }
-  }
+      try {
+        return Stream.periodic(interval, (count) async {
+          try {
+            await initialize();
+            
+            final parser = V2ray.parseFromURL(_activeConfig!.fullConfig);
+            final delay = await _flutterV2ray
+                .getServerDelay(config: parser.getFullConfiguration())
+                .timeout(
+                  const Duration(seconds: 10),
+                  onTimeout: () {
+                    debugPrint('V2Ray ping timeout for ${_activeConfig!.remark}');
+                    return -1;
+                  },
+                );
 
-  // Getter to check if connected to a server
-  bool get isConnected => _activeConfig != null;
-
-  // Getter to access the active config
-  V2RayConfig? get activeConfig => _activeConfig;
-
-  // Public method to force check connection status
-  Future<bool> isActuallyConnected() async {
-    try {
-      final delay = await _flutterV2ray.getConnectedServerDelay();
-      final isConnected = delay != null && delay >= 0;
-
-      // Don't automatically clear the active config or call onDisconnected
-      // This prevents false disconnections when switching between apps
-      // Only report the actual connection status
-
-      return isConnected;
-    } catch (e) {
-      print('Error in force connection check: $e');
-      // Don't automatically clear the active config or call onDisconnected
-      // Just report the error but maintain the connection state
-      return _activeConfig !=
-          null; // Assume still connected if we have an active config
-    }
-  }
-
-  /// Get real-time ping monitoring for the currently connected server
-  /// Returns a stream of ping results that updates at the specified interval
-  Stream<PingResult>? startConnectedServerPingMonitoring({
-    Duration interval = const Duration(seconds: 5),
-  }) {
-    if (_activeConfig == null) {
-      debugPrint('No active config for ping monitoring');
-      return null;
+            return delay >= -1 && delay < 10000 ? delay : null;
+          } catch (e) {
+            debugPrint('Error in continuous ping monitoring: $e');
+            return null;
+          }
+        }).asyncMap((future) => future);
+      } catch (e) {
+        debugPrint('Error starting connected server ping monitoring: $e');
+        return null;
+      }
     }
 
-    try {
-      return NativePingService.startContinuousPing(
-        host: _activeConfig!.address,
-        port: _activeConfig!.port,
-        interval: interval,
-      );
-    } catch (e) {
-      debugPrint('Error starting connected server ping monitoring: $e');
-      return null;
-    }
-  }
-
-  /// Get network type information
-  Future<String> getNetworkType() async {
-    try {
-      return await NativePingService.getNetworkType();
-    } catch (e) {
-      debugPrint('Error getting network type: $e');
+    /// Get network type information
+    Future<String> getNetworkType() async {
+      // Since we're not using NativePingService anymore, we'll return a default value
       return 'Unknown';
     }
-  }
 
-  /// Test connectivity using native ping service
-  Future<Map<String, PingResult>> testConnectivity() async {
-    try {
-      return await NativePingService.testConnectivity();
-    } catch (e) {
-      debugPrint('Error testing connectivity: $e');
-      return {};
-    }
-  }
-
-  /// Get enhanced server delay with detailed ping information
-  Future<PingResult> getServerPingDetails(V2RayConfig config) async {
-    try {
-      return await NativePingService.pingHost(
-        host: config.address,
-        port: config.port,
-        timeoutMs: 8000,
-        useIcmp: true,
-        useTcp: true,
-        useCache: false,
-      );
-    } catch (e) {
-      debugPrint('Error getting server ping details for ${config.remark}: $e');
-      return PingResult.error('Failed to ping server: $e');
-    }
-  }
-
-  /// Batch ping multiple servers for server selection
-  Future<Map<String, int?>> batchPingServers(List<V2RayConfig> configs) async {
-    try {
-      final hosts = configs
-          .map((config) => (host: config.address, port: config.port))
-          .toList();
-
-      final results = await NativePingService.pingMultipleHosts(
-        hosts: hosts,
-        timeoutMs: 6000,
-        useIcmp: true,
-        useTcp: true,
-      );
-
-      final Map<String, int?> configResults = {};
-
-      for (final config in configs) {
-        final key = '${config.address}:${config.port}';
-        final pingResult = results[key];
-        final latency = pingResult?.success == true
-            ? pingResult!.latency
-            : null;
-
-        configResults[config.id] = latency;
-
-        // Also cache the result
-        _pingCache[key] = latency;
-        _pingCache[config.id] = latency;
-      }
-
-      return configResults;
-    } catch (e) {
-      debugPrint('Error in batch ping servers: $e');
-      return {};
-    }
-  }
-
-  /// Get fastest server from a list of configs
-  Future<V2RayConfig?> getFastestServer(List<V2RayConfig> configs) async {
-    if (configs.isEmpty) return null;
-
-    try {
-      final pingResults = await batchPingServers(configs);
-
-      V2RayConfig? fastestConfig;
-      int? lowestLatency;
-
-      for (final config in configs) {
-        final latency = pingResults[config.id];
-        if (latency != null && latency > 0) {
-          if (lowestLatency == null || latency < lowestLatency) {
-            lowestLatency = latency;
-            fastestConfig = config;
-          }
-        }
-      }
-
-      return fastestConfig;
-    } catch (e) {
-      debugPrint('Error finding fastest server: $e');
-      return null;
-    }
-  }
-
-  Future<V2RayConfig?> parseSubscriptionConfig(String configText) async {
-    try {
-      // Try to parse as a V2Ray URL
-      final parser = V2ray.parseFromURL(configText);
-
-      // Determine the protocol type from the URL prefix
-      String configType = '';
-      if (configText.startsWith('vmess://')) {
-        configType = 'vmess';
-      } else if (configText.startsWith('vless://')) {
-        configType = 'vless';
-      } else if (configText.startsWith('ss://')) {
-        configType = 'shadowsocks';
-      } else if (configText.startsWith('trojan://')) {
-        configType = 'trojan';
-      } else {
-        throw Exception('Unsupported protocol');
-      }
-
-      // Use the parsed address and port from the V2RayURL parser
-      String address = parser.address;
-      int port = parser.port;
-
-      // Create a new V2RayConfig object with a generated ID
-      return V2RayConfig(
-        id: DateTime.now().millisecondsSinceEpoch.toString(),
-        remark: parser.remark,
-        address: address,
-        port: port,
-        configType: configType,
-        fullConfig: configText,
-        isConnected: false,
-        isProxyMode: false,
-      );
-    } catch (e) {
-      debugPrint('Error parsing config: $e');
-      return null;
-    }
-  }
-
-  @override
-  void dispose() {
-    _stopStatusMonitoring();
-    _stopUsageMonitoring();
-    // Cleanup native ping service
-    NativePingService.cleanup();
-    super.dispose();
-  }
-
-  // Usage statistics methods
-  void _startUsageMonitoring() {
-    // Stop existing timer if any
-    _usageStatsTimer?.cancel();
-
-    // Start periodic usage monitoring every second
-    _usageStatsTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
-      if (_activeConfig != null) {
-        // Increment connected time
-        _connectedSeconds++;
-
-        try {
-          // Use real V2Ray status data if available
-          if (_currentStatus != null) {
-            // Get real-time traffic data from V2Ray status
-            final status = _currentStatus!;
-
-            // Update cumulative statistics with real data
-            // Note: V2Ray status provides cumulative data, so we store the latest values
-            _uploadBytes = status.upload;
-            _downloadBytes = status.download;
-          } else {
-            // Fallback to simulated data if V2Ray status is not available
-            final random = Random();
-            final uploadSpeed = random.nextInt(50) * 1024; // 0-50 KB in bytes
-            final downloadSpeed = random.nextInt(50) * 1024; // 0-50 KB in bytes
-
-            // Add to total bytes
-            _uploadBytes += uploadSpeed;
-            _downloadBytes += downloadSpeed;
-          }
-
-          // Save statistics every minute to avoid excessive writes
-          if (_connectedSeconds % 60 == 0) {
-            await _saveUsageStats();
-          }
-        } catch (e) {
-          print('Error updating usage statistics: $e');
-        }
-      }
-    });
-  }
-
-  void _stopUsageMonitoring() {
-    _usageStatsTimer?.cancel();
-    _usageStatsTimer = null;
-  }
-
-  // Save usage stats and connection time to storage
-  Future<void> _saveUsageStats() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Save current usage statistics
-    await prefs.setInt('upload_bytes', _uploadBytes);
-    await prefs.setInt('download_bytes', _downloadBytes);
-    await prefs.setInt('connected_seconds', _connectedSeconds);
-
-    // Save last connection time if connected
-    if (_lastConnectionTime != null) {
-      await prefs.setString(
-        'last_connection_time',
-        _lastConnectionTime!.toIso8601String(),
-      );
-    }
-  }
-
-  Future<void> _loadUsageStats() async {
-    final prefs = await SharedPreferences.getInstance();
-
-    // Load saved usage statistics
-    _uploadBytes = prefs.getInt('upload_bytes') ?? 0;
-    _downloadBytes = prefs.getInt('download_bytes') ?? 0;
-    _connectedSeconds = prefs.getInt('connected_seconds') ?? 0;
-
-    // Load last connection time (but don't calculate elapsed time here)
-    // This will be handled by _restoreConnectionTime when needed
-    final lastConnectionTimeStr = prefs.getString('last_connection_time');
-    if (lastConnectionTimeStr != null) {
+    /// Test connectivity using V2Ray's built-in method
+    Future<Map<String, int?>> testConnectivity() async {
       try {
-        _lastConnectionTime = DateTime.parse(lastConnectionTimeStr);
+        // Test connectivity to some common services
+        final testConfigs = [
+          'https://clients3.google.com/generate_204',
+          'https://www.google.com',
+          'https://www.cloudflare.com'
+        ];
+        
+        final Map<String, int?> results = {};
+        
+        for (final url in testConfigs) {
+          try {
+            // Create a simple test configuration
+            final testConfig = {
+              "inbounds": [
+                {
+                  "port": "10808",
+                  "protocol": "socks",
+                  "settings": {
+                    "auth": "noauth",
+                    "udp": true,
+                    "ip": "127.0.0.1"
+                  }
+                }
+              ],
+              "outbounds": [
+                {
+                  "protocol": "freedom",
+                  "settings": {}
+                }
+              ]
+            };
+            
+            final delay = await _flutterV2ray
+                .getServerDelay(config: jsonEncode(testConfig), url: url)
+                .timeout(
+                  const Duration(seconds: 10),
+                  onTimeout: () {
+                    debugPrint('Connectivity test timeout for $url');
+                    return -1;
+                  },
+                );
+            
+            results[url] = delay >= -1 && delay < 10000 ? delay : null;
+          } catch (e) {
+            debugPrint('Error testing connectivity to $url: $e');
+            results[url] = null;
+          }
+        }
+        
+        return results;
       } catch (e) {
-        debugPrint('Error parsing last connection time: $e');
+        debugPrint('Error in testConnectivity: $e');
+        return {};
+      }
+    }
+
+    /// Get enhanced server delay with detailed ping information
+    Future<int?> getServerPingDetails(V2RayConfig config) async {
+      try {
+        await initialize();
+        
+        final parser = V2ray.parseFromURL(config.fullConfig);
+        final delay = await _flutterV2ray
+            .getServerDelay(config: parser.getFullConfiguration())
+            .timeout(
+              const Duration(seconds: 10),
+              onTimeout: () {
+                debugPrint('V2Ray ping timeout for ${config.remark}');
+                throw Exception('V2Ray ping timeout');
+              },
+            );
+
+        return delay >= -1 && delay < 10000 ? delay : null;
+      } catch (e) {
+        debugPrint('Error getting server ping details for ${config.remark}: $e');
+        return null;
+      }
+    }
+
+    /// Batch ping multiple servers for server selection
+    Future<Map<String, int?>> batchPingServers(List<V2RayConfig> configs) async {
+      try {
+        final Map<String, int?> configResults = {};
+
+        // Ping each server individually (in parallel)
+        final futures = <Future<MapEntry<String, int?>>>[];
+        
+        for (final config in configs) {
+          futures.add(_pingSingleServer(config).then((delay) => MapEntry(config.id, delay)));
+        }
+
+        // Wait for all pings to complete
+        final results = await Future.wait(futures);
+        
+        // Populate the results map
+        for (final result in results) {
+          configResults[result.key] = result.value;
+          
+          // Also cache the result by host:port key
+          final config = configs.firstWhere((c) => c.id == result.key);
+          final key = '${config.address}:${config.port}';
+          _pingCache[key] = result.value;
+          _pingCache[config.id] = result.value;
+        }
+
+        return configResults;
+      } catch (e) {
+        debugPrint('Error in batch ping servers: $e');
+        return {};
+      }
+    }
+
+    /// Helper method to ping a single server
+    Future<int?> _pingSingleServer(V2RayConfig config) async {
+      try {
+        await initialize();
+        
+        final parser = V2ray.parseFromURL(config.fullConfig);
+        final delay = await _flutterV2ray
+            .getServerDelay(config: parser.getFullConfiguration())
+            .timeout(
+              const Duration(seconds: 10),
+              onTimeout: () {
+                debugPrint('V2Ray ping timeout for ${config.remark}');
+                throw Exception('V2Ray ping timeout');
+              },
+            );
+
+        return delay >= -1 && delay < 10000 ? delay : null;
+      } catch (e) {
+        debugPrint('Error pinging server ${config.remark}: $e');
+        return null;
+      }
+    }
+
+    /// Get fastest server from a list of configs
+    Future<V2RayConfig?> getFastestServer(List<V2RayConfig> configs) async {
+      if (configs.isEmpty) return null;
+
+      try {
+        final pingResults = await batchPingServers(configs);
+
+        V2RayConfig? fastestConfig;
+        int? lowestLatency;
+
+        for (final config in configs) {
+          final latency = pingResults[config.id];
+          if (latency != null && latency > 0) {
+            if (lowestLatency == null || latency < lowestLatency) {
+              lowestLatency = latency;
+              fastestConfig = config;
+            }
+          }
+        }
+
+        return fastestConfig;
+      } catch (e) {
+        debugPrint('Error finding fastest server: $e');
+        return null;
+      }
+    }
+
+    Future<V2RayConfig?> parseSubscriptionConfig(String configText) async {
+      try {
+        // Try to parse as a V2Ray URL
+        final parser = V2ray.parseFromURL(configText);
+
+        // Determine the protocol type from the URL prefix
+        String configType = '';
+        if (configText.startsWith('vmess://')) {
+          configType = 'vmess';
+        } else if (configText.startsWith('vless://')) {
+          configType = 'vless';
+        } else if (configText.startsWith('ss://')) {
+          configType = 'shadowsocks';
+        } else if (configText.startsWith('trojan://')) {
+          configType = 'trojan';
+        } else {
+          throw Exception('Unsupported protocol');
+        }
+
+        // Use the parsed address and port from the V2RayURL parser
+        String address = parser.address;
+        int port = parser.port;
+
+        // Create a new V2RayConfig object with a generated ID
+        return V2RayConfig(
+          id: DateTime.now().millisecondsSinceEpoch.toString(),
+          remark: parser.remark,
+          address: address,
+          port: port,
+          configType: configType,
+          fullConfig: configText,
+          isConnected: false,
+          isProxyMode: false,
+        );
+      } catch (e) {
+        debugPrint('Error parsing config: $e');
+        return null;
+      }
+    }
+
+    @override
+    void dispose() {
+      _stopStatusMonitoring();
+      _stopUsageMonitoring();
+      // No need to cleanup native ping service since we're not using it anymore
+      super.dispose();
+    }
+
+    // Usage statistics methods
+    void _startUsageMonitoring() {
+      // Stop existing timer if any
+      _usageStatsTimer?.cancel();
+
+      // Start periodic usage monitoring every second
+      _usageStatsTimer = Timer.periodic(Duration(seconds: 1), (timer) async {
+        if (_activeConfig != null) {
+          // Increment connected time
+          _connectedSeconds++;
+
+          try {
+            // Use real V2Ray status data if available
+            if (_currentStatus != null) {
+              // Get real-time traffic data from V2Ray status
+              final status = _currentStatus!;
+
+              // Update cumulative statistics with real data
+              // Note: V2Ray status provides cumulative data, so we store the latest values
+              _uploadBytes = status.upload;
+              _downloadBytes = status.download;
+            } else {
+              // Fallback to simulated data if V2Ray status is not available
+              final random = Random();
+              final uploadSpeed = random.nextInt(50) * 1024; // 0-50 KB in bytes
+              final downloadSpeed = random.nextInt(50) * 1024; // 0-50 KB in bytes
+
+              // Add to total bytes
+              _uploadBytes += uploadSpeed;
+              _downloadBytes += downloadSpeed;
+            }
+
+            // Save statistics every minute to avoid excessive writes
+            if (_connectedSeconds % 60 == 0) {
+              await _saveUsageStats();
+            }
+          } catch (e) {
+            print('Error updating usage statistics: $e');
+          }
+        }
+      });
+    }
+
+    void _stopUsageMonitoring() {
+      _usageStatsTimer?.cancel();
+      _usageStatsTimer = null;
+    }
+
+    // Save usage stats and connection time to storage
+    Future<void> _saveUsageStats() async {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Save current usage statistics
+      await prefs.setInt('upload_bytes', _uploadBytes);
+      await prefs.setInt('download_bytes', _downloadBytes);
+      await prefs.setInt('connected_seconds', _connectedSeconds);
+
+      // Save last connection time if connected
+      if (_lastConnectionTime != null) {
+        await prefs.setString(
+          'last_connection_time',
+          _lastConnectionTime!.toIso8601String(),
+        );
+      }
+    }
+
+    Future<void> _loadUsageStats() async {
+      final prefs = await SharedPreferences.getInstance();
+
+      // Load saved usage statistics
+      _uploadBytes = prefs.getInt('upload_bytes') ?? 0;
+      _downloadBytes = prefs.getInt('download_bytes') ?? 0;
+      _connectedSeconds = prefs.getInt('connected_seconds') ?? 0;
+
+      // Load last connection time (but don't calculate elapsed time here)
+      // This will be handled by _restoreConnectionTime when needed
+      final lastConnectionTimeStr = prefs.getString('last_connection_time');
+      if (lastConnectionTimeStr != null) {
+        try {
+          _lastConnectionTime = DateTime.parse(lastConnectionTimeStr);
+        } catch (e) {
+          debugPrint('Error parsing last connection time: $e');
+          _lastConnectionTime = null;
+        }
+      } else {
         _lastConnectionTime = null;
       }
-    } else {
-      _lastConnectionTime = null;
-    }
 
-    debugPrint(
-      'Loaded usage stats: Upload: ${getFormattedUpload()}, Download: ${getFormattedDownload()}, Time: ${getFormattedConnectedTime()}',
-    );
-  }
-
-  Future<void> resetUsageStats() async {
-    _uploadBytes = 0;
-    _downloadBytes = 0;
-    _connectedSeconds = 0;
-
-    // Reset last connection time to now if connected
-    if (_activeConfig != null) {
-      _lastConnectionTime = DateTime.now();
-    } else {
-      _lastConnectionTime = null;
-    }
-
-    // Save the reset values
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('upload_bytes', 0);
-    await prefs.setInt('download_bytes', 0);
-    await prefs.setInt('connected_seconds', 0);
-
-    if (_lastConnectionTime != null) {
-      await prefs.setString(
-        'last_connection_time',
-        _lastConnectionTime!.toIso8601String(),
+      debugPrint(
+        'Loaded usage stats: Upload: ${getFormattedUpload()}, Download: ${getFormattedDownload()}, Time: ${getFormattedConnectedTime()}',
       );
-    } else {
-      await prefs.remove('last_connection_time');
+    }
+
+    Future<void> resetUsageStats() async {
+      _uploadBytes = 0;
+      _downloadBytes = 0;
+      _connectedSeconds = 0;
+
+      // Reset last connection time to now if connected
+      if (_activeConfig != null) {
+        _lastConnectionTime = DateTime.now();
+      } else {
+        _lastConnectionTime = null;
+      }
+
+      // Save the reset values
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.setInt('upload_bytes', 0);
+      await prefs.setInt('download_bytes', 0);
+      await prefs.setInt('connected_seconds', 0);
+
+      if (_lastConnectionTime != null) {
+        await prefs.setString(
+          'last_connection_time',
+          _lastConnectionTime!.toIso8601String(),
+        );
+      } else {
+        await prefs.remove('last_connection_time');
+      }
+    }
+
+    // Getters for usage statistics
+    int get uploadBytes => _uploadBytes;
+    int get downloadBytes => _downloadBytes;
+    int get connectedSeconds => _connectedSeconds;
+
+    // Get current speeds from V2Ray status (for internal use)
+    int get currentUploadSpeed => _currentStatus?.uploadSpeed ?? 0;
+    int get currentDownloadSpeed => _currentStatus?.downloadSpeed ?? 0;
+
+    // Format usage statistics for display
+    String getFormattedUpload() {
+      return _formatBytes(_uploadBytes);
+    }
+
+    String getFormattedDownload() {
+      return _formatBytes(_downloadBytes);
+    }
+
+    String getFormattedTotalTraffic() {
+      return _formatBytes(_uploadBytes + _downloadBytes);
+    }
+
+    String getFormattedConnectedTime() {
+      final hours = _connectedSeconds ~/ 3600;
+      final minutes = (_connectedSeconds % 3600) ~/ 60;
+      final seconds = _connectedSeconds % 60;
+      return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
+    }
+
+    String _formatBytes(int bytes) {
+      if (bytes < 1024) {
+        return '$bytes B';
+      } else if (bytes < 1024 * 1024) {
+        return '${(bytes / 1024).toStringAsFixed(1)} KB';
+      } else if (bytes < 1024 * 1024 * 1024) {
+        return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
+      } else {
+        return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
+      }
     }
   }
-
-  // Getters for usage statistics
-  int get uploadBytes => _uploadBytes;
-  int get downloadBytes => _downloadBytes;
-  int get connectedSeconds => _connectedSeconds;
-
-  // Get current speeds from V2Ray status (for internal use)
-  int get currentUploadSpeed => _currentStatus?.uploadSpeed ?? 0;
-  int get currentDownloadSpeed => _currentStatus?.downloadSpeed ?? 0;
-
-  // Format usage statistics for display
-  String getFormattedUpload() {
-    return _formatBytes(_uploadBytes);
-  }
-
-  String getFormattedDownload() {
-    return _formatBytes(_downloadBytes);
-  }
-
-  String getFormattedTotalTraffic() {
-    return _formatBytes(_uploadBytes + _downloadBytes);
-  }
-
-  String getFormattedConnectedTime() {
-    final hours = _connectedSeconds ~/ 3600;
-    final minutes = (_connectedSeconds % 3600) ~/ 60;
-    final seconds = _connectedSeconds % 60;
-    return '${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}:${seconds.toString().padLeft(2, '0')}';
-  }
-
-  String _formatBytes(int bytes) {
-    if (bytes < 1024) {
-      return '$bytes B';
-    } else if (bytes < 1024 * 1024) {
-      return '${(bytes / 1024).toStringAsFixed(1)} KB';
-    } else if (bytes < 1024 * 1024 * 1024) {
-      return '${(bytes / (1024 * 1024)).toStringAsFixed(1)} MB';
-    } else {
-      return '${(bytes / (1024 * 1024 * 1024)).toStringAsFixed(1)} GB';
-    }
-  }
-}
