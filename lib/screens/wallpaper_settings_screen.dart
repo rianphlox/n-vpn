@@ -173,14 +173,14 @@ class _WallpaperSettingsScreenState extends State<WallpaperSettingsScreen> {
                           _statusMessage!.contains('Error') ||
                               _statusMessage!.contains('failed')
                           ? Colors.red.withOpacity(0.1)
-                          : AppTheme.primaryGreen.withOpacity(0.1),
+                          : AppTheme.primaryBlue.withOpacity(0.1),
                       borderRadius: BorderRadius.circular(8),
                       border: Border.all(
                         color:
                             _statusMessage!.contains('Error') ||
                                 _statusMessage!.contains('failed')
                             ? Colors.red
-                            : AppTheme.primaryGreen,
+                            : AppTheme.primaryBlue,
                         width: 1,
                       ),
                     ),
@@ -195,7 +195,7 @@ class _WallpaperSettingsScreenState extends State<WallpaperSettingsScreen> {
                               _statusMessage!.contains('Error') ||
                                   _statusMessage!.contains('failed')
                               ? Colors.red
-                              : AppTheme.primaryGreen,
+                              : AppTheme.primaryBlue,
                           size: 20,
                         ),
                         const SizedBox(width: 8),
@@ -207,7 +207,7 @@ class _WallpaperSettingsScreenState extends State<WallpaperSettingsScreen> {
                                   _statusMessage!.contains('Error') ||
                                       _statusMessage!.contains('failed')
                                   ? Colors.red
-                                  : AppTheme.primaryGreen,
+                                  : AppTheme.primaryBlue,
                             ),
                           ),
                         ),
@@ -343,7 +343,7 @@ class _WallpaperSettingsScreenState extends State<WallpaperSettingsScreen> {
                 gradient: const LinearGradient(
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
-                  colors: [AppTheme.primaryDark, AppTheme.secondaryDark],
+                  colors: [AppTheme.surfaceDark, AppTheme.surfaceContainer],
                 ),
               ),
               child: Center(
@@ -370,7 +370,7 @@ class _WallpaperSettingsScreenState extends State<WallpaperSettingsScreen> {
 
   Widget _buildActionsCard(WallpaperService wallpaperService) {
     return Card(
-      color: AppTheme.cardDark,
+      color: AppTheme.surfaceCard,
       elevation: 4,
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -407,7 +407,7 @@ class _WallpaperSettingsScreenState extends State<WallpaperSettingsScreen> {
                   context.tr(TranslationKeys.wallpaperSettingsSelect),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryGreen,
+                  backgroundColor: AppTheme.primaryBlue,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

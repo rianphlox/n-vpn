@@ -32,7 +32,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 TranslationKeys.batterySettingsBatteryOptimizationOpened,
               ),
             ),
-            backgroundColor: AppTheme.primaryGreen,
+            backgroundColor: AppTheme.primaryBlue,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -76,7 +76,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
             content: Text(
               context.tr(TranslationKeys.batterySettingsGeneralBatteryOpened),
             ),
-            backgroundColor: AppTheme.primaryGreen,
+            backgroundColor: AppTheme.primaryBlue,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -120,7 +120,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
             content: Text(
               context.tr(TranslationKeys.batterySettingsAppSettingsOpened),
             ),
-            backgroundColor: AppTheme.primaryGreen,
+            backgroundColor: AppTheme.primaryBlue,
             duration: const Duration(seconds: 2),
           ),
         );
@@ -185,7 +185,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 color: AppTheme.cardDark,
                 borderRadius: BorderRadius.circular(16),
                 border: Border.all(
-                  color: AppTheme.primaryGreen.withValues(alpha: 0.3),
+                  color: AppTheme.connectedGreen.withValues(alpha: 0.3),
                   width: 1,
                 ),
               ),
@@ -194,7 +194,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                   Icon(
                     Icons.battery_charging_full,
                     size: 48,
-                    color: AppTheme.primaryGreen,
+                    color: AppTheme.connectedGreen,
                   ),
                   const SizedBox(height: 12),
                   Text(
@@ -387,10 +387,10 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: AppTheme.primaryGreen.withValues(alpha: 0.1),
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(12),
                   ),
-                  child: Icon(icon, color: AppTheme.primaryGreen, size: 24),
+                  child: Icon(icon, color: AppTheme.primaryBlue, size: 24),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
@@ -442,7 +442,7 @@ class _BatterySettingsScreenState extends State<BatterySettingsScreen> {
                   ),
                 ),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppTheme.primaryGreen,
+                  backgroundColor: AppTheme.primaryBlue,
                   foregroundColor: Colors.white,
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(

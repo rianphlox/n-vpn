@@ -61,7 +61,7 @@ class _HomeScreenState extends State<HomeScreen> {
               children: [
                 Icon(
                   Icons.check_circle,
-                  color: AppTheme.primaryGreen,
+                  color: AppTheme.connectedGreen,
                   size: 18,
                 ),
                 const SizedBox(width: 8),
@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.check_circle, color: const Color.fromARGB(255, 6, 66, 31), size: 20),
+                Icon(Icons.check_circle, color: AppTheme.connectedGreen, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -181,7 +181,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
               ],
             ),
-            backgroundColor: AppTheme.primaryGreen,
+            backgroundColor: AppTheme.connectedGreen,
             duration: const Duration(seconds: 3),
             behavior: SnackBarBehavior.floating,
           ),
@@ -450,7 +450,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 '${ipInfo.country} - ${ipInfo.city}',
                 style: const TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: AppTheme.primaryGreen,
+                  color: AppTheme.primaryBlue,
                 ),
                 overflow: TextOverflow.ellipsis,
               ),
@@ -461,7 +461,7 @@ class _HomeScreenState extends State<HomeScreen> {
               borderRadius: BorderRadius.circular(12),
               child: Padding(
                 padding: const EdgeInsets.all(4.0),
-                child: Icon(Icons.share, size: 18, color: AppTheme.primaryGreen),
+                child: Icon(Icons.share, size: 18, color: AppTheme.primaryBlue),
               ),
             ),
           ],
@@ -475,7 +475,7 @@ class _HomeScreenState extends State<HomeScreen> {
             icon: const Icon(Icons.check, size: 18),
             label: Text(context.tr('home.check_config')),
             style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.primaryGreen,
+              backgroundColor: AppTheme.primaryBlue,
               foregroundColor: Colors.white,
               padding: const EdgeInsets.symmetric(vertical: 12),
               shape: RoundedRectangleBorder(
@@ -499,7 +499,7 @@ class _HomeScreenState extends State<HomeScreen> {
           value,
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: AppTheme.primaryGreen,
+            color: AppTheme.primaryBlue,
           ),
         ),
       ],
@@ -555,7 +555,7 @@ class _HomeScreenState extends State<HomeScreen> {
           context.tr('home.fetching'),
           style: const TextStyle(
             fontWeight: FontWeight.bold,
-            color: AppTheme.primaryGreen,
+            color: AppTheme.primaryBlue,
           ),
         ),
         const SizedBox(width: 8),
@@ -592,7 +592,7 @@ class _HomeScreenState extends State<HomeScreen> {
               total,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                color: AppTheme.primaryGreen,
+                color: AppTheme.primaryBlue,
                 fontSize: 16,
               ),
             ),
@@ -625,11 +625,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   children: [
                     Text(
                       download,
-                      style: const TextStyle(color: Colors.blue, fontSize: 12),
+                      style: const TextStyle(color: Colors.white, fontSize: 12),
                     ),
                     const Text(
                       ' ↓',
-                      style: TextStyle(color: Colors.blue, fontSize: 12),
+                      style: TextStyle(color: Colors.white, fontSize: 12),
                     ),
                   ],
                 ),

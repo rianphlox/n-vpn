@@ -67,7 +67,7 @@ class ConnectionButton extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppTheme.connectingYellow,
+                            color: AppTheme.connectingBlue,
                             width: 3,
                           ),
                         ),
@@ -93,7 +93,7 @@ class ConnectionButton extends StatelessWidget {
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
                           border: Border.all(
-                            color: AppTheme.connectingYellow.withValues(
+                            color: AppTheme.connectingBlue.withValues(
                               alpha: 0.7,
                             ),
                             width: 2,
@@ -132,18 +132,18 @@ class ConnectionButton extends StatelessWidget {
   }
 
   Color _getButtonColor(bool isConnected, bool isConnecting) {
-    if (isConnecting) return AppTheme.connectingYellow;
-    return isConnected ? AppTheme.primaryGreen : AppTheme.disconnectedRed;
+    if (isConnecting) return AppTheme.connectingBlue;
+    return isConnected ? AppTheme.connectedGreen : AppTheme.disconnectedRed;
   }
 
   List<Color> _getGradientColors(bool isConnected, bool isConnecting) {
     if (isConnecting) {
       return [
-        AppTheme.connectingYellow,
-        AppTheme.connectingYellow.withValues(alpha: 0.7),
+        AppTheme.connectingBlue,
+        AppTheme.connectingBlue.withOpacity(0.7),
       ];
     } else if (isConnected) {
-      return [AppTheme.primaryGreen, AppTheme.accentGreen];
+      return [AppTheme.connectedGreen, AppTheme.connectedGreen.withValues(alpha: 0.7)];
     } else {
       return [
         AppTheme.disconnectedRed,

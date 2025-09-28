@@ -265,7 +265,7 @@ class _TelegramProxyScreenState extends State<TelegramProxyScreen> {
                   icon: const Icon(Icons.telegram),
                   label: Text(context.tr(TranslationKeys.telegramProxyConnect)),
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: AppTheme.primaryGreen,
+                    backgroundColor: AppTheme.primaryBlue,
                   ),
                   onPressed: () async {
                     final url = proxy.telegramUrl;

@@ -138,7 +138,7 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                 },
                 child: Text(
                   context.tr('common.cancel'),
-                  style: const TextStyle(color: AppTheme.primaryGreen),
+                  style: const TextStyle(color: AppTheme.primaryBlue),
                 ),
               ),
               TextButton(
@@ -157,7 +157,7 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                 },
                 child: Text(
                   context.tr('privacy_welcome.proceed_anyway'),
-                  style: const TextStyle(color: AppTheme.primaryGreen),
+                  style: const TextStyle(color: AppTheme.primaryBlue),
                 ),
               ),
             ],
@@ -945,7 +945,7 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                 const Icon(
                   Icons.water,
                   size: 100,
-                  color: AppTheme.primaryGreen,
+                  color: AppTheme.connectedGreen,
                 ),
                 const SizedBox(height: 24),
                 Text(
@@ -979,12 +979,12 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                               ? GoogleFonts.vazirmatn(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: AppTheme.primaryGreen,
+                                  color: AppTheme.connectedGreen,
                                 )
                               : const TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
-                                  color: AppTheme.primaryGreen,
+                                  color: AppTheme.connectedGreen,
                                 ),
                           textAlign: TextAlign.center,
                         ),

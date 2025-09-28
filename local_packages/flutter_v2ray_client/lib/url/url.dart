@@ -161,6 +161,7 @@ abstract class V2RayURL {
     'realitySettings': null,
     'grpcSettings': null,
     'xhttpSettings': null, // Add xhttpSettings
+    'httpupgradeSettings': null, // Add httpupgradeSettings
     'dsSettings': null,
     'sockopt': null
   };
@@ -281,6 +282,13 @@ abstract class V2RayURL {
         'host': host ?? '',
         'path': path ?? '/',
         'mode': mode ?? 'auto',
+      };
+      sni = host ?? '';
+    } else if (transport == 'httpupgrade') {
+      // For httpupgrade, we'll set up the basic structure
+      streamSetting['httpupgradeSettings'] = {
+        'host': host ?? '',
+        'path': path ?? '',
       };
       sni = host ?? '';
     }

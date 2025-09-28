@@ -178,7 +178,7 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
       backgroundColor: AppTheme.primaryDark,
       appBar: AppBar(
         title: Text(context.tr(TranslationKeys.vpnSettingsTitle)),
-        backgroundColor: AppTheme.primaryDark,
+        backgroundColor: AppTheme.primaryBlue,
         elevation: 0,
         actions: [
           IconButton(
@@ -190,7 +190,7 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
       ),
       body: isLoading
           ? const Center(
-              child: CircularProgressIndicator(color: AppTheme.primaryGreen),
+              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
             )
           : SingleChildScrollView(
               padding: const EdgeInsets.all(16.0),

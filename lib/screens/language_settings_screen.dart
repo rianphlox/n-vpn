@@ -184,10 +184,10 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen>
       width: double.infinity,
       padding: const EdgeInsets.all(20.0),
       decoration: BoxDecoration(
-        color: AppTheme.primaryGreen.withValues(alpha: 0.1),
+        color: AppTheme.primaryBlue.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppTheme.primaryGreen.withValues(alpha: 0.3),
+          color: AppTheme.primaryBlue.withValues(alpha: 0.3),
           width: 1,
         ),
       ),
@@ -204,7 +204,7 @@ class _LanguageSettingsScreenState extends State<LanguageSettingsScreen>
               Container(
                 padding: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryGreen.withValues(alpha: 0.2),
+                  color: AppTheme.primaryBlue.withValues(alpha: 0.2),
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(

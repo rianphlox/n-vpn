@@ -131,7 +131,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 },
                 backgroundColor: Colors.transparent,
                 elevation: 0,
-                selectedItemColor: AppTheme.primaryGreen,
+                selectedItemColor: AppTheme.primaryBlue,
                 unselectedItemColor: Colors.grey,
                 type: BottomNavigationBarType.fixed,
                 selectedFontSize: 12,

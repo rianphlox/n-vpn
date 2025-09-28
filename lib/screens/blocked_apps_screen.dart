@@ -278,7 +278,7 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
                                 leading: CircleAvatar(
                                   backgroundColor: app.isSystemApp
                                       ? Colors.blueGrey
-                                      : AppTheme.accentGreen,
+                                      : AppTheme.connectedGreen,
                                   child: Text(
                                     app.name.isNotEmpty
                                         ? app.name[0].toUpperCase()
@@ -299,7 +299,7 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
                                 ),
                                 trailing: Checkbox(
                                   value: isSelected,
-                                  activeColor: AppTheme.accentGreen,
+                                  activeColor: AppTheme.connectedGreen,
                                   onChanged: (value) {
                                     setState(() {
                                       if (value == true) {

@@ -82,7 +82,7 @@ class _ServerBottomSheetState extends State<ServerBottomSheet> {
   Widget _buildBottomSheet(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: AppTheme.secondaryDark,
+        color: AppTheme.surfaceContainer,
         borderRadius: const BorderRadius.only(
           topLeft: Radius.circular(20),
           topRight: Radius.circular(20),
@@ -148,7 +148,7 @@ class _ServerBottomSheetState extends State<ServerBottomSheet> {
                     borderRadius: BorderRadius.circular(12),
                   ),
                   tileColor: isSelected
-                      ? AppTheme.primaryGreen.withOpacity(0.1)
+                      ? AppTheme.connectedGreen.withValues(alpha: 0.1)
                       : null,
                   leading: Container(
                     width: 12,
@@ -156,7 +156,7 @@ class _ServerBottomSheetState extends State<ServerBottomSheet> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: isSelected
-                          ? AppTheme.primaryGreen
+                          ? AppTheme.connectedGreen
                           : AppTheme.textGrey,
                     ),
                   ),

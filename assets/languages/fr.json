@@ -155,7 +155,7 @@
     "version": "Version {version}",
     "tagline": "VPN Open Source, Gratuit, Rapide et Privé",
     "developed_by": "Développé par",
-    "developers": "Hossein Pira & hidedev16",
+    "developers": "Hossein Pira",
     "description": "ProxyCloud est une application VPN open source qui fournit un accès internet sécurisé et privé via la technologie VPN V2Ray et les proxies MTProto Telegram. Rapide, illimitée et complètement gratuite sans frais d'abonnement. Votre vie privée est notre priorité.",
     "telegram_channel": "Chaîne Telegram",
     "github_source": "Code Source GitHub",

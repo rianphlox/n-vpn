@@ -122,7 +122,7 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
             ElevatedButton(
               onPressed: _fetchIpInfo,
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppTheme.primaryGreen,
+                backgroundColor: AppTheme.primaryBlue,
                 foregroundColor: Colors.white,
                 padding: const EdgeInsets.symmetric(
                   horizontal: 24,
@@ -154,8 +154,6 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildSummaryCard(),
-          const SizedBox(height: 16),
-          _buildDetailsCard(),
           const SizedBox(height: 16),
           _buildLocationCard(),
           const SizedBox(height: 16),
@@ -195,47 +193,6 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
             _buildInfoRow(
               context.tr('ip_info.isp'),
               _ipData!['isp_name'] ?? context.tr('common.unknown'),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildDetailsCard() {
-    return Card(
-      color: AppTheme.cardDark,
-      elevation: 4,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              context.tr('ip_info.details'),
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            const SizedBox(height: 16),
-            _buildInfoRow(
-              context.tr('ip_info.query_type'),
-              _ipData!['query_type'] ?? context.tr('common.unknown'),
-            ),
-            _buildInfoRow(
-              context.tr('ip_info.query_text'),
-              _ipData!['query_text'] ?? context.tr('common.unknown'),
-            ),
-            _buildInfoRow(
-              context.tr('ip_info.reverse_dns'),
-              _ipData!['reverse'] ?? context.tr('ip_info.none'),
-            ),
-            _buildInfoRow(
-              context.tr('ip_info.level'),
-              _ipData!['level'] ?? context.tr('common.unknown'),
             ),
           ],
         ),

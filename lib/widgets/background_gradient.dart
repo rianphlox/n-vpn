@@ -44,7 +44,7 @@ class BackgroundGradient extends StatelessWidget {
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [AppTheme.primaryDark, AppTheme.secondaryDark],
+          colors: [AppTheme.surfaceDark, AppTheme.surfaceContainer],
         ),
       ),
       child: child,
@@ -58,8 +58,8 @@ class BackgroundGradient extends StatelessWidget {
           image: FileImage(wallpaperFile),
           fit: BoxFit.cover,
           colorFilter: ColorFilter.mode(
-            Colors.black.withOpacity(
-              0.3,
+            Colors.black.withValues(
+              alpha: 0.3,
             ), // Add overlay for better text readability
             BlendMode.darken,
           ),

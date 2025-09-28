@@ -105,7 +105,7 @@ class _SubscriptionManagementScreenState
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   context.tr(TranslationKeys.commonOk),
-                  style: const TextStyle(color: AppTheme.primaryGreen),
+                  style: const TextStyle(color: AppTheme.primaryBlue),
                 ),
               ),
             ],
@@ -142,7 +142,7 @@ class _SubscriptionManagementScreenState
                 onPressed: () => Navigator.pop(context),
                 child: Text(
                   context.tr(TranslationKeys.commonOk),
-                  style: const TextStyle(color: AppTheme.primaryGreen),
+                  style: const TextStyle(color: AppTheme.primaryBlue),
                 ),
               ),
             ],
@@ -271,7 +271,7 @@ class _SubscriptionManagementScreenState
                 onPressed: () => Navigator.pop(context, false),
                 child: Text(
                   context.tr(TranslationKeys.commonCancel),
-                  style: const TextStyle(color: AppTheme.primaryGreen),
+                  style: const TextStyle(color: AppTheme.primaryBlue),
                 ),
               ),
               TextButton(
@@ -341,14 +341,14 @@ class _SubscriptionManagementScreenState
                 onPressed: () => Navigator.pop(context, false),
                 child: Text(
                   context.tr(TranslationKeys.commonCancel),
-                  style: const TextStyle(color: AppTheme.primaryGreen),
+                  style: const TextStyle(color: AppTheme.primaryBlue),
                 ),
               ),
               TextButton(
                 onPressed: () => Navigator.pop(context, true),
                 child: Text(
                   context.tr(TranslationKeys.commonOk),
-                  style: const TextStyle(color: AppTheme.primaryGreen),
+                  style: const TextStyle(color: AppTheme.primaryBlue),
                 ),
               ),
             ],
@@ -539,7 +539,7 @@ class _SubscriptionManagementScreenState
                               onPressed: () =>
                                   _addOrUpdateSubscription(context),
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryGreen,
+                                backgroundColor: AppTheme.primaryBlue,
                               ),
                               child: Text(
                                 _isUpdating
@@ -709,7 +709,7 @@ class _SubscriptionManagementScreenState
         backgroundColor: AppTheme.secondaryDark,
         title: Row(
           children: [
-            const Icon(Icons.help_outline, color: AppTheme.primaryGreen),
+            const Icon(Icons.help_outline, color: AppTheme.primaryBlue),
             const SizedBox(width: 10),
             Text(context.tr(TranslationKeys.subscriptionManagementHowToAdd)),
           ],
@@ -801,7 +801,7 @@ class _SubscriptionManagementScreenState
             onPressed: () => Navigator.pop(context),
             child: Text(
               context.tr(TranslationKeys.subscriptionManagementGotIt),
-              style: const TextStyle(color: AppTheme.primaryGreen),
+              style: const TextStyle(color: AppTheme.primaryBlue),
             ),
           ),
         ],

@@ -212,7 +212,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
                       border: InputBorder.none,
                       prefixIcon: const Icon(
                         Icons.link,
-                        color: AppTheme.primaryGreen,
+                        color: AppTheme.connectedGreen,
                       ),
                       suffixIcon: _urlController.text.isNotEmpty
                           ? IconButton(
@@ -233,7 +233,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
                 PopupMenuButton<String>(
                   icon: const Icon(
                     Icons.arrow_drop_down,
-                    color: AppTheme.primaryGreen,
+                    color: AppTheme.connectedGreen,
                   ),
                   tooltip: context.tr(
                     TranslationKeys.hostCheckerSelectDefaultUrl,
@@ -294,7 +294,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.timer, color: AppTheme.primaryGreen, size: 20),
+                const Icon(Icons.timer, color: AppTheme.connectedGreen, size: 20),
                 const SizedBox(width: 8),
                 Text(
                   context.tr(TranslationKeys.hostCheckerTimeoutSettings),
@@ -340,7 +340,7 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
                       focusedBorder: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(8),
                         borderSide: const BorderSide(
-                          color: AppTheme.primaryGreen,
+                          color: AppTheme.connectedGreen,
                         ),
                       ),
                     ),
@@ -378,11 +378,11 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
     return ElevatedButton(
       onPressed: _isLoading ? null : _checkHost,
       style: ElevatedButton.styleFrom(
-        backgroundColor: AppTheme.primaryGreen,
+        backgroundColor: AppTheme.primaryBlue,
         foregroundColor: Colors.white,
         padding: const EdgeInsets.symmetric(vertical: 16),
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        disabledBackgroundColor: AppTheme.primaryGreen.withOpacity(0.5),
+        disabledBackgroundColor: AppTheme.primaryBlue.withOpacity(0.5),
       ),
       child: _isLoading
           ? const SizedBox(

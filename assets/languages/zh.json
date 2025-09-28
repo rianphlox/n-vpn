@@ -155,7 +155,7 @@
     "version": "版本{version}",
     "tagline": "开源、免费、快速和私密的VPN",
     "developed_by": "开发者",
-    "developers": "Hossein Pira & hidedev16",
+    "developers": "Hossein Pira",
     "description": "ProxyCloud是一个开源VPN应用程序，通过V2Ray VPN技术和Telegram MTProto代理提供安全、私密的互联网访问。快速、无限制且完全免费，无需订阅费用。您的隐私是我们的优先考虑。",
     "telegram_channel": "Telegram频道",
     "github_source": "GitHub源代码",

@@ -217,7 +217,7 @@ class _StoreScreenState extends State<StoreScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text(context.tr(TranslationKeys.storeScreenSubscriptionStore)),
-        backgroundColor: AppTheme.primaryDark,
+        backgroundColor: AppTheme.surfaceContainer,
         elevation: 0,
         actions: [
           IconButton(
@@ -231,7 +231,7 @@ class _StoreScreenState extends State<StoreScreen> {
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
-            colors: [AppTheme.primaryDark, AppTheme.primaryDarker],
+            colors: [AppTheme.surfaceDark, AppTheme.surfaceDarker],
           ),
         ),
         child: Column(
@@ -244,7 +244,7 @@ class _StoreScreenState extends State<StoreScreen> {
                   hintText: context.tr(TranslationKeys.storeScreenSearchHint),
                   prefixIcon: const Icon(Icons.search, color: Colors.grey),
                   filled: true,
-                  fillColor: Colors.white.withOpacity(0.1),
+                  fillColor: Colors.white.withValues(alpha: 0.1),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10),
                     borderSide: BorderSide.none,
@@ -278,7 +278,7 @@ class _StoreScreenState extends State<StoreScreen> {
                           ElevatedButton(
                             onPressed: _fetchStoreData,
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.primaryGreen,
+                              backgroundColor: AppTheme.primaryBlue,
                             ),
                             child: Text(
                               context.tr(TranslationKeys.storeScreenRetry),
@@ -382,7 +382,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                       IconButton(
                                         icon: const Icon(
                                           Icons.copy,
-                                          color: AppTheme.primaryGreen,
+                                          color: AppTheme.primaryBlue,
                                           size: 20,
                                         ),
                                         onPressed: () =>
@@ -416,7 +416,7 @@ class _StoreScreenState extends State<StoreScreen> {
                                         item['url'] ?? '',
                                       ),
                                       style: ElevatedButton.styleFrom(
-                                        backgroundColor: AppTheme.primaryGreen,
+                                        backgroundColor: AppTheme.primaryBlue,
                                         foregroundColor: Colors.white,
                                         elevation: 3,
                                         padding: const EdgeInsets.symmetric(
@@ -445,7 +445,7 @@ class _StoreScreenState extends State<StoreScreen> {
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
       floatingActionButton: FloatingActionButton(
         onPressed: _showContactDialog,
-        backgroundColor: AppTheme.primaryGreen,
+        backgroundColor: AppTheme.primaryBlue,
         mini: true,
         child: const Icon(Icons.contact_support, color: Colors.white),
       ),

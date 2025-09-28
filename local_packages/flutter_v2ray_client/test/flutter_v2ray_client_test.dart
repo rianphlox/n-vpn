@@ -37,6 +37,18 @@ void main() {
       expect(parsed.port, equals(1002));
     });
 
+    test('should parse vless URL with httpupgrade transport correctly', () {
+      const vlessHttpupgradeUrl =
+          'vless://e390c1ee-dffd-4a5d-82f5-a4a9a8ee4e80@69.84.182.90:8880?security=&encryption=none&host=suddhdussn.hide-abr.com.tr.&type=httpupgrade#%F0%9F%87%A9%F0%9F%87%AA%20%7C%20CDN';
+
+      expect(() => V2ray.parseFromURL(vlessHttpupgradeUrl), returnsNormally);
+      final parsed = V2ray.parseFromURL(vlessHttpupgradeUrl);
+      expect(parsed, isA<V2RayURL>());
+      expect(parsed.remark, equals('🇩🇪 | CDN'));
+      expect(parsed.address, equals('69.84.182.90'));
+      expect(parsed.port, equals(8880));
+    });
+
     test('should throw ArgumentError for invalid URL', () {
       const invalidUrl = 'invalid://url';
 
@@ -96,6 +108,46 @@ void main() {
       expect(config, contains('xhttp'));
       expect(config, contains('reality'));
       expect(config, contains('cdn.jsdelivr.net'));
+    });
+  });
+
+  group('HTTPUpgrade URL Specific Tests', () {
+    test('should correctly parse VLESS URL with httpupgrade transport', () {
+      const vlessHttpupgradeUrl =
+          'vless://e390c1ee-dffd-4a5d-82f5-a4a9a8ee4e80@69.84.182.90:8880?security=&encryption=none&host=suddhdussn.hide-abr.com.tr.&type=httpupgrade#%F0%9F%87%A9%F0%9F%87%AA%20%7C%20CDN';
+
+      final vless = V2ray.parseFromURL(vlessHttpupgradeUrl);
+      
+      expect(vless.address, equals('69.84.182.90'));
+      expect(vless.port, equals(8880));
+      expect(vless.remark, equals('🇩🇪 | CDN'));
+    });
+
+    test('should generate correct httpupgrade stream settings', () {
+      const vlessHttpupgradeUrl =
+          'vless://e390c1ee-dffd-4a5d-82f5-a4a9a8ee4e80@69.84.182.90:8880?security=&encryption=none&host=suddhdussn.hide-abr.com.tr.&type=httpupgrade#%F0%9F%87%A9%F0%9F%87%AA%20%7C%20CDN';
+
+      final vless = V2ray.parseFromURL(vlessHttpupgradeUrl);
+      final streamSettings = vless.streamSetting;
+      
+      expect(streamSettings['network'], equals('httpupgrade'));
+      expect(streamSettings['security'], equals(''));
+      
+      final httpupgradeSettings = streamSettings['httpupgradeSettings'] as Map;
+      expect(httpupgradeSettings['host'], equals('suddhdussn.hide-abr.com.tr.'));
+      expect(httpupgradeSettings['path'], equals(''));
+    });
+
+    test('should generate complete httpupgrade configuration', () {
+      const vlessHttpupgradeUrl =
+          'vless://e390c1ee-dffd-4a5d-82f5-a4a9a8ee4e80@69.84.182.90:8880?security=&encryption=none&host=suddhdussn.hide-abr.com.tr.&type=httpupgrade#%F0%9F%87%A9%F0%9F%87%AA%20%7C%20CDN';
+
+      final vless = V2ray.parseFromURL(vlessHttpupgradeUrl);
+      final config = vless.getFullConfiguration();
+      
+      expect(config, isNotEmpty);
+      expect(config, contains('httpupgrade'));
+      expect(config, contains('suddhdussn.hide-abr.com.tr.'));
     });
   });
 }

@@ -94,7 +94,7 @@ class _SpeedtestScreenState extends State<SpeedtestScreen> {
           WebViewWidget(controller: _controller),
           if (_isLoading)
             const Center(
-              child: CircularProgressIndicator(color: AppTheme.primaryGreen),
+              child: CircularProgressIndicator(color: AppTheme.primaryBlue),
             ),
         ],
       ),

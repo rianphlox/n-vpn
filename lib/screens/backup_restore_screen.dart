@@ -189,7 +189,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
                     ElevatedButton(
                       onPressed: _isLoading ? null : _exportData,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryGreen,
+                        backgroundColor: AppTheme.primaryBlue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -237,7 +237,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
                     ElevatedButton(
                       onPressed: _isLoading ? null : _importData,
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: AppTheme.primaryGreen,
+                        backgroundColor: AppTheme.primaryBlue,
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8),
                         ),
@@ -261,7 +261,7 @@ class _BackupRestoreScreenState extends State<BackupRestoreScreen> {
                 style: TextStyle(
                   color: _statusMessage!.contains('Error')
                       ? Colors.red
-                      : AppTheme.primaryGreen,
+                      : AppTheme.connectedGreen,
                 ),
               ),
             ],

@@ -259,10 +259,10 @@ class _ToolsScreenState extends State<ToolsScreen> {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: AppTheme.primaryGreen.withValues(alpha: 0.1),
+                  color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(12),
                 ),
-                child: Icon(icon, color: AppTheme.primaryGreen, size: 28),
+                child: Icon(icon, color: AppTheme.primaryBlue, size: 28),
               ),
               const SizedBox(width: 16),
               Expanded(
@@ -287,7 +287,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
               ),
               const Icon(
                 Icons.arrow_forward_ios,
-                color: AppTheme.primaryGreen,
+                color: AppTheme.primaryBlue,
                 size: 16,
               ),
             ],
@@ -362,7 +362,7 @@ class _ToolsScreenState extends State<ToolsScreen> {
                 const Spacer(),
                 ElevatedButton(
                   onPressed: () => _launchUrl(update.url.trim()),
-                  style: ElevatedButton.styleFrom(backgroundColor: Colors.blue),
+                  style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
                   child: Text(context.tr('tools.update_now')),
                 ),
               ],

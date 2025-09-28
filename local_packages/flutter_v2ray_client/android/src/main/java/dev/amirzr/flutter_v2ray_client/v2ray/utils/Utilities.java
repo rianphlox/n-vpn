@@ -53,12 +53,13 @@ public class Utilities {
         }
     }
 
-
     public static String convertIntToTwoDigit(int value) {
-        if (value < 10) return "0" + value;
-        else return value + "";
+        if (value < 10) {
+            return "0" + value; 
+        }else {
+            return value + "";
+        }
     }
-
 
     public static V2rayConfig parseV2rayJsonFile(final String remark, String config, final ArrayList<String> blockedApplication, final ArrayList<String> bypass_subnets) {
         final V2rayConfig v2rayConfig = new V2rayConfig();
@@ -96,7 +97,7 @@ public class Utilities {
                 // Try to get server address and port for different protocol types
                 JSONObject firstOutbound = config_json.getJSONArray("outbounds").getJSONObject(0);
                 String protocol = firstOutbound.getString("protocol");
-                
+
                 if ("vmess".equals(protocol) || "vless".equals(protocol)) {
                     // Traditional V2Ray protocols with vnext
                     v2rayConfig.CONNECTED_V2RAY_SERVER_ADDRESS = firstOutbound.getJSONObject("settings")
@@ -160,6 +161,5 @@ public class Utilities {
         v2rayConfig.V2RAY_FULL_JSON_CONFIG = config;
         return v2rayConfig;
     }
-
 
 }

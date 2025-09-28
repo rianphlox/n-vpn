@@ -109,9 +109,9 @@ class ServerSelector extends StatelessWidget {
                   vertical: 12,
                 ),
                 decoration: BoxDecoration(
-                  color: AppTheme.secondaryDark,
+                  color: AppTheme.surfaceContainer,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(color: AppTheme.cardDark),
+                  border: Border.all(color: AppTheme.surfaceCard),
                 ),
                 child: Row(
                   children: [
@@ -151,7 +151,7 @@ class ServerSelector extends StatelessWidget {
                     ],
                     const Icon(
                       Icons.arrow_drop_down,
-                      color: AppTheme.primaryGreen,
+                      color: AppTheme.connectedGreen,
                     ),
                   ],
                 ),
@@ -170,7 +170,7 @@ class ServerSelector extends StatelessWidget {
     // Check if this is the active config (connected)
     final activeConfig = provider.activeConfig;
     if (activeConfig != null && activeConfig.id == config.id) {
-      return AppTheme.primaryGreen;
+      return AppTheme.connectedGreen;
     }
     // Check if this is the selected config (but not connected)
     final selectedConfig = provider.selectedConfig;
@@ -195,7 +195,7 @@ class _LoadingServerCard extends StatelessWidget {
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const CircularProgressIndicator(color: AppTheme.primaryGreen),
+              const CircularProgressIndicator(color: AppTheme.connectedGreen),
               const SizedBox(height: 16),
               Text(context.tr(TranslationKeys.serverSelectorLoadingServers)),
             ],

@@ -1,36 +1,44 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-import '../providers/language_provider.dart';
 
 class AppTheme {
-  // Primary colors
-  static const Color primaryGreen = Color.fromARGB(255, 14, 117, 57);
-  static const Color primaryDark = Color(0xFF121212);
-  static const Color primaryDarker = Color(0xFF0A0A0A);
-  static const Color secondaryDark = Color(0xFF1E1E1E);
-  static const Color cardDark = Color(0xFF252525);
-
-  // Accent colors
-  static const Color accentGreen = Color.fromARGB(255, 16, 101, 60);
-  static const Color disconnectedRed = Color(0xFFFF5252);
-  static const Color connectingYellow = Color(0xFFFFD740);
+  // Material 3 Blue Dark Theme Colors
+  static const Color primaryBlue = Color(0xFF4285F4); // Material Blue 500
+  static const Color primaryBlueDark = Color(0xFF1A73E8); // Material Blue 700
+  static const Color secondaryBlue = Color(0xFF34A853); // Material Green 500
+  static const Color surfaceDark = Color(0xFF121212); // Dark surface
+  static const Color surfaceDarker = Color(0xFF0A0A0A); // Even darker surface
+  static const Color surfaceContainer = Color(0xFF1E1E1E); // Container surface
+  static const Color surfaceCard = Color(0xFF252525); // Card surface
+  
+  // Status colors
+  static const Color connectedGreen = Color(0xFF34A853); // Material Green 500
+  static const Color disconnectedRed = Color(0xFFEA4335); // Material Red 500
+  static const Color connectingBlue = Color(0xFF4285F4); // Material Blue 500
 
   // Text colors
   static const Color textLight = Color(0xFFFFFFFF);
   static const Color textGrey = Color(0xFFAAAAAA);
+  static const Color textSecondary = Color(0xFFBDC1C6);
+
+  // Backward compatibility - old color names mapped to new colors
+  static const Color primaryGreen = connectedGreen;
+  static const Color primaryDark = surfaceDark;
+  static const Color secondaryDark = surfaceContainer;
+  static const Color cardDark = surfaceCard;
+  static const Color primaryDarker = surfaceDarker;
 
   // Gradients
   static const LinearGradient primaryGradient = LinearGradient(
     begin: Alignment.topLeft,
     end: Alignment.bottomRight,
-    colors: [Color.fromARGB(255, 11, 95, 46), Color.fromARGB(255, 22, 122, 74)],
+    colors: [primaryBlue, primaryBlueDark],
   );
 
   static const LinearGradient darkGradient = LinearGradient(
     begin: Alignment.topCenter,
     end: Alignment.bottomCenter,
-    colors: [primaryDark, secondaryDark],
+    colors: [surfaceDark, surfaceContainer],
   );
 
   // Theme data with conditional font support
@@ -58,30 +66,42 @@ class AppTheme {
         ? GoogleFonts.vazirmatn(fontSize: 16, fontWeight: FontWeight.w600)
         : GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.w600);
 
-    return ThemeData.dark().copyWith(
-      scaffoldBackgroundColor: primaryDark,
-      primaryColor: primaryGreen,
-      colorScheme: const ColorScheme.dark().copyWith(
-        primary: const Color.fromARGB(255, 7, 97, 45),
-        secondary: const Color.fromARGB(255, 11, 84, 49),
-        surface: primaryDark,
+    return ThemeData(
+      useMaterial3: true, // Enable Material 3
+      brightness: Brightness.dark,
+      scaffoldBackgroundColor: surfaceDark,
+      primaryColor: primaryBlue,
+      colorScheme: ColorScheme.fromSeed(
+        seedColor: primaryBlue,
+        brightness: Brightness.dark,
+        primary: primaryBlue,
+        onPrimary: textLight,
+        secondary: secondaryBlue,
+        onSecondary: textLight,
+        surface: surfaceDark,
+        onSurface: textLight,
+        surfaceContainerHighest: surfaceContainer,
         error: disconnectedRed,
+        onError: textLight,
       ),
       appBarTheme: AppBarTheme(
-        backgroundColor: secondaryDark,
+        backgroundColor: surfaceContainer,
         elevation: 0,
         centerTitle: true,
         titleTextStyle: baseAppBarTextStyle,
         iconTheme: const IconThemeData(color: textLight),
+        actionsIconTheme: const IconThemeData(color: textLight),
       ),
       cardTheme: CardThemeData(
-        color: cardDark,
+        color: surfaceCard,
         elevation: 4,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(16),
+        ),
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: const Color.fromARGB(255, 11, 94, 45),
+          backgroundColor: primaryBlue,
           foregroundColor: textLight,
           elevation: 4,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
@@ -95,6 +115,30 @@ class AppTheme {
       dividerTheme: const DividerThemeData(
         color: Color(0xFF323232),
         thickness: 1,
+      ),
+      switchTheme: SwitchThemeData(
+        thumbColor: WidgetStateProperty.resolveWith<Color?>(
+          (Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
+              return primaryBlue;
+            }
+            return textGrey;
+          },
+        ),
+        trackColor: WidgetStateProperty.resolveWith<Color?>(
+          (Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
+              return primaryBlue.withValues(alpha: 0.5);
+            }
+            return textGrey.withValues(alpha: 0.5);
+          },
+        ),
+      ),
+      sliderTheme: SliderThemeData(
+        activeTrackColor: primaryBlue,
+        inactiveTrackColor: textGrey.withValues(alpha: 0.3),
+        thumbColor: primaryBlue,
+        overlayColor: primaryBlue.withValues(alpha: 0.2),
       ),
     );
   }
