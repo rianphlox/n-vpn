@@ -171,7 +171,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SnackBar(
             content: Row(
               children: [
-                Icon(Icons.check_circle, color: AppTheme.connectedGreen, size: 20),
+                Icon(Icons.check_circle, color: Colors.white, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
@@ -192,7 +192,7 @@ class _HomeScreenState extends State<HomeScreen> {
           SnackBar(
             content: Row(
               children: [
-                const Icon(Icons.error, color: Colors.red, size: 20),
+                const Icon(Icons.error, color: Colors.white, size: 20),
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
