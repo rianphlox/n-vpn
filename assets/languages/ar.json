@@ -486,6 +486,7 @@
     "supports": "يدعم vless:// و vmess:// و ss:// وغيرها",
     "unique_name_for_sub": "أدخل اسمًا فريدًا للاشتراك الخاص بك",
     "url_with_configs": "أدخل الرابط الذي يحتوي على تكوينات V2Ray",
+    "import_from_file": "اختر ملف",
     "ago": "مضت",
     "reset_default_url": "إعادة تعيين الرابط",
     "reset_default_url_title": "إعادة تعيين رابط الاشتراك الافتراضي",

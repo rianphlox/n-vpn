@@ -294,7 +294,11 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
           children: [
             Row(
               children: [
-                const Icon(Icons.timer, color: AppTheme.connectedGreen, size: 20),
+                const Icon(
+                  Icons.timer,
+                  color: AppTheme.connectedGreen,
+                  size: 20,
+                ),
                 const SizedBox(width: 8),
                 Text(
                   context.tr(TranslationKeys.hostCheckerTimeoutSettings),
@@ -590,10 +594,6 @@ class _HostCheckerScreenState extends State<HostCheckerScreen> {
             _buildInfoRow(
               context.tr(TranslationKeys.hostCheckerUrl),
               _urlController.text,
-            ),
-            _buildInfoRow(
-              context.tr(TranslationKeys.hostCheckerTimeoutUsed),
-              '${timeoutUsed}s',
             ),
             if (contentLength != null && contentLength > 0)
               _buildInfoRow(

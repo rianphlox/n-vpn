@@ -11,7 +11,12 @@ class UpdateService {
   // Check for updates
   Future<AppUpdate?> checkForUpdates() async {
     try {
-      final response = await http.get(Uri.parse(updateUrl));
+      final response = await http.get(Uri.parse(updateUrl)).timeout(
+            const Duration(seconds: 60),
+            onTimeout: () {
+              throw Exception('Network timeout: Check your internet connection');
+            },
+          );
       if (response.statusCode == 200) {
         final AppUpdate? update = AppUpdate.fromJsonString(response.body);
         if (update != null && update.hasUpdate()) {

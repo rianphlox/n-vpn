@@ -484,6 +484,7 @@
         "steps": "Adımlar:",
         "unique_name_step": "1. Aboneliğinize benzersiz bir ad verin",
         "url_with_configs": "2. V2Ray yapılandırmaları içeren bir URL girin",
+        "import_from_file": "Dosya seç",
         "got_it": "Anladım",
         "no_subscriptions": "Henüz abonelik eklenmedi",
         "last_updated": "Son güncelleme: ",

@@ -484,6 +484,7 @@
         "steps": "Steps:",
         "unique_name_step": "1. Give your subscription a unique name",
         "url_with_configs": "2. Enter a URL that contains V2Ray configurations",
+        "import_from_file": "Select file",
         "got_it": "Got it",
         "no_subscriptions": "No subscriptions added yet",
         "last_updated": "Last updated: ",

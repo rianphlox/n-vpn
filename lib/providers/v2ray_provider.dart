@@ -361,6 +361,27 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
     }
   }
 
+  Future<List<V2RayConfig>> importConfigsFromText(String configText) async {
+    try {
+      // Parse multiple configurations from text (similar to subscription parsing)
+      final configs = await _v2rayService.parseSubscriptionContent(configText);
+      
+      if (configs.isEmpty) {
+        throw Exception('No valid configurations found');
+      }
+
+      // Add all configs to the list
+      for (var config in configs) {
+        await addConfig(config);
+      }
+
+      return configs;
+    } catch (e) {
+      _setError('Failed to import configurations: $e');
+      return [];
+    }
+  }
+
   @override
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
@@ -924,6 +945,52 @@ class V2RayProvider with ChangeNotifier, WidgetsBindingObserver {
     } catch (e) {
       print('Error checking connection status: $e');
       // Don't change connection state on errors
+    }
+  }
+
+  Future<List<V2RayConfig>> parseSubscriptionContent(String content) async {
+    return await _v2rayService.parseSubscriptionContent(content);
+  }
+
+  Future<void> addSubscriptionFromFile(String name, List<V2RayConfig> configs) async {
+    _setLoading(true);
+    _errorMessage = '';
+    try {
+      // Add configs and display them immediately
+      _configs.addAll(configs);
+
+      final newConfigIds = configs.map((c) => c.id).toList();
+
+      // Create subscription with a special indicator for file-based subscriptions
+      final subscription = Subscription(
+        id: DateTime.now().millisecondsSinceEpoch.toString(),
+        name: name,
+        url: 'file://subscription', // Special indicator for file-based subscriptions
+        lastUpdated: DateTime.now(),
+        configIds: newConfigIds,
+      );
+
+      _subscriptions.add(subscription);
+
+      // Save both configs and subscription
+      await _v2rayService.saveConfigs(_configs);
+      await _v2rayService.saveSubscriptions(_subscriptions);
+
+      // Update UI after everything is saved
+      notifyListeners();
+    } catch (e) {
+      String errorMsg = 'Failed to add subscription from file';
+
+      // Provide more specific error messages
+      if (e.toString().contains('No valid servers')) {
+        errorMsg = 'No valid servers found in file';
+      } else {
+        errorMsg = 'Failed to add subscription from file: ${e.toString()}';
+      }
+
+      _setError(errorMsg);
+    } finally {
+      _setLoading(false);
     }
   }
 }

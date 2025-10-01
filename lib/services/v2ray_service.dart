@@ -532,12 +532,93 @@ class V2RayService extends ChangeNotifier {
     }
   }
 
+  Future<List<V2RayConfig>> parseSubscriptionContent(String content) async {
+    try {
+      final List<V2RayConfig> configs = [];
+
+      // Try to decode as base64 first
+      try {
+        // Check if the content looks like base64
+        if (_isBase64(content)) {
+          final decoded = utf8.decode(base64.decode(content.trim()));
+          // If decoding succeeds, use the decoded content
+          content = decoded;
+          print('Successfully decoded base64 content');
+        }
+      } catch (e) {
+        // If base64 decoding fails, use the original content
+        print('Not a valid base64 content, using original: $e');
+      }
+
+      final List<String> lines = content.split('\n');
+
+      for (String line in lines) {
+        line = line.trim();
+        if (line.isEmpty) continue;
+
+        try {
+          if (line.startsWith('vmess://') ||
+              line.startsWith('vless://') ||
+              line.startsWith('trojan://') ||
+              line.startsWith('ss://')) {
+            V2RayURL parser = V2ray.parseFromURL(line);
+            String configType = '';
+
+            if (line.startsWith('vmess://')) {
+              configType = 'vmess';
+            } else if (line.startsWith('vless://')) {
+              configType = 'vless';
+            } else if (line.startsWith('ss://')) {
+              configType = 'shadowsocks';
+            } else if (line.startsWith('trojan://')) {
+              configType = 'trojan';
+            }
+
+            // Use the parsed address and port from the V2RayURL parser
+            String address = parser.address;
+            int port = parser.port;
+
+            configs.add(
+              V2RayConfig(
+                id:
+                    DateTime.now().millisecondsSinceEpoch.toString() +
+                    configs.length.toString(),
+                remark: parser.remark,
+                address: address,
+                port: port,
+                configType: configType,
+                fullConfig: line,
+              ),
+            );
+          }
+        } catch (e) {
+          print('Error parsing config: $e');
+        }
+      }
+
+      if (configs.isEmpty) {
+        throw Exception('No valid configurations found in subscription');
+      }
+
+      return configs;
+    } catch (e) {
+      print('Error parsing subscription content: $e');
+
+      // Provide more specific error messages based on exception type
+      if (e.toString().contains('No valid configurations')) {
+        throw Exception('No valid servers found in file');
+      } else {
+        throw Exception('Failed to parse subscription file: ${e.toString()}');
+      }
+    }
+  }
+
   Future<List<V2RayConfig>> parseSubscriptionUrl(String url) async {
     try {
       final response = await http
           .get(Uri.parse(url))
           .timeout(
-            const Duration(seconds: 15),
+            const Duration(seconds: 60),
             onTimeout: () {
               throw Exception(
                 'Network timeout: Check your internet connection',
@@ -718,7 +799,12 @@ class V2RayService extends ChangeNotifier {
       while (retryCount < maxRetries) {
         try {
           print('Fetching IP info, attempt ${retryCount + 1}/$maxRetries');
-          final response = await http.get(Uri.parse(apiUrl));
+          final response = await http.get(Uri.parse(apiUrl)).timeout(
+                const Duration(seconds: 60),
+                onTimeout: () {
+                  throw Exception('Network timeout: Check your internet connection');
+                },
+              );
 
           if (response.statusCode == 200) {
             final Map<String, dynamic> data = json.decode(response.body);

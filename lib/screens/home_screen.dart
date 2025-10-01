@@ -158,7 +158,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     try {
       final startTime = DateTime.now();
-      final response = await http.get(Uri.parse('https://www.google.com'));
+      final response = await http
+          .get(Uri.parse('https://www.google.com'))
+          .timeout(
+            const Duration(seconds: 60),
+            onTimeout: () {
+              throw Exception(
+                'Network timeout: Check your internet connection',
+              );
+            },
+          );
       final endTime = DateTime.now();
       final duration = endTime.difference(startTime);
 

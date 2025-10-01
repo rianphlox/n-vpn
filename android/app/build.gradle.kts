@@ -42,8 +42,8 @@ android {
         applicationId = "com.cloud.pira"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
-        versionCode = 38
-        versionName = "3.6.0"
+        versionCode = 39
+        versionName = "3.6.5"
 
         manifestPlaceholders.put("io.flutter.embedding.android.EnableImpeller", "false")
     }

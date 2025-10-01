@@ -85,6 +85,55 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
     }
   }
 
+  Future<void> _importMultipleFromClipboard() async {
+    try {
+      final clipboardData = await Clipboard.getData(Clipboard.kTextPlain);
+      if (clipboardData == null ||
+          clipboardData.text == null ||
+          clipboardData.text!.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.serverSelectionClipboardEmpty),
+            ),
+          ),
+        );
+        return;
+      }
+
+      final provider = Provider.of<V2RayProvider>(context, listen: false);
+      final configs = await provider.importConfigsFromText(clipboardData.text!);
+
+      if (configs.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              '${configs.length} ${context.tr(TranslationKeys.serverSelectionImportSuccess)}',
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.serverSelectionImportFailed),
+            ),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.tr(TranslationKeys.serverSelectionImportFailed),
+          ),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   Future<void> _deleteLocalConfig(V2RayConfig config) async {
     try {
       await Provider.of<V2RayProvider>(
@@ -778,7 +827,7 @@ class _ServerSelectionScreenState extends State<ServerSelectionScreen> {
       backgroundColor: AppTheme.primaryDark,
       floatingActionButton: _selectedFilter == 'Local'
           ? FloatingActionButton(
-              onPressed: _importFromClipboard,
+              onPressed: _importMultipleFromClipboard,
               backgroundColor: AppTheme.primaryGreen,
               child: const Icon(Icons.paste),
             )

@@ -60,7 +60,16 @@ class _IpInfoScreenState extends State<IpInfoScreen> {
 
   Future<Map<String, dynamic>> _fetchFullIpDetails() async {
     try {
-      final response = await http.get(Uri.parse('https://ipleak.net/json/'));
+      final response = await http
+          .get(Uri.parse('https://ipleak.net/json/'))
+          .timeout(
+            const Duration(seconds: 60),
+            onTimeout: () {
+              throw Exception(
+                'Network timeout: Check your internet connection',
+              );
+            },
+          );
 
       if (response.statusCode == 200) {
         return jsonDecode(response.body);

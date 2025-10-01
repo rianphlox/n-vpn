@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:file_picker/file_picker.dart';
+import 'dart:io';
 import '../models/subscription.dart';
 import '../providers/v2ray_provider.dart';
 import '../theme/app_theme.dart';
@@ -27,6 +29,93 @@ class _SubscriptionManagementScreenState
     _nameController.dispose();
     _urlController.dispose();
     super.dispose();
+  }
+
+  Future<void> _importFromFile() async {
+    try {
+      final result = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: ['txt', 'json', 'yaml', 'yml'],
+      );
+
+      if (result == null || result.files.isEmpty) {
+        return;
+      }
+
+      final file = File(result.files.single.path!);
+      final content = await file.readAsString();
+
+      // Parse the content as subscription configs
+      final provider = Provider.of<V2RayProvider>(context, listen: false);
+      final configs = await provider.parseSubscriptionContent(content);
+
+      if (configs.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('No valid configurations found in file'),
+            backgroundColor: Colors.red.shade700,
+          ),
+        );
+        return;
+      }
+
+      final name = _nameController.text.trim();
+      if (name.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr(TranslationKeys.subscriptionManagementEnterName),
+            ),
+          ),
+        );
+        return;
+      }
+
+      // Show loading indicator
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            context.tr(
+              TranslationKeys.subscriptionManagementAddingSubscription,
+            ),
+          ),
+        ),
+      );
+
+      // Add configs and display them immediately
+      final v2rayProvider = Provider.of<V2RayProvider>(context, listen: false);
+      await v2rayProvider.addSubscriptionFromFile(name, configs);
+
+      // Check if there was an error
+      if (v2rayProvider.errorMessage.isNotEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(v2rayProvider.errorMessage),
+            backgroundColor: Colors.red.shade700,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+        v2rayProvider.clearError();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              context.tr(
+                TranslationKeys.subscriptionManagementSubscriptionAdded,
+              ),
+            ),
+          ),
+        );
+      }
+
+      // Reset the form
+      _resetForm();
+    } catch (e) {
+      ErrorSnackbar.show(
+        context,
+        '${context.tr(TranslationKeys.errorUnknown)}: ${e.toString()}',
+      );
+    }
   }
 
   void _resetForm() {
@@ -520,6 +609,36 @@ class _SubscriptionManagementScreenState
                             fillColor: AppTheme.secondaryDark,
                           ),
                         ),
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Expanded(
+                              child: Text(
+                                context.tr(
+                                  TranslationKeys
+                                      .subscriptionManagementImportFromFile,
+                                ),
+                                style: const TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.grey,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: _importFromFile,
+                              child: Text(
+                                context.tr(
+                                  TranslationKeys
+                                      .subscriptionManagementImportFromFile,
+                                ),
+                                overflow: TextOverflow.ellipsis,
+                                style: const TextStyle(color: Colors.blue),
+                              ),
+                            ),
+                          ],
+                        ),
                         const SizedBox(height: 16),
                         Row(
                           mainAxisAlignment: MainAxisAlignment.end,
@@ -790,9 +909,12 @@ class _SubscriptionManagementScreenState
                 '2. ${context.tr(TranslationKeys.subscriptionManagementUrlWithConfigs)}',
               ),
               Text(
-                '3. ${context.tr(TranslationKeys.subscriptionManagementAdd)}',
+                '3. ${context.tr(TranslationKeys.subscriptionManagementImportFromFile)}',
               ),
-              Text('4. ${context.tr(TranslationKeys.commonRefresh)}'),
+              Text(
+                '4. ${context.tr(TranslationKeys.subscriptionManagementAdd)}',
+              ),
+              Text('5. ${context.tr(TranslationKeys.commonRefresh)}'),
             ],
           ),
         ),

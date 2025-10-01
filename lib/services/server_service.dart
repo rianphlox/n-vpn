@@ -12,7 +12,12 @@ class ServerService {
   Future<List<V2RayConfig>> fetchServers({required String customUrl}) async {
     try {
       final url = customUrl;
-      final response = await http.get(Uri.parse(url));
+      final response = await http.get(Uri.parse(url)).timeout(
+            const Duration(seconds: 60),
+            onTimeout: () {
+              throw Exception('Network timeout: Check your internet connection');
+            },
+          );
 
       if (response.statusCode == 200) {
         final String responseBody = response.body;

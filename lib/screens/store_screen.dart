@@ -42,7 +42,7 @@ class _StoreScreenState extends State<StoreScreen> {
       final response = await http
           .get(Uri.parse(_storeUrl))
           .timeout(
-            const Duration(seconds: 10),
+            const Duration(seconds: 60),
             onTimeout: () {
               throw Exception(
                 context.tr(TranslationKeys.errorConnectionTimeout),
