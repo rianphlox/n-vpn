@@ -139,6 +139,7 @@ class TranslationKeys {
   static const String toolsBlockedApps = 'tools.blocked_apps';
   static const String toolsPerAppTunnel = 'tools.per_app_tunnel';
   static const String toolsHomeWallpaper = 'tools.home_wallpaper';
+  static const String toolsWallpaperStore = 'tools.wallpaper_store';
   static const String toolsVpnSettings = 'tools.vpn_settings';
   static const String toolsBatteryBackground = 'tools.battery_background';
   static const String toolsBackupRestore = 'tools.backup_restore';
@@ -212,6 +213,7 @@ class TranslationKeys {
   static const String commonContact = 'common.contact';
   static const String commonContactOnTelegram = 'common.contact_on_telegram';
   static const String commonDismiss = 'common.dismiss';
+  static const String commonLoadingApps = 'common.loading_apps';
 
   // Server Selector
   static const String serverSelectorConnectionActive =
@@ -763,6 +765,20 @@ class TranslationKeys {
   static const String wallpaperSettingsDefaultBackground =
       'wallpaper_settings.default_background';
   static const String wallpaperSettingsInfo = 'wallpaper_settings.info';
+  static const String wallpaperSettingsVisitStore = 'wallpaper_settings.visit_store';
+  static const String wallpaperSettingsStoreButton = 'wallpaper_settings.store_button';
+
+  // Wallpaper Store Screen
+  static const String wallpaperStoreTitle = 'wallpaper_store.title';
+  static const String wallpaperStoreLoading = 'wallpaper_store.loading';
+  static const String wallpaperStoreErrorLoading = 'wallpaper_store.error_loading';
+  static const String wallpaperStoreRetry = 'wallpaper_store.retry';
+  static const String wallpaperStoreNoWallpapers = 'wallpaper_store.no_wallpapers';
+  static const String wallpaperStoreSetAsWallpaper = 'wallpaper_store.set_as_wallpaper';
+  static const String wallpaperStoreDownload = 'wallpaper_store.download';
+  static const String wallpaperStoreDownloadSuccess = 'wallpaper_store.download_success';
+  static const String wallpaperStoreDownloadError = 'wallpaper_store.download_error';
+  static const String wallpaperStoreSetSuccess = 'wallpaper_store.set_success';
 
   // VPN Settings Screen
   static const String vpnSettingsTitle = 'vpn_settings.title';

@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../services/wallpaper_service.dart';
 import '../theme/app_theme.dart';
 import '../utils/app_localizations.dart';
+import 'wallpaper_store_screen.dart';
 
 class WallpaperSettingsScreen extends StatefulWidget {
   const WallpaperSettingsScreen({super.key});
@@ -408,6 +409,37 @@ class _WallpaperSettingsScreenState extends State<WallpaperSettingsScreen> {
                 ),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppTheme.primaryBlue,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+            ),
+
+            const SizedBox(height: 12),
+
+            // Wallpaper store button
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton.icon(
+                onPressed: _isLoading
+                    ? null
+                    : () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const WallpaperStoreScreen(),
+                          ),
+                        );
+                      },
+                icon: const Icon(Icons.store),
+                label: Text(
+                  context.tr(TranslationKeys.wallpaperSettingsStoreButton),
+                ),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: AppTheme.primaryBlue,
+                  side: const BorderSide(color: AppTheme.primaryBlue),
                   padding: const EdgeInsets.symmetric(vertical: 12),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),

@@ -145,7 +145,9 @@ public class V2rayVPNService extends VpnService implements V2rayServicesListener
         } catch (Exception e) {
             // If parsing fails, add sane fallback DNS
             try { builder.addDnsServer("1.1.1.1"); } catch (Exception ignored) {}
+            try { builder.addDnsServer("1.0.0.1"); } catch (Exception ignored) {}
             try { builder.addDnsServer("8.8.8.8"); } catch (Exception ignored) {}
+            try { builder.addDnsServer("8.8.4.4"); } catch (Exception ignored) {}
         }
         try {
             mInterface.close();

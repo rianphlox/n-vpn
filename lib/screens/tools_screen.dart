@@ -15,6 +15,7 @@ import 'blocked_apps_screen.dart';
 import 'per_app_tunnel_screen.dart';
 import 'backup_restore_screen.dart';
 import 'wallpaper_settings_screen.dart';
+import 'wallpaper_store_screen.dart';
 import 'battery_settings_screen.dart';
 import 'language_settings_screen.dart';
 
@@ -182,6 +183,20 @@ class _ToolsScreenState extends State<ToolsScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const WallpaperSettingsScreen(),
+                      ),
+                    );
+                  },
+                ),
+                _buildToolCard(
+                  context,
+                  title: context.tr(TranslationKeys.toolsWallpaperStore),
+                  description: context.tr('tools.wallpaper_store_desc'),
+                  icon: Icons.store,
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const WallpaperStoreScreen(),
                       ),
                     );
                   },

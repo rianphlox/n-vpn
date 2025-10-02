@@ -33,6 +33,8 @@
     "per_app_tunnel_desc": "Seleccionar aplicaciones que deben usar el túnel VPN (otras serán bloqueadas)",
     "home_wallpaper": "Fondo de Pantalla",
     "home_wallpaper_desc": "Establecer fondo de pantalla personalizado para la pantalla de inicio",
+    "wallpaper_store": "Tienda de Fondos",
+    "wallpaper_store_desc": "Explorar y descargar fondos de nuestra colección",
     "vpn_settings": "Configuración de VPN",
     "vpn_settings_desc": "Configurar subredes de bypass y otras opciones de VPN",
     "battery_background": "Batería y Acceso en Segundo Plano",
@@ -278,6 +280,7 @@
     "close": "Cerrar",
     "refresh": "Actualizar",
     "loading": "Cargando...",
+    "loading_apps": "Cargando aplicaciones...",
     "error": "Error",
     "success": "Éxito",
     "warning": "Advertencia",
@@ -409,7 +412,21 @@
     "image_not_found": "Archivo de fondo de pantalla no encontrado",
     "failed_load": "Error al cargar la imagen",
     "default_background": "Fondo de Gradiente Predeterminado",
-    "info": "• Las imágenes se optimizarán y guardarán localmente\n• Soporta formatos JPG, PNG\n• El fondo de pantalla se aplica solo a la pantalla de inicio"
+    "info": "• Las imágenes se optimizarán y guardarán localmente\n• Soporta formatos JPG, PNG\n• El fondo de pantalla se aplica solo a la pantalla de inicio",
+    "visit_store": "Visitar Tienda de Fondos",
+    "store_button": "Tienda de Fondos"
+  },
+  "wallpaper_store": {
+    "title": "Tienda de Fondos",
+    "loading": "Cargando fondos de pantalla...",
+    "error_loading": "Error al cargar fondos de pantalla: {error}",
+    "retry": "Reintentar",
+    "no_wallpapers": "No hay fondos de pantalla disponibles",
+    "set_as_wallpaper": "Establecer como Fondo",
+    "download": "Descargar",
+    "download_success": "¡Fondo de pantalla descargado con éxito!",
+    "download_error": "Error al descargar fondo de pantalla: {error}",
+    "set_success": "¡Fondo de pantalla establecido con éxito! Vaya a la pantalla de inicio para verlo."
   },
   "store_screen": {
     "title": "Tienda de Suscripciones",

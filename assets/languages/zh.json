@@ -33,6 +33,8 @@
     "per_app_tunnel_desc": "选择应使用VPN隧道的应用（其他应用将被阻止）",
     "home_wallpaper": "主页壁纸",
     "home_wallpaper_desc": "为首页背景设置自定义壁纸",
+    "wallpaper_store": "壁纸商店",
+    "wallpaper_store_desc": "浏览并下载我们收藏的壁纸",
     "vpn_settings": "VPN设置",
     "vpn_settings_desc": "配置绕过子网和其他VPN选项",
     "battery_background": "电池和后台访问",
@@ -278,6 +280,7 @@
     "close": "关闭",
     "refresh": "刷新",
     "loading": "加载中...",
+    "loading_apps": "正在加载应用程序...",
     "error": "错误",
     "success": "成功",
     "warning": "警告",
@@ -409,7 +412,21 @@
     "image_not_found": "壁纸文件未找到",
     "failed_load": "加载图片失败",
     "default_background": "默认渐变背景",
-    "info": "• 图片将被优化并本地保存\n• 支持JPG、PNG格式\n• 壁纸仅应用于主屏幕"
+    "info": "• 图片将被优化并本地保存\n• 支持JPG、PNG格式\n• 壁纸仅应用于主屏幕",
+    "visit_store": "访问壁纸商店",
+    "store_button": "壁纸商店"
+  },
+  "wallpaper_store": {
+    "title": "壁纸商店",
+    "loading": "正在加载壁纸...",
+    "error_loading": "加载壁纸时出错：{error}",
+    "retry": "重试",
+    "no_wallpapers": "没有可用的壁纸",
+    "set_as_wallpaper": "设为壁纸",
+    "download": "下载",
+    "download_success": "壁纸下载成功！",
+    "download_error": "下载壁纸时出错：{error}",
+    "set_success": "壁纸设置成功！前往主屏幕查看。"
   },
   "store_screen": {
     "title": "订阅商店",

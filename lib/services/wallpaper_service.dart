@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:http/http.dart' as http;
 
 class WallpaperService extends ChangeNotifier {
   static const String _wallpaperPathKey = 'home_wallpaper_path';
@@ -153,6 +154,47 @@ class WallpaperService extends ChangeNotifier {
       if (kDebugMode) {
         print('Error cleaning up old wallpapers: $e');
       }
+    }
+  }
+
+  /// Set wallpaper from URL
+  Future<bool> setWallpaperFromUrl(String url) async {
+    try {
+      final response = await http.get(Uri.parse(url));
+      
+      if (response.statusCode == 200) {
+        // Get app documents directory
+        final Directory appDir = await getApplicationDocumentsDirectory();
+        final String wallpapersDir = '${appDir.path}/wallpapers';
+
+        // Create wallpapers directory if it doesn't exist
+        final Directory wallpaperDirectory = Directory(wallpapersDir);
+        if (!await wallpaperDirectory.exists()) {
+          await wallpaperDirectory.create(recursive: true);
+        }
+
+        // Generate unique filename
+        final String timestamp = DateTime.now().millisecondsSinceEpoch.toString();
+        final String extension = url.split('.').last.split('?').first;
+        final String fileName = 'wallpaper_$timestamp.$extension';
+        final String savePath = '$wallpapersDir/$fileName';
+
+        // Save the image
+        final File file = File(savePath);
+        await file.writeAsBytes(response.bodyBytes);
+
+        // Save wallpaper path and enable it
+        await _saveWallpaperSettings(file.path, true);
+
+        return true;
+      } else {
+        return false;
+      }
+    } catch (e) {
+      if (kDebugMode) {
+        print('Error setting wallpaper from URL: $e');
+      }
+      return false;
     }
   }
 }

@@ -37,7 +37,7 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
   @override
   void initState() {
     super.initState();
-    _loadApps();
+    _loadData();
   }
 
   @override
@@ -62,17 +62,18 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
     });
   }
 
-  Future<void> _loadApps() async {
+  Future<void> _loadData() async {
+    // Load saved blocked apps first (fast operation)
+    final prefs = await SharedPreferences.getInstance();
+    final savedBlockedApps = prefs.getStringList('blocked_apps') ?? [];
+    
     setState(() {
-      _isLoading = true;
+      _selectedApps = savedBlockedApps;
+      _isLoading = true; // Show loading for app list
     });
 
     try {
-      // Load saved blocked apps
-      final prefs = await SharedPreferences.getInstance();
-      final savedBlockedApps = prefs.getStringList('blocked_apps') ?? [];
-
-      // Get available apps from device
+      // Get available apps from device (potentially slow operation)
       if (defaultTargetPlatform == TargetPlatform.android) {
         final apps = await _v2rayService.getInstalledApps();
 
@@ -97,7 +98,6 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
         setState(() {
           _availableApps = appInfoList;
           _filteredApps = List.from(appInfoList);
-          _selectedApps = savedBlockedApps;
           _isLoading = false;
         });
       } else {
@@ -105,7 +105,6 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
         setState(() {
           _availableApps = [];
           _filteredApps = [];
-          _selectedApps = savedBlockedApps;
           _isLoading = false;
         });
       }
@@ -216,7 +215,22 @@ class _BlockedAppsScreenState extends State<BlockedAppsScreen> {
         ],
       ),
       body: _isLoading
-          ? const Center(child: CircularProgressIndicator())
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const CircularProgressIndicator(),
+                  const SizedBox(height: 16),
+                  Text(
+                    context.tr(TranslationKeys.commonLoadingApps), // Use translated text
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 16,
+                    ),
+                  ),
+                ],
+              ),
+            )
           : Column(
               children: [
                 // Search bar

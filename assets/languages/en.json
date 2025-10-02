@@ -33,6 +33,8 @@
         "per_app_tunnel_desc": "Select apps that should use the VPN tunnel (others will be blocked)",
         "home_wallpaper": "Home Wallpaper",
         "home_wallpaper_desc": "Set custom wallpaper for home screen background",
+        "wallpaper_store": "Wallpaper Store",
+        "wallpaper_store_desc": "Browse and download wallpapers from our collection",
         "vpn_settings": "VPN Settings",
         "vpn_settings_desc": "Configure bypass subnets and other VPN options",
         "battery_background": "Battery & Background Access",
@@ -278,6 +280,7 @@
         "close": "Close",
         "refresh": "Refresh",
         "loading": "Loading...",
+        "loading_apps": "Loading apps...",
         "error": "Error",
         "success": "Success",
         "warning": "Warning",
@@ -409,7 +412,21 @@
         "image_not_found": "Wallpaper file not found",
         "failed_load": "Failed to load image",
         "default_background": "Default Gradient Background",
-        "info": "• Images will be optimized and saved locally\n• Supports JPG, PNG formats\n• Wallpaper applies to home screen only"
+        "info": "• Images will be optimized and saved locally\n• Supports JPG, PNG formats\n• Wallpaper applies to home screen only",
+        "visit_store": "Visit Wallpaper Store",
+        "store_button": "Wallpaper Store"
+    },
+    "wallpaper_store": {
+        "title": "Wallpaper Store",
+        "loading": "Loading wallpapers...",
+        "error_loading": "Error loading wallpapers: {error}",
+        "retry": "Retry",
+        "no_wallpapers": "No wallpapers available",
+        "set_as_wallpaper": "Set as Wallpaper",
+        "download": "Download",
+        "download_success": "Wallpaper downloaded successfully!",
+        "download_error": "Error downloading wallpaper: {error}",
+        "set_success": "Wallpaper set successfully! Go to home screen to see it."
     },
     "vpn_settings": {
         "title": "VPN Settings",

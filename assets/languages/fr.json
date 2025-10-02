@@ -33,6 +33,8 @@
     "per_app_tunnel_desc": "Sélectionner les applications qui doivent utiliser le tunnel VPN (les autres seront bloquées)",
     "home_wallpaper": "Fond d'Écran",
     "home_wallpaper_desc": "Définir un fond d'écran personnalisé pour l'écran d'accueil",
+    "wallpaper_store": "Boutique de Fonds d'Écran",
+    "wallpaper_store_desc": "Parcourir et télécharger des fonds d'écran de notre collection",
     "vpn_settings": "Paramètres VPN",
     "vpn_settings_desc": "Configurer les sous-réseaux de contournement et autres options VPN",
     "battery_background": "Batterie et Accès en Arrière-plan",
@@ -278,6 +280,7 @@
     "close": "Fermer",
     "refresh": "Actualiser",
     "loading": "Chargement en cours...",
+    "loading_apps": "Chargement des applications...",
     "error": "Erreur",
     "success": "Succès",
     "warning": "Avertissement",
@@ -409,7 +412,21 @@
     "image_not_found": "Fichier de fond d'écran introuvable",
     "failed_load": "Échec du chargement de l'image",
     "default_background": "Fond de dégradé par défaut",
-    "info": "• Les images seront optimisées et enregistrées localement\n• Prend en charge les formats JPG, PNG\n• Le fond d'écran s'applique uniquement à l'écran d'accueil"
+    "info": "• Les images seront optimisées et enregistrées localement\n• Prend en charge les formats JPG, PNG\n• Le fond d'écran s'applique uniquement à l'écran d'accueil",
+    "visit_store": "Visiter la Boutique de Fonds d'Écran",
+    "store_button": "Boutique de Fonds d'Écran"
+  },
+  "wallpaper_store": {
+    "title": "Boutique de Fonds d'Écran",
+    "loading": "Chargement des fonds d'écran...",
+    "error_loading": "Erreur lors du chargement des fonds d'écran : {error}",
+    "retry": "Réessayer",
+    "no_wallpapers": "Aucun fond d'écran disponible",
+    "set_as_wallpaper": "Définir comme Fond d'Écran",
+    "download": "Télécharger",
+    "download_success": "Fond d'écran téléchargé avec succès !",
+    "download_error": "Erreur lors du téléchargement du fond d'écran : {error}",
+    "set_success": "Fond d'écran défini avec succès ! Allez sur l'écran d'accueil pour le voir."
   },
   "store_screen": {
     "title": "Boutique d'Abonnements",

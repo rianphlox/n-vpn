@@ -44,7 +44,7 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
           prefs.getBool('bypass_subnets_enabled') ?? false;
       final bool savedDnsEnabled = prefs.getBool('custom_dns_enabled') ?? false;
       final String savedDnsServers =
-          prefs.getString('custom_dns_servers') ?? '1.1.1.1';
+          prefs.getString('custom_dns_servers') ?? '1.1.1.1\n1.0.0.1\n8.8.8.8\n8.8.4.4';
 
       // Set proxy mode to false (VPN mode only) in SharedPreferences
       await prefs.setBool('proxy_mode_enabled', false);
@@ -391,7 +391,7 @@ class _VpnSettingsScreenState extends State<VpnSettingsScreen> {
                                 onPressed: isDnsEnabled
                                     ? () {
                                         setState(() {
-                                          dnsServerController.text = '1.1.1.1';
+                                          dnsServerController.text = '1.1.1.1\n1.0.0.1\n8.8.8.8\n8.8.4.4';
                                         });
                                       }
                                     : null,

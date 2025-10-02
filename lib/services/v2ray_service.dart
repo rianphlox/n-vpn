@@ -75,11 +75,23 @@ class V2RayService extends ChangeNotifier {
   final Map<String, int?> _pingCache = {};
   final Map<String, bool> _pingInProgress = {};
 
+  // App list cache
+  List<Map<String, dynamic>>? _cachedAppList;
+  DateTime? _lastAppListFetch;
+  static const Duration _appListCacheDuration = Duration(minutes: 5);
+
   // Get list of installed apps (Android only)
   Future<List<Map<String, dynamic>>> getInstalledApps() async {
     try {
       // On Android, use the method channel to get installed apps
       if (defaultTargetPlatform == TargetPlatform.android) {
+        // Check if we have a cached version that's still valid
+        if (_cachedAppList != null && 
+            _lastAppListFetch != null && 
+            DateTime.now().difference(_lastAppListFetch!) < _appListCacheDuration) {
+          return _cachedAppList!;
+        }
+
         const platform = MethodChannel('com.cloud.pira/app_list');
         final List<dynamic> result = await platform.invokeMethod(
           'getInstalledApps',
@@ -96,6 +108,10 @@ class V2RayService extends ChangeNotifier {
             )
             .toList();
 
+        // Cache the result
+        _cachedAppList = appList;
+        _lastAppListFetch = DateTime.now();
+
         return appList;
       } else {
         // Return empty list on non-Android platforms
@@ -103,8 +119,19 @@ class V2RayService extends ChangeNotifier {
       }
     } catch (e) {
       debugPrint('Error getting installed apps: $e');
+      // Return cached version if available, even if stale
+      if (_cachedAppList != null) {
+        return _cachedAppList!;
+      }
       return [];
     }
+  }
+
+  // Method to manually refresh the app list cache
+  Future<void> refreshAppListCache() async {
+    _cachedAppList = null;
+    _lastAppListFetch = null;
+    await getInstalledApps();
   }
 
   // Clear ping cache for all configs or a specific config
@@ -227,7 +254,7 @@ class V2RayService extends ChangeNotifier {
       // Get custom DNS settings
       final bool dnsEnabled = prefs.getBool('custom_dns_enabled') ?? false;
       final String dnsServers =
-          prefs.getString('custom_dns_servers') ?? '1.1.1.1';
+          prefs.getString('custom_dns_servers') ?? '1.1.1.1\n1.0.0.1\n8.8.8.8\n8.8.4.4';
 
       // Apply custom DNS settings if enabled
       if (dnsEnabled && dnsServers.isNotEmpty) {
