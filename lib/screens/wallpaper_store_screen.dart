@@ -49,9 +49,10 @@ class _WallpaperStoreScreenState extends State<WallpaperStoreScreen> {
       if (response.statusCode == 200) {
         // Parse the JSON response
         final List<dynamic> data = json.decode(response.body);
-        final List<String> wallpapers = 
-            data.map((item) => item.toString()).toList();
-        
+        final List<String> wallpapers = data
+            .map((item) => item.toString())
+            .toList();
+
         setState(() {
           _wallpapers = wallpapers;
           _isLoading = false;
@@ -80,40 +81,46 @@ class _WallpaperStoreScreenState extends State<WallpaperStoreScreen> {
     try {
       // Use Android Download Manager for downloading
       const platform = MethodChannel('com.cloud.pira/download');
-      
+
       // Generate filename from URL
       final String fileName = url.split('/').last;
-      
+
       // Invoke the Android Download Manager
       final String downloadId = await platform.invokeMethod('downloadFile', {
         'url': url,
         'fileName': fileName,
       });
-      
+
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr(TranslationKeys.wallpaperStoreDownloadSuccess)),
+          content: Text(
+            context.tr(TranslationKeys.wallpaperStoreDownloadSuccess),
+          ),
           backgroundColor: AppTheme.primaryBlue,
         ),
       );
     } on PlatformException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr(
-            TranslationKeys.wallpaperStoreDownloadError,
-            parameters: {'error': e.message ?? 'Unknown error'},
-          )),
+          content: Text(
+            context.tr(
+              TranslationKeys.wallpaperStoreDownloadError,
+              parameters: {'error': e.message ?? 'Unknown error'},
+            ),
+          ),
           backgroundColor: Colors.red,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr(
-            TranslationKeys.wallpaperStoreDownloadError,
-            parameters: {'error': e.toString()},
-          )),
+          content: Text(
+            context.tr(
+              TranslationKeys.wallpaperStoreDownloadError,
+              parameters: {'error': e.toString()},
+            ),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -123,7 +130,7 @@ class _WallpaperStoreScreenState extends State<WallpaperStoreScreen> {
   Future<void> _setAsWallpaper(String url) async {
     try {
       final response = await http.get(Uri.parse(url));
-      
+
       if (response.statusCode == 200) {
         // Get app documents directory
         final Directory appDir = await getApplicationDocumentsDirectory();
@@ -148,14 +155,14 @@ class _WallpaperStoreScreenState extends State<WallpaperStoreScreen> {
           context,
           listen: false,
         );
-        
+
         // Use the new method to set wallpaper from URL
         final success = await wallpaperService.setWallpaperFromUrl(url);
-        
+
         if (!success) {
           throw Exception('Failed to set wallpaper from URL');
         }
-        
+
         // Show success message
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -163,19 +170,23 @@ class _WallpaperStoreScreenState extends State<WallpaperStoreScreen> {
             backgroundColor: AppTheme.primaryBlue,
           ),
         );
-        
+
         // Go back to the previous screen
         Navigator.of(context).pop();
       } else {
-        throw Exception('Failed to download image: HTTP ${response.statusCode}');
+        throw Exception(
+          'Failed to download image: HTTP ${response.statusCode}',
+        );
       }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr(
-            TranslationKeys.wallpaperStoreDownloadError,
-            parameters: {'error': e.toString()},
-          )),
+          content: Text(
+            context.tr(
+              TranslationKeys.wallpaperStoreDownloadError,
+              parameters: {'error': e.toString()},
+            ),
+          ),
           backgroundColor: Colors.red,
         ),
       );
@@ -206,54 +217,55 @@ class _WallpaperStoreScreenState extends State<WallpaperStoreScreen> {
               ),
             )
           : _errorMessage.isNotEmpty
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        _errorMessage,
-                        style: const TextStyle(color: Colors.white70),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: _fetchWallpapers,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppTheme.primaryBlue,
-                        ),
-                        child: Text(
-                          context.tr(TranslationKeys.wallpaperStoreRetry),
-                        ),
-                      ),
-                    ],
+          ? Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    _errorMessage,
+                    style: const TextStyle(color: Colors.white70),
+                    textAlign: TextAlign.center,
                   ),
-                )
-              : _wallpapers.isEmpty
-                  ? Center(
-                      child: Text(
-                        context.tr(TranslationKeys.wallpaperStoreNoWallpapers),
-                        style: const TextStyle(color: Colors.white70),
-                      ),
-                    )
-                  : GridView.builder(
-                      padding: const EdgeInsets.all(16),
-                      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                        crossAxisCount: 2,
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 0.9, // Increased to give more space for buttons
-                      ),
-                      itemCount: _wallpapers.length,
-                      itemBuilder: (context, index) {
-                        final wallpaperUrl = _wallpapers[index];
-                        return _WallpaperItem(
-                          imageUrl: wallpaperUrl,
-                          onDownload: () => _downloadWallpaper(wallpaperUrl),
-                          onSetAsWallpaper: () => _setAsWallpaper(wallpaperUrl),
-                          onTap: () => _showFullScreenImage(wallpaperUrl),
-                        );
-                      },
+                  const SizedBox(height: 16),
+                  ElevatedButton(
+                    onPressed: _fetchWallpapers,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppTheme.primaryBlue,
                     ),
+                    child: Text(
+                      context.tr(TranslationKeys.wallpaperStoreRetry),
+                    ),
+                  ),
+                ],
+              ),
+            )
+          : _wallpapers.isEmpty
+          ? Center(
+              child: Text(
+                context.tr(TranslationKeys.wallpaperStoreNoWallpapers),
+                style: const TextStyle(color: Colors.white70),
+              ),
+            )
+          : GridView.builder(
+              padding: const EdgeInsets.all(16),
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 2,
+                crossAxisSpacing: 12,
+                mainAxisSpacing: 12,
+                childAspectRatio:
+                    0.9, // Increased to give more space for buttons
+              ),
+              itemCount: _wallpapers.length,
+              itemBuilder: (context, index) {
+                final wallpaperUrl = _wallpapers[index];
+                return _WallpaperItem(
+                  imageUrl: wallpaperUrl,
+                  onDownload: () => _downloadWallpaper(wallpaperUrl),
+                  onSetAsWallpaper: () => _setAsWallpaper(wallpaperUrl),
+                  onTap: () => _showFullScreenImage(wallpaperUrl),
+                );
+              },
+            ),
     );
   }
 
@@ -295,13 +307,17 @@ class _WallpaperItem extends StatelessWidget {
             child: GestureDetector(
               onTap: onTap,
               child: ClipRRect(
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(12),
+                ),
                 child: CachedNetworkImage(
                   imageUrl: imageUrl,
                   fit: BoxFit.cover,
                   placeholder: (context, url) => Center(
                     child: CircularProgressIndicator(
-                      valueColor: AlwaysStoppedAnimation<Color>(AppTheme.primaryBlue),
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppTheme.primaryBlue,
+                      ),
                     ),
                   ),
                   errorWidget: (context, url, error) => Container(
@@ -318,7 +334,7 @@ class _WallpaperItem extends StatelessWidget {
               ),
             ),
           ),
-          
+
           // Buttons container - fixed height to prevent overflow
           SizedBox(
             height: 60, // Fixed height to prevent overflow
@@ -342,16 +358,18 @@ class _WallpaperItem extends StatelessWidget {
                           ),
                         ),
                         child: Text(
-                          context.tr(TranslationKeys.wallpaperStoreSetAsWallpaper),
+                          context.tr(
+                            TranslationKeys.wallpaperStoreSetAsWallpaper,
+                          ),
                           style: const TextStyle(fontSize: 10),
                           textAlign: TextAlign.center,
                         ),
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(width: 4),
-                  
+
                   // Download button
                   Expanded(
                     flex: 1,
@@ -389,7 +407,8 @@ class _WallpaperItem extends StatelessWidget {
 class FullScreenImageViewer extends StatefulWidget {
   final String imageUrl;
 
-  const FullScreenImageViewer({Key? key, required this.imageUrl}) : super(key: key);
+  const FullScreenImageViewer({Key? key, required this.imageUrl})
+    : super(key: key);
 
   @override
   State<FullScreenImageViewer> createState() => _FullScreenImageViewerState();
@@ -422,7 +441,9 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
               // TODO: Implement set as wallpaper functionality for fullscreen view
               ScaffoldMessenger.of(context).showSnackBar(
                 const SnackBar(
-                  content: Text('Set as wallpaper functionality can be added here'),
+                  content: Text(
+                    'Set as wallpaper functionality can be added here',
+                  ),
                   backgroundColor: Colors.blue,
                 ),
               );
@@ -444,11 +465,7 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
               ),
             ),
             errorWidget: (context, url, error) => const Center(
-              child: Icon(
-                Icons.broken_image,
-                color: Colors.white70,
-                size: 48,
-              ),
+              child: Icon(Icons.broken_image, color: Colors.white70, size: 48),
             ),
           ),
         ),
@@ -460,40 +477,46 @@ class _FullScreenImageViewerState extends State<FullScreenImageViewer> {
     try {
       // Use Android Download Manager for downloading
       const platform = MethodChannel('com.cloud.pira/download');
-      
+
       // Generate filename from URL
       final String fileName = url.split('/').last;
-      
+
       // Invoke the Android Download Manager
       final String downloadId = await platform.invokeMethod('downloadFile', {
         'url': url,
         'fileName': fileName,
       });
-      
+
       // Show success message
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr(TranslationKeys.wallpaperStoreDownloadSuccess)),
+          content: Text(
+            context.tr(TranslationKeys.wallpaperStoreDownloadSuccess),
+          ),
           backgroundColor: AppTheme.primaryBlue,
         ),
       );
     } on PlatformException catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr(
-            TranslationKeys.wallpaperStoreDownloadError,
-            parameters: {'error': e.message ?? 'Unknown error'},
-          )),
+          content: Text(
+            context.tr(
+              TranslationKeys.wallpaperStoreDownloadError,
+              parameters: {'error': e.message ?? 'Unknown error'},
+            ),
+          ),
           backgroundColor: Colors.red,
         ),
       );
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(context.tr(
-            TranslationKeys.wallpaperStoreDownloadError,
-            parameters: {'error': e.toString()},
-          )),
+          content: Text(
+            context.tr(
+              TranslationKeys.wallpaperStoreDownloadError,
+              parameters: {'error': e.toString()},
+            ),
+          ),
           backgroundColor: Colors.red,
         ),
       );
