@@ -8,6 +8,10 @@
   <img src="screenshots/base.jpg" alt="Скриншот Proxy Cloud" width="300"/>
 </p>
 
+<div align="center">
+  <img src="https://img.shields.io/github/downloads/code3-dev/ProxyCloud/total?label=Downloads&style=for-the-badge" alt="Downloads Badge">
+</div>
+
 <p align="center">
   <b>Современный, многофункциональный VPN-клиент, который быстрый, безлимитный, безопасный и полностью бесплатный.</b>
 </p>
