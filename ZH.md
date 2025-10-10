@@ -9,6 +9,10 @@
   <img src="screenshots/base.jpg" alt="代理云截图" width="300"/>
 </p>
 
+<div align="center">
+  <img src="https://img.shields.io/github/downloads/code3-dev/ProxyCloud/total?label=Downloads&style=for-the-badge" alt="Downloads Badge">
+</div>
+
 <p align="center">
   <b>一个现代、功能丰富的VPN客户端，快速、无限制、安全且完全免费。</b>
 </p>
