@@ -175,6 +175,10 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - [Privacy Policy](PRIVACY.md) - How we handle your data and protect your privacy
 - [Terms of Service](TERMS.md) - Rules and guidelines for using Proxy Cloud
 
+## Star History
+
+[![Star History Chart](https://api.star-history.com/svg?repos=code3-dev/ProxyCloud&type=Date)](https://www.star-history.com/#code3-dev/ProxyCloud&Date)
+
 ## 📞 Support
 
 If you encounter any issues or have questions, please open an issue on our GitHub repository.
