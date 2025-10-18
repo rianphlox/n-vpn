@@ -157,7 +157,7 @@ class AboutScreen extends StatelessWidget {
                       width: 24,
                       height: 24,
                     ),
-                    label: Text(context.tr(TranslationKeys.ircfChannel)),
+                    label: const Text('IRCF'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 5, 83, 46),
                       foregroundColor: Colors.white,

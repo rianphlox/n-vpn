@@ -485,10 +485,6 @@ class TranslationKeys {
       'privacy_welcome.error_opening_app_settings';
   static const String privacyWelcomeSkip = 'privacy_welcome.skip';
   static const String privacyWelcomeGetStarted = 'privacy_welcome.get_started';
-  static const String privacyWelcomeWelcomeTitle =
-      'privacy_welcome.welcome_title';
-  static const String privacyWelcomeWelcomeSubtitle =
-      'privacy_welcome.welcome_subtitle';
   static const String privacyWelcomePrivacyTitle =
       'privacy_welcome.privacy_title';
   static const String privacyWelcomePrivacySubtitle =
@@ -499,10 +495,6 @@ class TranslationKeys {
       'privacy_welcome.could_not_open_privacy';
   static const String privacyWelcomeCouldNotOpenTerms =
       'privacy_welcome.could_not_open_terms';
-  static const String privacyWelcomeNoLimitsTitle =
-      'privacy_welcome.no_limits_title';
-  static const String privacyWelcomeNoLimitsSubtitle =
-      'privacy_welcome.no_limits_subtitle';
   static const String privacyWelcomeBackgroundAccessTitle =
       'privacy_welcome.background_access_title';
   static const String privacyWelcomeBackgroundAccessSubtitle =
@@ -513,19 +505,11 @@ class TranslationKeys {
       'privacy_welcome.battery_settings';
   static const String privacyWelcomeBatteryOptimizationNote =
       'privacy_welcome.battery_optimization_note';
-  static const String privacyWelcomeFreeToUseTitle =
-      'privacy_welcome.free_to_use_title';
-  static const String privacyWelcomeFreeToUseSubtitle =
-      'privacy_welcome.free_to_use_subtitle';
 
   // Language Selection
   static const String selectLanguagePrompt = 'select_language_prompt';
   static const String selectLanguageTitle = 'select_language_title';
   static const String selectLanguageSubtitle = 'select_language_subtitle';
-
-  // Channels and Sponsors
-  static const String channelsAndSponsorsTitle = 'channels_and_sponsors_title';
-  static const String internetForAll = 'internet_for_all';
 
   // Server Selection
   static const String serverSelectionTitle = 'server_selection.title';
@@ -765,19 +749,26 @@ class TranslationKeys {
   static const String wallpaperSettingsDefaultBackground =
       'wallpaper_settings.default_background';
   static const String wallpaperSettingsInfo = 'wallpaper_settings.info';
-  static const String wallpaperSettingsVisitStore = 'wallpaper_settings.visit_store';
-  static const String wallpaperSettingsStoreButton = 'wallpaper_settings.store_button';
+  static const String wallpaperSettingsVisitStore =
+      'wallpaper_settings.visit_store';
+  static const String wallpaperSettingsStoreButton =
+      'wallpaper_settings.store_button';
 
   // Wallpaper Store Screen
   static const String wallpaperStoreTitle = 'wallpaper_store.title';
   static const String wallpaperStoreLoading = 'wallpaper_store.loading';
-  static const String wallpaperStoreErrorLoading = 'wallpaper_store.error_loading';
+  static const String wallpaperStoreErrorLoading =
+      'wallpaper_store.error_loading';
   static const String wallpaperStoreRetry = 'wallpaper_store.retry';
-  static const String wallpaperStoreNoWallpapers = 'wallpaper_store.no_wallpapers';
-  static const String wallpaperStoreSetAsWallpaper = 'wallpaper_store.set_as_wallpaper';
+  static const String wallpaperStoreNoWallpapers =
+      'wallpaper_store.no_wallpapers';
+  static const String wallpaperStoreSetAsWallpaper =
+      'wallpaper_store.set_as_wallpaper';
   static const String wallpaperStoreDownload = 'wallpaper_store.download';
-  static const String wallpaperStoreDownloadSuccess = 'wallpaper_store.download_success';
-  static const String wallpaperStoreDownloadError = 'wallpaper_store.download_error';
+  static const String wallpaperStoreDownloadSuccess =
+      'wallpaper_store.download_success';
+  static const String wallpaperStoreDownloadError =
+      'wallpaper_store.download_error';
   static const String wallpaperStoreSetSuccess = 'wallpaper_store.set_success';
 
   // VPN Settings Screen
@@ -804,14 +795,6 @@ class TranslationKeys {
   static const String vpnSettingsSavedSuccess = 'vpn_settings.saved_success';
   static const String vpnSettingsErrorLoading = 'vpn_settings.error_loading';
   static const String vpnSettingsErrorSaving = 'vpn_settings.error_saving';
-
-  // Persian Gulf Page
-  static const String persianGulfTitle = 'persian_gulf.title';
-  static const String persianGulfMessage = 'persian_gulf.message';
-  static const String persianGulfCardTitle = 'persian_gulf.card_title';
-
-  // IRCF Channel
-  static const String ircfChannel = 'ircf.channel';
 }
 
 /// Translation helper functions

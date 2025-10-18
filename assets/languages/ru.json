@@ -56,7 +56,7 @@
     "select_language": "Выбрать язык"
   },
   "home": {
-    "title": "Proxy Cloud",
+    "title": "QShield",
     "connect": "Подключить",
     "disconnect": "Отключить",
     "connecting": "Подключение...",

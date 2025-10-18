@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:provider/provider.dart';
@@ -9,7 +8,6 @@ import 'main_navigation_screen.dart';
 import '../utils/app_localizations.dart';
 import '../models/app_language.dart';
 import '../providers/language_provider.dart';
-import '../widgets/error_snackbar.dart';
 
 class PrivacyWelcomeScreen extends StatefulWidget {
   const PrivacyWelcomeScreen({Key? key}) : super(key: key);
@@ -21,8 +19,7 @@ class PrivacyWelcomeScreen extends StatefulWidget {
 class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  final int _totalPages =
-      7; // Reduced to remove background access page, now accommodating channels, sponsors, and Persian Gulf pages
+  final int _totalPages = 2; // Language selection and Privacy pages only
   bool _acceptedPrivacy = false;
 
   AppLanguage? _selectedLanguage;
@@ -61,8 +58,7 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
     }
 
     // If on privacy page and checkbox not checked, don't proceed
-    if (_currentPage == 2 && !_acceptedPrivacy) {
-      // Changed from 1 to 2 because we added language page
+    if (_currentPage == 1 && !_acceptedPrivacy) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(
@@ -72,13 +68,6 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
         ),
       );
       return;
-    }
-
-
-
-    // If on channels page, proceed to next page
-    if (_currentPage == 4) {
-      // No special handling required for channels page
     }
 
     if (_currentPage < _totalPages - 1) {
@@ -213,13 +202,8 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                         });
                       },
                       children: [
-                        _buildLanguageSelectionPage(), // Added language selection page
-                        _buildWelcomePage(),
+                        _buildLanguageSelectionPage(),
                         _buildPrivacyPage(),
-                        _buildNoLimitsPage(),
-                        _buildChannelsPage(), // Added channels and sponsors page
-                        _buildPersianGulfPage(), // Added Persian Gulf page
-                        _buildFreeToUsePage(),
                       ],
                     ),
                   ),
@@ -254,9 +238,7 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                         SizedBox(
                           width: double.infinity,
                           child: ElevatedButton(
-                            onPressed:
-                                (_currentPage == 2 &&
-                                    !_acceptedPrivacy) // Changed from 1 to 2
+                            onPressed: (_currentPage == 1 && !_acceptedPrivacy)
                                 ? null
                                 : _nextPage,
                             style: ElevatedButton.styleFrom(
@@ -421,62 +403,6 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
     );
   }
 
-  Widget _buildWelcomePage() {
-    return Consumer<LanguageProvider>(
-      builder: (context, languageProvider, child) {
-        final isRtlLanguage =
-            languageProvider.currentLanguage.code == 'fa' ||
-            languageProvider.currentLanguage.code == 'ar';
-
-        final titleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              )
-            : const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              );
-
-        final subtitleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(fontSize: 16, color: Colors.white70)
-            : const TextStyle(fontSize: 16, color: Colors.white70);
-
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.security,
-                  size: 100,
-                  color: AppTheme.primaryGreen,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  context.tr('privacy_welcome.welcome_title'),
-                  style: titleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  context.tr('privacy_welcome.welcome_subtitle'),
-                  style: subtitleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   Widget _buildPrivacyPage() {
     return Consumer<LanguageProvider>(
       builder: (context, languageProvider, child) {
@@ -627,378 +553,6 @@ class _PrivacyWelcomeScreenState extends State<PrivacyWelcomeScreen> {
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildNoLimitsPage() {
-    return Consumer<LanguageProvider>(
-      builder: (context, languageProvider, child) {
-        final isRtlLanguage =
-            languageProvider.currentLanguage.code == 'fa' ||
-            languageProvider.currentLanguage.code == 'ar';
-
-        final titleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              )
-            : const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              );
-
-        final subtitleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(fontSize: 16, color: Colors.white70)
-            : const TextStyle(fontSize: 16, color: Colors.white70);
-
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.speed,
-                  size: 100,
-                  color: AppTheme.primaryGreen,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  context.tr('privacy_welcome.no_limits_title'),
-                  style: titleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  context.tr('privacy_welcome.no_limits_subtitle'),
-                  style: subtitleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildFreeToUsePage() {
-    return Consumer<LanguageProvider>(
-      builder: (context, languageProvider, child) {
-        final isRtlLanguage =
-            languageProvider.currentLanguage.code == 'fa' ||
-            languageProvider.currentLanguage.code == 'ar';
-
-        final titleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              )
-            : const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              );
-
-        final subtitleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(fontSize: 16, color: Colors.white70)
-            : const TextStyle(fontSize: 16, color: Colors.white70);
-
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.money_off,
-                  size: 100,
-                  color: AppTheme.primaryGreen,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  context.tr('privacy_welcome.free_to_use_title'),
-                  style: titleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  context.tr('privacy_welcome.free_to_use_subtitle'),
-                  style: subtitleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildChannelsPage() {
-    return Consumer<LanguageProvider>(
-      builder: (context, languageProvider, child) {
-        final isRtlLanguage =
-            languageProvider.currentLanguage.code == 'fa' ||
-            languageProvider.currentLanguage.code == 'ar';
-
-        final titleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              )
-            : const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              );
-
-        final sloganStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.primaryGreen,
-              )
-            : const TextStyle(
-                fontSize: 20,
-                fontWeight: FontWeight.bold,
-                color: AppTheme.primaryGreen,
-              );
-
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.group,
-                  size: 100,
-                  color: AppTheme.primaryGreen,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  context.tr(TranslationKeys.channelsAndSponsorsTitle),
-                  style: titleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  context.tr(
-                    TranslationKeys.internetForAll,
-                  ), // "Internet for all; or for no one!"
-                  style: sloganStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 32),
-                // ProxyCloud Channel Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      final url = Uri.parse('tg://resolve?domain=irdevs_dns');
-                      try {
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(
-                            url,
-                            mode: LaunchMode.externalApplication,
-                          );
-                        } else {
-                          ErrorSnackbar.show(
-                            context,
-                            context.tr(
-                              TranslationKeys.telegramProxyNotInstalled,
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        ErrorSnackbar.show(
-                          context,
-                          context.tr(
-                            TranslationKeys.telegramProxyLaunchError,
-                            parameters: {'error': e.toString()},
-                          ),
-                        );
-                      }
-                    },
-                    icon: Image.asset(
-                      'assets/images/logo.png',
-                      width: 24,
-                      height: 24,
-                    ),
-                    label: const Text(
-                      'ProxyCloud',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black,
-                      ),
-                    ),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                // IRCF Channel Button
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton.icon(
-                    onPressed: () async {
-                      final url = Uri.parse('tg://resolve?domain=ircfspace');
-                      try {
-                        if (await canLaunchUrl(url)) {
-                          await launchUrl(
-                            url,
-                            mode: LaunchMode.externalApplication,
-                          );
-                        } else {
-                          ErrorSnackbar.show(
-                            context,
-                            context.tr(
-                              TranslationKeys.telegramProxyNotInstalled,
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        ErrorSnackbar.show(
-                          context,
-                          context.tr(
-                            TranslationKeys.telegramProxyLaunchError,
-                            parameters: {'error': e.toString()},
-                          ),
-                        );
-                      }
-                    },
-                    icon: Image.asset(
-                      'assets/images/ircf.png',
-                      width: 24,
-                      height: 24,
-                    ),
-                    label: Text(context.tr(TranslationKeys.ircfChannel)),
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color.fromARGB(255, 5, 83, 46),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-              ],
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  Widget _buildPersianGulfPage() {
-    return Consumer<LanguageProvider>(
-      builder: (context, languageProvider, child) {
-        final isRtlLanguage =
-            languageProvider.currentLanguage.code == 'fa' ||
-            languageProvider.currentLanguage.code == 'ar';
-
-        final titleStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              )
-            : const TextStyle(
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              );
-
-        final messageStyle = isRtlLanguage
-            ? GoogleFonts.vazirmatn(fontSize: 16, color: Colors.white70)
-            : const TextStyle(fontSize: 16, color: Colors.white70);
-
-        return Padding(
-          padding: const EdgeInsets.all(24.0),
-          child: SingleChildScrollView(
-            physics: const BouncingScrollPhysics(),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.water,
-                  size: 100,
-                  color: AppTheme.connectedGreen,
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  context.tr(TranslationKeys.persianGulfTitle),
-                  style: titleStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 16),
-                // Persian Gulf image card
-                Card(
-                  color: AppTheme.cardDark,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Column(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
-                          child: Image.asset(
-                            'assets/images/gulf.png',
-                            height: 150,
-                            fit: BoxFit.cover,
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Text(
-                          context.tr(TranslationKeys.persianGulfCardTitle),
-                          style: isRtlLanguage
-                              ? GoogleFonts.vazirmatn(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.connectedGreen,
-                                )
-                              : const TextStyle(
-                                  fontSize: 20,
-                                  fontWeight: FontWeight.bold,
-                                  color: AppTheme.connectedGreen,
-                                ),
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                Text(
-                  context.tr(TranslationKeys.persianGulfMessage),
-                  style: messageStyle,
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 24),
               ],
             ),
           ),

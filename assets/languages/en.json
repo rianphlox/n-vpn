@@ -56,7 +56,7 @@
         "select_language": "Select Language"
     },
     "home": {
-        "title": "Proxy Cloud",
+        "title": "QShield",
         "connect": "Connect",
         "disconnect": "Disconnect",
         "connecting": "Connecting...",
@@ -353,29 +353,21 @@
         "error_opening_app_settings": "Error opening app settings",
         "skip": "Skip",
         "get_started": "Get Started",
-        "welcome_title": "Welcome to Proxy Cloud",
-        "welcome_subtitle": "An open-source VPN that's fast, unlimited, secure, and completely free.",
         "privacy_title": "Your Privacy Matters",
         "privacy_subtitle": "We don't track, store, or share your data. Your online activity remains private and secure.",
         "i_accept": "I accept the ",
         "and": " and ",
         "could_not_open_privacy": "Could not open Privacy Policy",
         "could_not_open_terms": "Could not open Terms of Service",
-        "no_limits_title": "No Limits",
-        "no_limits_subtitle": "Enjoy unlimited bandwidth and server switches. Browse, stream, and download without restrictions.",
         "background_access_title": "Background Access",
         "background_access_subtitle": "Allow the app to run in background for better VPN performance and connection stability.",
         "open_settings": "Open Settings",
         "battery_settings": "Battery Settings",
-        "battery_optimization_note": "Disable battery optimization for ProxyCloud to ensure the VPN stays connected while the app is in background.",
-        "free_to_use_title": "Fully Free",
-        "free_to_use_subtitle": "This app is completely free to use. No hidden fees, no subscriptions, no ads."
+        "battery_optimization_note": "Disable battery optimization for ProxyCloud to ensure the VPN stays connected while the app is in background."
     },
     "select_language_prompt": "Please select a language to continue",
     "select_language_title": "Select Language",
     "select_language_subtitle": "Choose your preferred language for the app interface",
-    "internet_for_all": "Internet for all; or for no one!",
-    "channels_and_sponsors_title": "ProxyCloud Channels & Sponsors",
     "telegram_proxy": {
         "title": "Telegram Proxies",
         "refresh": "Refresh",
@@ -522,13 +514,5 @@
         "reset_default_url_title": "Reset Default Subscription URL",
         "reset_default_url_confirmation": "Are you sure you want to reset the default subscription URL to its original value?",
         "default_url_reset": "Default subscription URL reset successfully"
-    },
-    "persian_gulf": {
-        "title": "Persian Gulf",
-        "message": "This is the Persian Gulf - has been, is, and will remain",
-        "card_title": "Persian Gulf for Ever"
-    },
-    "ircf": {
-        "channel": "IRCF"
     }
 }

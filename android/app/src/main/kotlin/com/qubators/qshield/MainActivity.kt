@@ -1,4 +1,4 @@
-package com.cloud.pira
+package com.qubators.qshield
 
 import android.content.Intent
 import android.os.Bundle

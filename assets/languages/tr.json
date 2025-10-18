@@ -55,8 +55,8 @@
         "restart_required": "Dil değişikliklerini uygulamak için lütfen uygulamayı yeniden başlatın",
         "select_language": "Dil Seçin"
     },
-    "home": {
-        "title": "Proxy Cloud",
+      "home": {
+      "title": "QShield",
         "connect": "Bağlan",
         "disconnect": "Bağlantıyı Kes",
         "connecting": "Bağlanıyor...",

@@ -55,8 +55,8 @@
         "restart_required": "لطفاً برنامه را مجدداً راه‌اندازی کنید تا تغییرات زبان اعمال شود",
         "select_language": "انتخاب زبان"
     },
-    "home": {
-        "title": "Proxy Cloud",
+      "home": {
+      "title": "QShield",
         "connect": "اتصال",
         "disconnect": "قطع اتصال",
         "connecting": "در حال اتصال...",
