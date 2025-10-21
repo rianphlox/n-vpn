@@ -10,7 +10,7 @@ import '../theme/app_theme.dart';
 import '../utils/app_localizations.dart';
 
 class TelegramProxyScreen extends StatefulWidget {
-  const TelegramProxyScreen({Key? key}) : super(key: key);
+  const TelegramProxyScreen({super.key});
 
   @override
   State<TelegramProxyScreen> createState() => _TelegramProxyScreenState();

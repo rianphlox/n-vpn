@@ -1,45 +1,82 @@
-# Miscellaneous
-*.class
-*.log
-*.pyc
-*.swp
-.DS_Store
-.atom/
-.build/
-.buildlog/
-.history
-.svn/
-.swiftpm/
-migrate_working_dir/
-
-# IntelliJ related
-*.iml
-*.ipr
-*.iws
-.idea/
-
-# The .vscode folder contains launch configuration and tasks you configure in
-# VS Code which you may wish to be included in version control, so this line
-# is commented out by default.
-#.vscode/
-
-# Flutter/Dart/Pub related
+# --------------------------
+# Flutter / Dart Standard
+# --------------------------
 **/doc/api/
-**/ios/Flutter/.last_build_id
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
+.packages
 .pub-cache/
 .pub/
-/build/
+build/
+android/app/debug
+android/app/profile
+android/app/release
 
-# Symbolication related
-app.*.symbols
+# --------------------------
+# IDEs & Editors
+# --------------------------
+# VS Code
+.vscode/
+# Android Studio / IntelliJ
+.idea/
+*.iml
+*.ipr
+*.iws
+# Xcode
+*.xcworkspace
+*.xcuserstate
+# macOS
+.DS_Store
 
-# Obfuscation related
-app.*.map.json
+# --------------------------
+# Logs & Misc
+# --------------------------
+*.log
+*.tmp
+*.swp
+*.lock
+*.bak
+*.orig
+*.rej
+*.pyc
+*.class
+*.obj
 
-# Android Studio will place build artifacts here
-/android/app/debug
-/android/app/profile
-/android/app/release
+# --------------------------
+# Flutter Web build output
+# (prevents HTML and web artifacts from showing)
+# --------------------------
+build/web/
+web/*.html
+web/*.js
+web/*.css
+web/assets/
+web/.dart_tool/
+web/.firebase/
+web/.cache/
+*.html
+*.js
+*.css
+*.map
+
+# --------------------------
+# Packages / Dependencies
+# --------------------------
+# SwiftPM
+.swiftpm/
+# Pub/Migration
+migrate_working_dir/
+
+# --------------------------
+# Android Keystore
+# --------------------------
+android/key.properties
+*.keystore
+*.jks
+
+# --------------------------
+# GitHub / Continue AI / Other tools
+# --------------------------
+.continue/
+.github/

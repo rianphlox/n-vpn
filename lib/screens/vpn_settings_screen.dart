@@ -6,7 +6,7 @@ import '../widgets/error_snackbar.dart';
 import '../utils/app_localizations.dart'; // Added import for translations
 
 class VpnSettingsScreen extends StatefulWidget {
-  const VpnSettingsScreen({Key? key}) : super(key: key);
+  const VpnSettingsScreen({super.key});
 
   @override
   State<VpnSettingsScreen> createState() => _VpnSettingsScreenState();

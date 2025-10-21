@@ -17,8 +17,10 @@ if (keystorePropertiesFile.exists()) {
 
 android {
     namespace = "com.qubators.qshield"
-    compileSdk = 36
-    ndkVersion = "27.0.12077973"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
+
+
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -33,7 +35,7 @@ android {
         create("release") {
             keyAlias = keystoreProperties.getProperty("keyAlias") ?: "androiddebugkey"
             keyPassword = keystoreProperties.getProperty("keyPassword") ?: "android"
-            storeFile = file(keystoreProperties.getProperty("storeFile") ?: "keystore/debug.keystore")
+            storeFile = keystoreProperties.getProperty("storeFile")?.let { rootProject.file(it) } ?: file("keystore/debug.keystore")
             storePassword = keystoreProperties.getProperty("storePassword") ?: "android"
         }
     }
@@ -65,7 +67,9 @@ android {
 
     buildTypes {
         getByName("release") {
-            signingConfig = signingConfigs.getByName("release")
+            // For testing on a physical device without providing a release keystore,
+            // you can comment out the line below.
+            // signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = true
             isShrinkResources = true
             ndk {

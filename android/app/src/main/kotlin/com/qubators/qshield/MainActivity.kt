@@ -6,6 +6,9 @@ import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
 import com.cloud.pira.DownloadMethodChannel
+import com.cloud.pira.AppListMethodChannel
+import com.cloud.pira.PingMethodChannel
+import com.cloud.pira.SettingsMethodChannel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch

@@ -5,7 +5,7 @@ import '../providers/v2ray_provider.dart';
 import '../theme/app_theme.dart';
 
 class ConnectionButton extends StatelessWidget {
-  const ConnectionButton({Key? key}) : super(key: key);
+  const ConnectionButton({super.key});
 
   // Helper method to handle async selection and connection
   Future<void> _connectToFirstServer(V2RayProvider provider) async {
