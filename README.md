@@ -1,7 +1,7 @@
 # QShield
 
 <p align="center">
-  <img src="assets/images/logo.png" alt="QShield Logo" width="150"/>
+  <img src="assets/images/app_icon.png" alt="QShield Logo" width="150"/>
 </p>
 
 <p align="center">
