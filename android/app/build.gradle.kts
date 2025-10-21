@@ -4,23 +4,13 @@ import java.util.Properties
 plugins {
     id("com.android.application")
     id("kotlin-android")
-    // The Flutter Gradle Plugin must be applied after the Android and Kotlin Gradle plugins.
     id("dev.flutter.flutter-gradle-plugin")
-}
-
-// Load keystore properties
-val keystorePropertiesFile = rootProject.file("key.properties")
-val keystoreProperties = Properties()
-if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(FileInputStream(keystorePropertiesFile))
 }
 
 android {
     namespace = "com.qubators.qshield"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
-
-
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -31,23 +21,13 @@ android {
         jvmTarget = JavaVersion.VERSION_11.toString()
     }
 
-    signingConfigs {
-        create("release") {
-            keyAlias = keystoreProperties.getProperty("keyAlias") ?: "androiddebugkey"
-            keyPassword = keystoreProperties.getProperty("keyPassword") ?: "android"
-            storeFile = keystoreProperties.getProperty("storeFile")?.let { rootProject.file(it) } ?: file("keystore/debug.keystore")
-            storePassword = keystoreProperties.getProperty("storePassword") ?: "android"
-        }
-    }
-
     defaultConfig {
         applicationId = "com.qubators.qshield"
         minSdk = flutter.minSdkVersion
         targetSdk = flutter.targetSdkVersion
         versionCode = 41
         versionName = "3.7.1"
-
-        manifestPlaceholders.put("io.flutter.embedding.android.EnableImpeller", "false")
+        manifestPlaceholders["io.flutter.embedding.android.EnableImpeller"] = "false"
     }
 
     packagingOptions {
@@ -58,24 +38,14 @@ android {
 
     splits {
         abi {
-            isEnable = true
-            reset()
-            include("x86_64", "armeabi-v7a", "arm64-v8a")
-            isUniversalApk = true
+            isEnable = false
         }
     }
 
     buildTypes {
         getByName("release") {
-            // For testing on a physical device without providing a release keystore,
-            // you can comment out the line below.
-            // signingConfig = signingConfigs.getByName("release")
-            isMinifyEnabled = true
-            isShrinkResources = true
-            ndk {
-                abiFilters.addAll(listOf("x86_64", "armeabi-v7a", "arm64-v8a"))
-                debugSymbolLevel = "FULL"
-            }
+            isMinifyEnabled = false
+            isShrinkResources = false
         }
     }
 }

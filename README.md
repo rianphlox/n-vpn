@@ -1,11 +1,11 @@
-# Proxy Cloud
+# QShield
 
 <p align="center">
-  <img src="assets/images/logo.png" alt="Proxy Cloud Logo" width="150"/>
+  <img src="assets/images/logo.png" alt="QShield Logo" width="150"/>
 </p>
 
 <p align="center">
-  <img src="screenshots/base.jpg" alt="Proxy Cloud Screenshot" width="300"/>
+  <img src="screenshots/base.jpg" alt="QShield Screenshot" width="300"/>
 </p>
 
 <div align="center">
@@ -22,7 +22,7 @@
 
 ## 🚀 Overview
 
-Proxy Cloud is a powerful Flutter application designed to provide secure, private internet access through V2Ray VPN technology and Telegram MTProto proxies. With an intuitive dark-themed interface and comprehensive features, Proxy Cloud puts you in control of your online privacy without any subscription fees or hidden costs.
+QShield is a powerful Flutter application designed to provide secure, private internet access through V2Ray VPN technology and Telegram MTProto proxies. With an intuitive dark-themed interface and comprehensive features, QShield puts you in control of your online privacy without any subscription fees or hidden costs.
 
 ## ✨ Key Features
 
@@ -160,7 +160,7 @@ yay -S proxycloud-gui-bin
 
 ## 🤝 Contributing
 
-We welcome contributions to make Proxy Cloud even better! Here's how you can help:
+We welcome contributions to make QShield even better! Here's how you can help:
 
 1. Fork the repository
 2. Create your feature branch: `git checkout -b feature/amazing-feature`
@@ -177,7 +177,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## 📜 Legal
 
 - [Privacy Policy](PRIVACY.md) - How we handle your data and protect your privacy
-- [Terms of Service](TERMS.md) - Rules and guidelines for using Proxy Cloud
+- [Terms of Service](TERMS.md) - Rules and guidelines for using QShield
 
 ## Star History
 
